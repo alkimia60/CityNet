@@ -1,0 +1,4 @@
+citynet\controller\UserManager.class
+citynet\dao\UserDao.class
+citynet\model\User.class
+citynet\Utils\DBConnection.class
