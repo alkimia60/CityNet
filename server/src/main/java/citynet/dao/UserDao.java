@@ -31,7 +31,6 @@ public class UserDao {
                 User user = new User();
                 user.setId(rs.getInt("id"));
                 user.setEmail(rs.getString("email"));
-                user.setPassword(rs.getString("password"));
                 user.setName(rs.getString("name"));
                 user.setSurname(rs.getString("surname"));
                 user.setAddress(rs.getString("address"));

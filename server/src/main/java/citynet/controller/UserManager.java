@@ -39,8 +39,7 @@ public class UserManager extends HttpServlet {
                 case "ListAllUsers":
                     int screen = Integer.parseInt(request.getParameter("screen"));
                     response.setContentType("text/html;charset=UTF-8");
-                    replyAllUsers(response, screen * INCREASE, INCREASE);
-                    //replyAllUsersJson(response, screen * INCREASE, INCREASE);
+                    replyAllUsersJson(response, screen * INCREASE, INCREASE);
                     break;
                 default:
                     StringBuilder reply = new StringBuilder();
@@ -119,7 +118,6 @@ public class UserManager extends HttpServlet {
             }
             reply.append("{\"id\":\"").append(users.get(i).getId()).append("\",")
                     .append("\"email\":\"").append(users.get(i).getEmail()).append("\",")
-                    .append("\"password\":\"" + users.get(i).getPassword() + "\",")
                     .append("\"name\":\"" + users.get(i).getName() + "\",")
                     .append("\"surname\":\"" + users.get(i).getSurname() + "\",")
                     .append("\"address\":\"" + users.get(i).getAddress() + "\",")
