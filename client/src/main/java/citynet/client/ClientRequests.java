@@ -25,11 +25,11 @@ import org.apache.http.util.EntityUtils;
 
  class ClientRequests {
     private static final String LOCAL_URL ="http://localhost:8084/citynet/UserManager";
-    private static final String PUBLIC_URL ="http://localhost:8084/citynet/UserManager";
+    private static final String PUBLIC_URL ="http://ec2-35-180-7-53.eu-west-3.compute.amazonaws.com:8080/citynet/UserManager";
 
     public final static void main(String[] args) {
         ClientRequests cr = new ClientRequests();
-        cr.ListAllUsers(2,LOCAL_URL);
+        cr.ListAllUsers(2,PUBLIC_URL);
     }
 
     /**
@@ -44,6 +44,7 @@ import org.apache.http.util.EntityUtils;
 
             List<NameValuePair> nvps = new ArrayList<>();
             nvps.add(new BasicNameValuePair("screen", String.valueOf(screen)));
+            //nvps.add(new BasicNameValuePair("screen", "prova"));
             nvps.add(new BasicNameValuePair("action", "ListAllUsers"));
 
             httpPost.setEntity(new UrlEncodedFormEntity(nvps));
