@@ -7,7 +7,7 @@ package citynet.dao;
 
 import citynet.Utils.AuthenticationUtils;
 import citynet.Utils.DBConnection;
-import citynet.Utils.StringUtils;
+import citynet.Utils.TextUtils;
 import citynet.model.User;
 
 import java.sql.Connection;
@@ -23,19 +23,17 @@ import java.sql.PreparedStatement;
 
 public class UserDao {
 
-    private Connection connection;
-
-    public UserDao() {
-        connection = DBConnection.getConnection();
-    }
-
+    //private Connection connection;
+//    public UserDao() {
+//        connection = DBConnection.getConnection();
+//    }
     public List<User> getAllUsers(int n, int m) {
-        //Connection connection = null;
+        Connection connection = null;
         Statement statement = null;
         ResultSet rs = null;
         List<User> users = new ArrayList<>();
         try {
-            //connection = DBConnection.getConnection();
+            connection = DBConnection.getConnection();
             statement = connection.createStatement();
             rs = statement.executeQuery("select * from users order by email limit " + n + "," + m);
             while (rs.next()) {
@@ -67,24 +65,24 @@ public class UserDao {
             } catch (Exception e) {
                 System.out.println(e.getMessage());
                 /* ignored */ }
-//            try {
-//                if (connection != null && !connection.isClosed()) {
-//                    connection.close();
-//                }
-//            } catch (Exception e) {
-//                /* ignored */ }
+            try {
+                if (connection != null && !connection.isClosed()) {
+                    connection.close();
+                }
+            } catch (Exception e) {
+                /* ignored */ }
         }
 
         return users;
     }
 
     public int totalUserRows() {
-        //Connection connection = null;
+        Connection connection = null;
         Statement statement = null;
         ResultSet rs = null;
         int result = 0;
         try {
-            //connection = DBConnection.getConnection();
+            connection = DBConnection.getConnection();
             statement = connection.createStatement();
             rs = statement.executeQuery("SELECT COUNT(*) AS rowcount FROM users");
             rs.next();
@@ -106,18 +104,18 @@ public class UserDao {
                 }
             } catch (Exception e) {
                 /* ignored */ }
-//            try {
-//                if (connection != null && !connection.isClosed()) {
-//                    connection.close();
-//                }
-//            } catch (Exception e) {
-//                /* ignored */ }
+            try {
+                if (connection != null && !connection.isClosed()) {
+                    connection.close();
+                }
+            } catch (Exception e) {
+                /* ignored */ }
         }
         return result;
     }
 
     public String userRegister(String userStr) {
-        //Connection connection = null;
+        Connection connection = null;
         PreparedStatement preparedStmt = null;
         Gson gson = new Gson();
 
@@ -126,7 +124,7 @@ public class UserDao {
                 + "address, postcode, city, user_level) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         AuthenticationUtils au = new AuthenticationUtils();
         try {
-            //connection = DBConnection.getConnection();
+            connection = DBConnection.getConnection();
             preparedStmt = connection.prepareStatement(query);
             preparedStmt.setString(1, user.getEmail());
             preparedStmt.setString(2, au.hashPassword(user.getPassword()));
@@ -137,7 +135,7 @@ public class UserDao {
             preparedStmt.setString(7, user.getCity());
             preparedStmt.setString(8, "user");
             preparedStmt.execute();
-            return StringUtils.jsonOkMessage("User registered");
+            return TextUtils.jsonOkMessage("User registered");
         } catch (SQLException ex) {
             Logger.getLogger(UserDao.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
@@ -147,32 +145,33 @@ public class UserDao {
                 }
             } catch (Exception e) {
                 /* ignored */ }
-//            try {
-//                if (connection != null && !connection.isClosed()) {
-//                    connection.close();
-//                }
-//            } catch (Exception e) {
-//                /* ignored */ }
+            try {
+                if (connection != null && !connection.isClosed()) {
+                    connection.close();
+                }
+            } catch (Exception e) {
+                /* ignored */ }
         }
-        return StringUtils.jsonErrorMessage("The user could not be registered");
+        return TextUtils.jsonErrorMessage("The user could not be registered");
     }
-    
+
     public String userDelete(String userEmail) {
-        //Connection connection = null;
+        Connection connection = null;
         //DELETE FROM table_name WHERE condition; 
         //PreparedStatement preparedStmt = null;
         Statement statement = null;
-        
 
-        String query = "DELETE FROM users WHERE email = \'" + userEmail +"\'" ;
+        String query = "DELETE FROM users WHERE email = \'" + userEmail + "\'";
 
         try {
-            //connection = DBConnection.getConnection();
+            connection = DBConnection.getConnection();
             statement = connection.createStatement();
             int deleted = statement.executeUpdate(query);
-            String result=StringUtils.jsonErrorMessage("Username does not exist");
-            if (deleted==1)result= StringUtils.jsonOkMessage("User deleted");                    
-            
+            String result = TextUtils.jsonErrorMessage("Username does not exist");
+            if (deleted == 1) {
+                result = TextUtils.jsonOkMessage("User deleted");
+            }
+
             //preparedStmt.setString(1, userStr);
             //boolean val= preparedStmt.execute();
             //return "{" + preparedStmt.execute() + "}";
@@ -187,18 +186,134 @@ public class UserDao {
                 }
             } catch (Exception e) {
                 /* ignored */ }
-//            try {
-//                if (connection != null && !connection.isClosed()) {
-//                    connection.close();
-//                }
-//            } catch (Exception e) {
-//                /* ignored */ }
+            try {
+                if (connection != null && !connection.isClosed()) {
+                    connection.close();
+                }
+            } catch (Exception e) {
+                /* ignored */ }
         }
-        return StringUtils.jsonErrorMessage("The user could not be deleted");
+        return TextUtils.jsonErrorMessage("The user could not be deleted");
     }
 
-    public String userLogin(String user, String password) {
-        String token="";
-        return token;
+    public String findUserHashedPassword(String user) {
+        Connection connection = null;
+        Statement statement = null;
+        ResultSet rs = null;
+        String query ="SELECT password FROM users WHERE email =\'" + user + "\'";
+        try {
+            connection = DBConnection.getConnection();
+            statement = connection.createStatement();
+            rs = statement.executeQuery(query);
+            rs.next();
+            return rs.getString(1);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (rs != null && !rs.isClosed()) {
+                    rs.close();
+                }
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+                /* ignored */ }
+            try {
+                if (statement != null && !statement.isClosed()) {
+                    statement.close();
+                }
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+                /* ignored */ }
+            try {
+                if (connection != null && !connection.isClosed()) {
+                    connection.close();
+                }
+            } catch (Exception e) {
+                /* ignored */ }
+        }
+
+        return TextUtils.jsonErrorMessage("No hashed password");
     }
+
+        public String findUserRol(String user) {
+        Connection connection = null;
+        Statement statement = null;
+        ResultSet rs = null;
+        String query ="SELECT user_level FROM users WHERE email =\'" + user + "\'";
+        try {
+            connection = DBConnection.getConnection();
+            statement = connection.createStatement();
+            rs = statement.executeQuery(query);
+            rs.next();
+            return rs.getString(1);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (rs != null && !rs.isClosed()) {
+                    rs.close();
+                }
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+                /* ignored */ }
+            try {
+                if (statement != null && !statement.isClosed()) {
+                    statement.close();
+                }
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+                /* ignored */ }
+            try {
+                if (connection != null && !connection.isClosed()) {
+                    connection.close();
+                }
+            } catch (Exception e) {
+                /* ignored */ }
+        }
+
+        return TextUtils.jsonErrorMessage("No user rol");
+    }
+        public boolean isValidUser(String user) {
+        Connection connection = null;
+        Statement statement = null;
+        ResultSet rs = null;
+        String query ="SELECT email FROM users WHERE email =\'" + user + "\'";
+        try {
+            connection = DBConnection.getConnection();
+            statement = connection.createStatement();
+            rs = statement.executeQuery(query);
+            rs.next();
+            if ((rs.getString(1)).equals(user)){
+                return true;
+            }else{
+                return false;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (rs != null && !rs.isClosed()) {
+                    rs.close();
+                }
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+                /* ignored */ }
+            try {
+                if (statement != null && !statement.isClosed()) {
+                    statement.close();
+                }
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+                /* ignored */ }
+            try {
+                if (connection != null && !connection.isClosed()) {
+                    connection.close();
+                }
+            } catch (Exception e) {
+                /* ignored */ }
+        }
+        return false;
+    }
+
+
 }

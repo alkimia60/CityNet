@@ -14,9 +14,10 @@ public class DBConnection {
     private static Connection connection = null;
 
     public static Connection getConnection() {
-        if (connection != null) {
-            return connection;
-        } else {
+        connection=null;
+//        if (connection != null) {
+//            return connection;
+//        } else {
             try {
 
 //                //Connexió amb dades en fitxer de configuració.
@@ -44,7 +45,7 @@ public class DBConnection {
 //                e.printStackTrace();
             }
             return connection;
-        }
+//        }
 
     }
 
