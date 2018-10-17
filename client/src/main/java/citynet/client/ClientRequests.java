@@ -11,9 +11,6 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import com.google.gson.Gson;
-import java.util.AbstractMap;
-import java.util.HashMap;
-import java.util.Map;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -40,25 +37,20 @@ class ClientRequests {
     public final static void main(String[] args) {
 
         ClientRequests cr = new ClientRequests();
-        User user = new User("aaa@usuari.com", "p455w0rd", "Alta",
+        User user = new User("aaaa@usuari.com", "p455w0rd", "Alta",
                 "Usuari", "Carrer de l'usuari 9", "08581", "Mataró");
-
-        //Llistar tots els usuaris
-        //if (token != null) {
-            //cr.listAllUsers( LOCAL_URL,0,token);
-        //} else {
-            //cr.userLogin(LOCAL_LOGIN, "aaa@usuari.com", "p455w0rd");
-            //cr.listAllUsers( LOCAL_URL,0,token);
-
-            //cr.listAllUsers( LOCAL_URL,0,"eyJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE1Mzk3OTE1NTEsImlzcyI6ImFhYUB1c3VhcmkuY29tIiwiZXhwIjoxNTM5NzkxNjExfQ.lJrRZMllJ4gwOhxoQUVkmBDzq8cVXFY02GSC4k9RYIE");
-        //}
 
         //Donar d'alta un usuari com objecte user
         //cr.userRegister(user, LOCAL_URL);
-        //Donar de baixa un usuari pel seu email
-        //cr.userDelete("aaa@usuari.com", LOCAL_URL);
+
         //Login usuari
-        cr.userLogin(LOCAL_LOGIN, "aaa@usuari.com", "p455w0rd");
+        //cr.userLogin(LOCAL_LOGIN, "aaa@usuari.com", "p455w0rd");
+
+        //cr.listAllUsers( LOCAL_URL,0,token);
+
+        //Donar de baixa un usuari pel seu email
+        //cr.userDelete("alex@usuari.com", LOCAL_URL,token);
+
     }
 
     /**
@@ -151,13 +143,14 @@ class ClientRequests {
         return "Error userRegister";
     }
 
-    private String userDelete(String user, String url) {
+    private String userDelete(String userToDelete, String url, String token) {
         try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
             HttpPost httpPost = new HttpPost(url);
 
             List<NameValuePair> nvps = new ArrayList<>();
-            nvps.add(new BasicNameValuePair("user", user));
             nvps.add(new BasicNameValuePair("action", "UserDelete"));
+            nvps.add(new BasicNameValuePair("user", userToDelete));
+            nvps.add(new BasicNameValuePair("token", token));
 
             httpPost.setEntity(new UrlEncodedFormEntity(nvps));
 
@@ -220,22 +213,21 @@ class ClientRequests {
 
             };
             String responseBody = httpclient.execute(httpPost, responseHandler);
+            System.out.println(responseBody);
             String error = JsonUtils.findJsonValue(responseBody, "error");
-            System.out.println(error);
+
             if ((error == "No json data")
                     & (JsonUtils.findJsonValue(responseBody, "token") != "No json data")) {
                 token = JsonUtils.findJsonValue(responseBody, "token");
                 rol = JsonUtils.findJsonValue(responseBody, "rol");
-                System.out.println(token);
-                System.out.println(rol);
                 return true;
-                
+
             } else {
                 token = null;
                 rol = null;
                 return false;
             }
-            
+
         } catch (Exception ex) {
             Logger.getLogger(ClientRequests.class
                     .getName()).log(Level.SEVERE, null, ex);
