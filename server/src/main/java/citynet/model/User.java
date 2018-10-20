@@ -7,16 +7,16 @@ package citynet.model;
 
 public class User {
 
-    private int id;
+    //private int id;
     private String email, password, name, surname, address, postcode, city, userLevel;
 
-    public int getId() {
+   /* public int getId() {
         return id;
     }
 
     public void setId(int id) {
         this.id = id;
-    }
+    }*/
 
     public String getEmail() {
         return email;

@@ -2,9 +2,9 @@
  *
  * @author Francisco Javier Diaz Garzon
  */
-package citynet.Login;
+package citynet.token;
 
-import citynet.Utils.TextUtils;
+import citynet.dao.UserDao;
 import javax.crypto.spec.SecretKeySpec;
 import javax.xml.bind.DatatypeConverter;
 import java.security.Key;
@@ -12,7 +12,9 @@ import io.jsonwebtoken.*;
 import java.util.Date;
 import java.util.HashMap;
 
-public class Tokens {
+public class TokenUtils {
+    public static final long TOKEN_EXP_TIME = 900000; //Token expiration time in millisecons
+    private final String secretKey="sF|;^b?L\"J1c";
 
 //Sample method to construct a JWT
     //private String createJWT(String id, String issuer, String subject, long ttlMillis) {
@@ -26,7 +28,7 @@ public class Tokens {
 
         //We will sign our JWT with our ApiKey secret
         //byte[] apiKeySecretBytes = DatatypeConverter.parseBase64Binary(apiKey.getSecret());
-        byte[] apiKeySecretBytes = DatatypeConverter.parseBase64Binary("ClauSecreta");
+        byte[] apiKeySecretBytes = DatatypeConverter.parseBase64Binary(secretKey);
         Key signingKey = new SecretKeySpec(apiKeySecretBytes, signatureAlgorithm.getJcaName());
 
         //Let's set the JWT Claims
@@ -48,7 +50,7 @@ public class Tokens {
         return builder.compact();
     }
 
-    public HashMap<String, String> parseJWT(String jwt) {
+    /*public HashMap<String, String> parseJWT(String jwt) {
         HashMap tokenInfo = new HashMap();
         try {
             //This line will throw an exception if it is not a signed JWS (as expected)
@@ -65,5 +67,50 @@ public class Tokens {
             System.out.println (e.getMessage());
         }
         return tokenInfo;
+    }*/
+
+        public String JWTTokenUser(String jwt) {
+        String tokenUser = "";
+        try {
+            //This line will throw an exception if it is not a signed JWS (as expected)
+            Claims claims = Jwts.parser()
+                    .setSigningKey(DatatypeConverter.parseBase64Binary(secretKey))
+                    .parseClaimsJws(jwt).getBody();
+            
+            tokenUser= claims.getIssuer();
+            return tokenUser;
+        } catch (Exception e) {
+            System.out.println (e.getMessage());
+        }
+        return tokenUser;
+    }
+
+
+    
+    /*public boolean isValidToken(String token) {
+        //find user issuer and expiration
+        //TokenUtils tkn = new TokenUtils();
+        HashMap<String, String> tokenInfo;
+        tokenInfo = parseJWT(token);
+        if (tokenInfo.isEmpty()) {
+            return false;
+        } else {
+            String user = tokenInfo.get("user");
+            //if user is in DB ->true
+            return new UserDao().isValidUser(user);
+        }
+
+    }*/
+    public boolean isValidToken(String token) {
+        //find user issuer
+        String tokenUser;
+        tokenUser = JWTTokenUser(token);
+        if (tokenUser.isEmpty()) {
+            return false;
+        } else {
+            //if user is in DB ->true
+            return new UserDao().isValidUser(tokenUser);
+        }
+
     }
 }

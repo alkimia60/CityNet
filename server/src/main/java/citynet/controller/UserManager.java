@@ -12,10 +12,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import citynet.dao.UserDao;
 import citynet.model.User;
-import citynet.Utils.TextUtils;
+import citynet.utils.TextUtils;
 import java.util.List;
 import com.google.gson.Gson;
-import citynet.Login.Tokens;
+import citynet.token.TokenUtils;
+import citynet.utils.AuthenticationUtils;
 import java.util.HashMap;
 
 public class UserManager extends HttpServlet {
@@ -45,7 +46,7 @@ public class UserManager extends HttpServlet {
             switch (action) {
                 case "ListAllUsers":
                     token = request.getParameter("token");
-                    if (isValidToken(token)) {
+                    if (new TokenUtils().isValidToken(token)) {
                         int screen = 0;
                         String screenStr = request.getParameter("screen");
                         if (TextUtils.isInteger(screenStr)) {
@@ -57,19 +58,49 @@ public class UserManager extends HttpServlet {
                     } else {
                         sendMessage(response, TextUtils.jsonErrorMessage("No valid token"));
                     }
-
                     break;
                 case "UserRegister":
                     replyUserRegister(response, request.getParameter("user"));
                     break;
                 case "UserDelete":
                     token = request.getParameter("token");
-                    if (isValidToken(token)) {
+                    if (new TokenUtils().isValidToken(token)) {
                         replyUserDelete(response, request.getParameter("user"));
                     } else {
                         sendMessage(response, TextUtils.jsonErrorMessage("No valid token"));
                     }
                     break;
+                case "ChangePassword":
+                    token = request.getParameter("token");
+                    //Is valid token. Comprova si el token conté usuari i si l'usuari és a la BD
+                    if (new TokenUtils().isValidToken(token)) {
+                        String user = new TokenUtils().JWTTokenUser(token);
+                        String oldPassword = request.getParameter("oldPassword");
+                        String newPassword = request.getParameter("newPassword");
+                        //Busca el hash del password de l'usuari a la BD
+                        String hashedPassword = ud.findUserHashedPassword(user);
+                        AuthenticationUtils au = new AuthenticationUtils();
+                        //is valid password. Comprova el hash del password antic amb el de la BD
+                        if (au.checkPass(oldPassword, hashedPassword)) {
+                            replyChangePassword(response, user, newPassword);
+                        } else {
+                            sendMessage(response, TextUtils.jsonErrorMessage("Invalid password"));
+                        }
+                    } else {
+                        sendMessage(response, TextUtils.jsonErrorMessage("No valid token"));
+                    }
+                    break;
+                case "AskUserProfile":
+                    token = request.getParameter("token");
+                    if (new TokenUtils().isValidToken(token)) {
+                        String user = new TokenUtils().JWTTokenUser(token); //Obté l'usuari del token
+                        //Obté les dades de l'usuari
+                        replyAskUserProfile(response, user);
+                    } else {
+                        sendMessage(response, TextUtils.jsonErrorMessage("No valid token"));
+                    }
+                    break;
+
                 default:
                     sendMessage(response, TextUtils.jsonErrorMessage("Param. action format exception"));
                     break;
@@ -94,7 +125,6 @@ public class UserManager extends HttpServlet {
 
         List<User> users = ud.getAllUsers(n, m);
         if (users.isEmpty()) {
-            //StringUtilsStringUtils su = new TextUtils();
             reply.append(TextUtils.jsonErrorMessage("No user results"));
         } else {
             //Is the beginning of the table?
@@ -186,18 +216,18 @@ public class UserManager extends HttpServlet {
         sendMessage(response, reply.toString());
     }
 
-    private boolean isValidToken(String token) {
-        //find user issuer and expiration
-        Tokens tkn = new Tokens();
-        HashMap<String, String> tokenInfo;
-        tokenInfo = tkn.parseJWT(token);
-        if (tokenInfo.isEmpty()) {
-            return false;
-        } else {
-            String user = tokenInfo.get("user");
-            //if user is in DB ->true
-            return ud.isValidUser(user);
-        }
+    private void replyChangePassword(HttpServletResponse response, String user, String password) throws IOException {
+        response.setContentType("application/json;charset=UTF-8");
+        StringBuilder reply = new StringBuilder();
+        reply.append(ud.changePassword(user, password));
+        sendMessage(response, reply.toString());
+    }
 
+    private void replyAskUserProfile(HttpServletResponse response, String user) throws IOException {
+        response.setContentType("application/json;charset=UTF-8");
+        Gson gson = new Gson();
+        StringBuilder reply = new StringBuilder();
+        reply.append(gson.toJson(ud.findUserData(user)));
+        sendMessage(response, reply.toString());
     }
 }

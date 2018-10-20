@@ -5,10 +5,10 @@ package citynet.controller;
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-import citynet.Utils.AuthenticationUtils;
-import citynet.Utils.TextUtils;
+import citynet.utils.AuthenticationUtils;
+import citynet.utils.TextUtils;
 import citynet.dao.UserDao;
-import citynet.Login.Tokens;
+import citynet.token.TokenUtils;
 import java.io.IOException;
 import java.io.PrintWriter;
 import javax.servlet.ServletException;
@@ -22,8 +22,8 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class Login extends HttpServlet {
 
-    private final long TOKEN_EXP_TIME = 900000;
-    private final UserDao ud = new UserDao();
+//    private final long TOKEN_EXP_TIME = 900000;
+    //private final UserDao ud = new UserDao();
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -38,17 +38,18 @@ public class Login extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("application/json;charset=UTF-8");
         String reply = "";
-        Tokens token = new Tokens();
+        TokenUtils token = new TokenUtils();
         PrintWriter out = response.getWriter();
         try {
             String user = request.getParameter("user");
             String password = request.getParameter("password");
+            UserDao ud = new UserDao();
             if (ud.isValidUser(user)) {
                 String hashedPassword = ud.findUserHashedPassword(user);
                 AuthenticationUtils au = new AuthenticationUtils();
                 if (au.checkPass(password, hashedPassword)) {
                     String rol = ud.findUserRol(user);
-                    reply = TextUtils.jsonTokenRolMessage(token.createJWT(user, TOKEN_EXP_TIME), rol);
+                    reply = TextUtils.jsonTokenRolMessage(token.createJWT(user, TokenUtils.TOKEN_EXP_TIME), rol);
                 } else {
                     reply = TextUtils.jsonErrorMessage("Invalid password");
                 }

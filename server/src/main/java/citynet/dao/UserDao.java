@@ -5,9 +5,9 @@
  */
 package citynet.dao;
 
-import citynet.Utils.AuthenticationUtils;
-import citynet.Utils.DBConnection;
-import citynet.Utils.TextUtils;
+import citynet.utils.AuthenticationUtils;
+import citynet.utils.DBConnection;
+import citynet.utils.TextUtils;
 import citynet.model.User;
 
 import java.sql.Connection;
@@ -120,19 +120,23 @@ public class UserDao {
         Gson gson = new Gson();
 
         User user = (User) gson.fromJson(userStr, User.class);
+        if (TextUtils.isJsonEmptyValues(userStr)){
+            return TextUtils.jsonErrorMessage("Empty fields in User object");
+        }
+        
         String query = "INSERT INTO users (email, password, name, surname, "
                 + "address, postcode, city, user_level) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         AuthenticationUtils au = new AuthenticationUtils();
         try {
             connection = DBConnection.getConnection();
             preparedStmt = connection.prepareStatement(query);
-            preparedStmt.setString(1, user.getEmail());
-            preparedStmt.setString(2, au.hashPassword(user.getPassword()));
-            preparedStmt.setString(3, user.getName());
-            preparedStmt.setString(4, user.getSurname());
-            preparedStmt.setString(5, user.getAddress());
-            preparedStmt.setString(6, user.getPostcode());
-            preparedStmt.setString(7, user.getCity());
+            preparedStmt.setString(1, user.getEmail().trim());
+            preparedStmt.setString(2, au.hashPassword(user.getPassword().trim()));
+            preparedStmt.setString(3, user.getName().trim());
+            preparedStmt.setString(4, user.getSurname().trim());
+            preparedStmt.setString(5, user.getAddress().trim());
+            preparedStmt.setString(6, user.getPostcode().trim());
+            preparedStmt.setString(7, user.getCity().trim());
             preparedStmt.setString(8, "user");
             preparedStmt.execute();
             return TextUtils.jsonOkMessage("User registered");
@@ -157,8 +161,6 @@ public class UserDao {
 
     public String userDelete(String userEmail) {
         Connection connection = null;
-        //DELETE FROM table_name WHERE condition; 
-        //PreparedStatement preparedStmt = null;
         Statement statement = null;
 
         String query = "DELETE FROM users WHERE email = \'" + userEmail + "\'";
@@ -200,7 +202,7 @@ public class UserDao {
         Connection connection = null;
         Statement statement = null;
         ResultSet rs = null;
-        String query ="SELECT password FROM users WHERE email =\'" + user + "\'";
+        String query = "SELECT password FROM users WHERE email =\'" + user + "\'";
         try {
             connection = DBConnection.getConnection();
             statement = connection.createStatement();
@@ -235,11 +237,11 @@ public class UserDao {
         return TextUtils.jsonErrorMessage("No hashed password");
     }
 
-        public String findUserRol(String user) {
+    public String findUserRol(String user) {
         Connection connection = null;
         Statement statement = null;
         ResultSet rs = null;
-        String query ="SELECT user_level FROM users WHERE email =\'" + user + "\'";
+        String query = "SELECT user_level FROM users WHERE email =\'" + user + "\'";
         try {
             connection = DBConnection.getConnection();
             statement = connection.createStatement();
@@ -273,19 +275,20 @@ public class UserDao {
 
         return TextUtils.jsonErrorMessage("No user rol");
     }
-        public boolean isValidUser(String user) {
+
+    public boolean isValidUser(String user) {
         Connection connection = null;
         Statement statement = null;
         ResultSet rs = null;
-        String query ="SELECT email FROM users WHERE email =\'" + user + "\'";
+        String query = "SELECT email FROM users WHERE email =\'" + user + "\'";
         try {
             connection = DBConnection.getConnection();
             statement = connection.createStatement();
             rs = statement.executeQuery(query);
             rs.next();
-            if ((rs.getString(1)).equals(user)){
+            if ((rs.getString(1)).equals(user)) {
                 return true;
-            }else{
+            } else {
                 return false;
             }
         } catch (SQLException e) {
@@ -315,5 +318,82 @@ public class UserDao {
         return false;
     }
 
+    public String changePassword(String user, String password) {
+        Connection connection = null;
+        PreparedStatement preparedStmt = null;
+
+        //String query = "UPDATE SET (password = \'" + new AuthenticationUtils().hashPassword(password) + ") WHERE email = \'" + user + "\'";
+        String query = "UPDATE users SET password = ? WHERE email = ?";
+        /*String query = "INSERT INTO users (email, password, name, surname, "
+                + "address, postcode, city, user_level) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";*/
+        try {
+            connection = DBConnection.getConnection();
+            preparedStmt = connection.prepareStatement(query);
+            preparedStmt.setString(1, new AuthenticationUtils().hashPassword(password.trim()));
+            preparedStmt.setString(2, user);
+            preparedStmt.execute();
+            return TextUtils.jsonOkMessage("Password Changed");
+        } catch (SQLException ex) {
+            Logger.getLogger(UserDao.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            try {
+                if (preparedStmt != null && !preparedStmt.isClosed()) {
+                    preparedStmt.close();
+                }
+            } catch (Exception e) {
+                /* ignored */ }
+            try {
+                if (connection != null && !connection.isClosed()) {
+                    connection.close();
+                }
+            } catch (Exception e) {
+                /* ignored */ }
+        }
+        return TextUtils.jsonErrorMessage("Password can not be changed");
+    }
+
+    public User findUserData(String userEmail) {
+        Connection connection = null;
+        Statement statement = null;
+        ResultSet rs = null;
+        User user = new User();
+        String query = "SELECT email, name, surname, address, postcode, city FROM users WHERE email =\'" + userEmail + "\'";
+        try {
+            connection = DBConnection.getConnection();
+            statement = connection.createStatement();
+            rs = statement.executeQuery(query);
+            rs.next();
+            user.setEmail(rs.getString("email"));
+            user.setName(rs.getString("name"));
+            user.setSurname(rs.getString("surname"));
+            user.setAddress(rs.getString("address"));
+            user.setPostcode(rs.getString("postcode"));
+            user.setCity(rs.getString("city"));
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (rs != null && !rs.isClosed()) {
+                    rs.close();
+                }
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+                /* ignored */ }
+            try {
+                if (statement != null && !statement.isClosed()) {
+                    statement.close();
+                }
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+                /* ignored */ }
+            try {
+                if (connection != null && !connection.isClosed()) {
+                    connection.close();
+                }
+            } catch (Exception e) {
+                /* ignored */ }
+        }
+        return user;
+    }
 
 }
