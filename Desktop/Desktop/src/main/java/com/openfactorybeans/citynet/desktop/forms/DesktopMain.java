@@ -5,11 +5,11 @@
  */
 package com.openfactorybeans.citynet.desktop.forms;
 
-import com.openfactorybeans.citynet.desktop.users.ListAllUsers;
+import com.openfactorybeans.citynet.desktop.users.User;
+import com.openfactorybeans.citynet.desktop.utils.FormsUtils;
 import java.beans.PropertyVetoException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.JInternalFrame;
 
 /**
  *
@@ -23,7 +23,32 @@ public class DesktopMain extends javax.swing.JFrame {
     public DesktopMain() {
         initComponents();
         setExtendedState(MAXIMIZED_BOTH);
-        //setVisible(true);
+        
+        //Verifique el rol de l'usuari que ha iniciat la sessió
+        checkOptionsRol();
+        
+    }
+    
+    /**
+     * Habilita o desabilita les opcions del menú en funció del rol
+     */
+    public void checkOptionsRol() {
+        
+        if (Login.rol.equals(User.UL_USER)) {
+            
+            //User Level "user". Deshabilitem tot menys les seves dades
+            jMenuUsers.setVisible(false);
+            jMenuContainers.setVisible(false);
+            
+        } else if (Login.rol.equals(User.UL_EDITOR)) {
+            
+            //User Level "edior". Deshabilitem el menú d'usuaris
+            jMenuUsers.setVisible(false);
+            
+        }
+        
+        //Si es admin ja están tots els menás activats
+        
     }
 
     /**
@@ -146,9 +171,13 @@ public class DesktopMain extends javax.swing.JFrame {
 
     private void jMenuItemLogoutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemLogoutActionPerformed
         
+        //Anulem les dades de sessió
+        Login.token = null;
+        Login.rol = null;
+        
         //Amaguem l'escriptori i mostrem el login
         Login login = new Login();
-        setVisible(false);
+        this.setVisible(false);
         login.setVisible(true);
     }//GEN-LAST:event_jMenuItemLogoutActionPerformed
 
@@ -165,7 +194,7 @@ public class DesktopMain extends javax.swing.JFrame {
         jDesktop.add(userAdd);
         
         //Centrem la finestra
-        centerWindow(userAdd);
+        FormsUtils.centerWindow(jDesktop, userAdd);
         
         //El fem visible
         userAdd.setVisible(true);
@@ -212,7 +241,7 @@ public class DesktopMain extends javax.swing.JFrame {
      * Mètode per centrar els jInternalFrame dintre d'un jDesktopPane
      * @param internalFrame que es vol centrar
      */
-    public void centerWindow(JInternalFrame internalFrame) {
+    /*public void centerWindow(JInternalFrame internalFrame) {
         
         //Obtenim els valors x, y amb la mida de l'escriptori dividit per 2 menys la mida del jInternalFrame dividit per 2
         int x = (jDesktop.getWidth() / 2) - (internalFrame.getWidth() / 2);
@@ -221,7 +250,7 @@ public class DesktopMain extends javax.swing.JFrame {
         //La posicionem al mig
         internalFrame.setLocation(x, y);
         
-    }
+    }*/
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JDesktopPane jDesktop;

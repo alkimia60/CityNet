@@ -6,6 +6,7 @@
 package com.openfactorybeans.citynet.desktop.users;
 
 import com.openfactorybeans.citynet.desktop.forms.Login;
+import com.openfactorybeans.citynet.desktop.utils.JsonUtils;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,20 +28,19 @@ import org.apache.http.util.EntityUtils;
  *
  * @author Jose
  */
-public class ListAllUsers {
+public class UserLogin {
     
-    public String listAllUsers(String url, int screen, String token) {
+    public boolean userLogin(String url, String user, String password) {
         try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
             HttpPost httpPost = new HttpPost(url);
 
             List<NameValuePair> nvps = new ArrayList<>();
-            nvps.add(new BasicNameValuePair("screen", String.valueOf(screen)));
-            nvps.add(new BasicNameValuePair("action", "ListAllUsers"));
-            nvps.add(new BasicNameValuePair("token", token));
-
+            nvps.add(new BasicNameValuePair("user", String.valueOf(user)));
+            nvps.add(new BasicNameValuePair("password", password)); 
+            
             httpPost.setEntity(new UrlEncodedFormEntity(nvps));
 
-            //System.out.println("Executing request " + httpPost.getRequestLine());
+            System.out.println("Executing request " + httpPost.getRequestLine());
 
             // Create a custom response handler
             ResponseHandler<String> responseHandler = new ResponseHandler<String>() {
@@ -59,16 +59,25 @@ public class ListAllUsers {
 
             };
             String responseBody = httpclient.execute(httpPost, responseHandler);
-            System.out.println("----------------------------------------");
             System.out.println(responseBody);
-            return responseBody;
+            String error = JsonUtils.findJsonValue(responseBody, "error");
+
+            if ((error == "No json data")
+                    & (JsonUtils.findJsonValue(responseBody, "token") != "No json data")) {
+                Login.token = JsonUtils.findJsonValue(responseBody, "token");
+                Login.rol = JsonUtils.findJsonValue(responseBody, "rol");
+                return true;
+
+            } else {
+                Login.token = null;
+                Login.token = null;
+                return false;
+            }
 
         } catch (Exception ex) {
-            
-            Logger.getLogger(ListAllUsers.class.getName()).log(Level.SEVERE, null, ex);
-            
+            Logger.getLogger(UserLogin.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
         }
-        return "Error listAllUsers";
     }
     
 }

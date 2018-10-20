@@ -30,7 +30,7 @@ public class TMUser implements TableModel {
 
     @Override
     public int getColumnCount() {
-        return 9;
+        return 7;
     }
 
     @Override
@@ -40,27 +40,27 @@ public class TMUser implements TableModel {
         
         switch(columnIndex) {
             case 0:
-                columName = "Nom";
+                columName = "Email";
                 break;
                 
             case 1:
-                columName = "Cognoms";
+                columName = "Nom";
                 break;
                 
             case 2:
-                columName = "Adreça";
+                columName = "Cognoms";
                 break;
                 
             case 3:
-                columName = "CP";
+                columName = "Adreça";
                 break;
                 
             case 4:
-                columName = "Població";
+                columName = "CP";
                 break;
                 
             case 5:
-                columName = "Email";
+                columName = "Població";
                 break;
                 
             case 6:
@@ -96,27 +96,27 @@ public class TMUser implements TableModel {
         
         switch(columnIndex) {
             case 0:
-                columNameValue = u.getName();
+                columNameValue = u.getEmail();
                 break;
                 
             case 1:
-                columNameValue = u.getSurname();
+                columNameValue = u.getName();
                 break;
                 
             case 2:
-                columNameValue = u.getAddress();
+                columNameValue = u.getSurname();
                 break;
                 
             case 3:
-                columNameValue = u.getPostcode();
+                columNameValue = u.getAddress();
                 break;
                 
             case 4:
-                columNameValue = u.getCity();
+                columNameValue = u.getPostcode();
                 break;
                 
             case 5:
-                columNameValue = u.getEmail();
+                columNameValue = u.getCity();
                 break;
                 
             case 6:
@@ -136,27 +136,27 @@ public class TMUser implements TableModel {
         
         switch(columnIndex) {
             case 0:
-                u.setName(aValue.toString());
+                u.setEmail(aValue.toString());
                 break;
                 
             case 1:
-                u.setSurname(aValue.toString());
+                u.setName(aValue.toString());
                 break;
                 
             case 2:
-                u.setAddress(aValue.toString());
+                u.setSurname(aValue.toString());
                 break;
                 
             case 3:
-                u.setPostcode(aValue.toString());
+                u.setAddress(aValue.toString());
                 break;
                 
             case 4:
-                u.setCity(aValue.toString());
+                u.setPostcode(aValue.toString());
                 break;
                 
             case 5:
-                u.setEmail(aValue.toString());
+                u.setCity(aValue.toString());
                 break;
                 
             case 6:

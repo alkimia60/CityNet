@@ -5,16 +5,21 @@
  */
 package com.openfactorybeans.citynet.desktop.forms;
 
+import com.openfactorybeans.citynet.desktop.users.UserLogin;
+
 /**
  *
  * @author Jose
  */
 public class Login extends javax.swing.JFrame {
-
-    //Variables de proves
-    String user = "citynet";
-    String pass = "1234";
     
+    //URL
+    private static final String PUBLIC_URL = "http://ec2-35-180-7-53.eu-west-3.compute.amazonaws.com:8080/citynet/Login";
+    
+    //Variables de sessió
+    public static String token;
+    public static String rol;
+
     /**
      * Creates new form Login
      */
@@ -34,6 +39,7 @@ public class Login extends javax.swing.JFrame {
 
         lblTitle = new javax.swing.JLabel();
         lblUserImage = new javax.swing.JLabel();
+        btnExit = new javax.swing.JButton();
         jPanelForm = new javax.swing.JPanel();
         lblUser = new javax.swing.JLabel();
         txtUser = new javax.swing.JTextField();
@@ -41,8 +47,8 @@ public class Login extends javax.swing.JFrame {
         pswPassword = new javax.swing.JPasswordField();
         lblMessages = new javax.swing.JLabel();
         jPanelButtons = new javax.swing.JPanel();
+        btnNewUser = new javax.swing.JButton();
         btnLogin = new javax.swing.JButton();
-        btnExit = new javax.swing.JButton();
         lblBackground = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -57,6 +63,17 @@ public class Login extends javax.swing.JFrame {
 
         lblUserImage.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/User75.png"))); // NOI18N
         getContentPane().add(lblUserImage, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 70, -1, -1));
+
+        btnExit.setBackground(new java.awt.Color(0, 0, 51));
+        btnExit.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        btnExit.setForeground(new java.awt.Color(255, 255, 255));
+        btnExit.setText("Sortir");
+        btnExit.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnExitActionPerformed(evt);
+            }
+        });
+        getContentPane().add(btnExit, new org.netbeans.lib.awtextra.AbsoluteConstraints(510, 20, -1, -1));
 
         jPanelForm.setOpaque(false);
 
@@ -115,6 +132,16 @@ public class Login extends javax.swing.JFrame {
 
         jPanelButtons.setOpaque(false);
 
+        btnNewUser.setBackground(new java.awt.Color(0, 0, 51));
+        btnNewUser.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        btnNewUser.setForeground(new java.awt.Color(255, 255, 255));
+        btnNewUser.setText("Nou usuari");
+        btnNewUser.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnNewUserActionPerformed(evt);
+            }
+        });
+
         btnLogin.setBackground(new java.awt.Color(0, 0, 51));
         btnLogin.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
         btnLogin.setForeground(new java.awt.Color(255, 255, 255));
@@ -125,24 +152,14 @@ public class Login extends javax.swing.JFrame {
             }
         });
 
-        btnExit.setBackground(new java.awt.Color(0, 0, 51));
-        btnExit.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
-        btnExit.setForeground(new java.awt.Color(255, 255, 255));
-        btnExit.setText("Sortir");
-        btnExit.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnExitActionPerformed(evt);
-            }
-        });
-
         javax.swing.GroupLayout jPanelButtonsLayout = new javax.swing.GroupLayout(jPanelButtons);
         jPanelButtons.setLayout(jPanelButtonsLayout);
         jPanelButtonsLayout.setHorizontalGroup(
             jPanelButtonsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanelButtonsLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(btnExit)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 186, Short.MAX_VALUE)
+                .addComponent(btnNewUser, javax.swing.GroupLayout.PREFERRED_SIZE, 106, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 169, Short.MAX_VALUE)
                 .addComponent(btnLogin)
                 .addContainerGap())
         );
@@ -152,11 +169,11 @@ public class Login extends javax.swing.JFrame {
                 .addGap(23, 23, 23)
                 .addGroup(jPanelButtonsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnLogin)
-                    .addComponent(btnExit))
+                    .addComponent(btnNewUser))
                 .addContainerGap(22, Short.MAX_VALUE))
         );
 
-        getContentPane().add(jPanelButtons, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 270, 390, 80));
+        getContentPane().add(jPanelButtons, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 270, 410, 80));
 
         lblBackground.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/FonsBlau600x357.jpg"))); // NOI18N
         getContentPane().add(lblBackground, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, -1, -1));
@@ -173,25 +190,42 @@ public class Login extends javax.swing.JFrame {
     private void btnLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLoginActionPerformed
         
         //Obtenim les dades
-        String userBox = txtUser.getText();
-        char[] passBox = pswPassword.getPassword();
+        String user = txtUser.getText();
+        char[] passChar = pswPassword.getPassword();
         
         //Passem a string la contrasenya
-        String passBoxTxt = new String(passBox);
+        String pass = new String(passChar);
         
-        //Verifiquem si coincideixen les dades
-        if (userBox.equals(user) && passBoxTxt.equals(pass)) {
-            //Coincideixen... accedim a l'aplicació
+        ////////////////////////////////////////////////////////////////////////////
+        //Conectem amb el servidor per iniciar sessió.
+        ////////////////////////////////////////////////////////////////////////////
+        UserLogin uLogin = new UserLogin();
+        boolean login = uLogin.userLogin(PUBLIC_URL, user, pass);
+        
+        if (login) {
+            
+            //Sessió iniciada
             DesktopMain desktopMain = new DesktopMain();
             desktopMain.setVisible(true);
-            setVisible(false);
+            this.setVisible(false);
             
         } else {
-            //No coincideixen... Mostrem missatge
+            
+            //Identificació amb errors
             lblMessages.setText("Dades incorrectes");
             
         }
+
     }//GEN-LAST:event_btnLoginActionPerformed
+
+    private void btnNewUserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNewUserActionPerformed
+        
+        //Instanciem el JFram de nou usuari
+        NewUser newUser = new NewUser();
+        newUser.setVisible(true);
+        this.setVisible(false);
+        
+    }//GEN-LAST:event_btnNewUserActionPerformed
 
     /**
      * @param args the command line arguments
@@ -231,6 +265,7 @@ public class Login extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnExit;
     private javax.swing.JButton btnLogin;
+    private javax.swing.JButton btnNewUser;
     private javax.swing.JPanel jPanelButtons;
     private javax.swing.JPanel jPanelForm;
     private javax.swing.JLabel lblBackground;

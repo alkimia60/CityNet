@@ -14,7 +14,7 @@ import java.awt.Color;
  *
  * @author Jose
  */
-public class UserAdd extends javax.swing.JInternalFrame {
+public class NewUser extends javax.swing.JFrame {
     
     //URL
     private static final String PUBLIC_URL = "http://ec2-35-180-7-53.eu-west-3.compute.amazonaws.com:8080/citynet/UserManager";
@@ -29,19 +29,19 @@ public class UserAdd extends javax.swing.JInternalFrame {
     //Declaració de variables dels camps del formulari
     String name, surname, address, postCode, city, email, password1, password2;
     char[] pass1, pass2;
-    
 
     /**
-     * Creates new form UserAdd
+     * Creates new form NewAdd
      */
-    public UserAdd() {
+    public NewUser() {
         initComponents();
+        setLocationRelativeTo(null);
         
         //Posem l'estat inicial del formulari
         initialStateForm();
     }
     
-    /**
+        /**
      * Estat inicial del formulari amb els camps sense dades i
      * el panel de missatges ocult
      */
@@ -59,7 +59,7 @@ public class UserAdd extends javax.swing.JInternalFrame {
         
     }
     
-    /**
+        /**
      * Verifica que els camps són correctes per afegir l'usuari.
      * En cas contrari, mostrarà un missatge d'error.
      * @return errors Serà true si no hi ha errors i false si hi ha errors
@@ -224,7 +224,6 @@ public class UserAdd extends javax.swing.JInternalFrame {
         return errorForm;
         
     }
-    
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -265,8 +264,8 @@ public class UserAdd extends javax.swing.JInternalFrame {
         btnClean = new javax.swing.JButton();
         btnCancel = new javax.swing.JButton();
 
-        setClosable(true);
-        setTitle("Afegir usuari");
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Nou usuari");
 
         lblTitlePersonalInfo.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
         lblTitlePersonalInfo.setText("Dades personals");
@@ -402,9 +401,7 @@ public class UserAdd extends javax.swing.JInternalFrame {
                         .addGroup(jPanelLoginLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(txtEmail, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(pswPass2, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(jPanelLoginLayout.createSequentialGroup()
-                                .addComponent(pswPass1, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(87, 87, 87)))))
+                            .addComponent(pswPass1, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addContainerGap())
         );
         jPanelLoginLayout.setVerticalGroup(
@@ -532,32 +529,18 @@ public class UserAdd extends javax.swing.JInternalFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void btnCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelActionPerformed
-        
-        //Tanquem el formulari
-        this.dispose();
-        
-    }//GEN-LAST:event_btnCancelActionPerformed
-
-    private void btnCleanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCleanActionPerformed
-        
-        //Posem l'estat inicial del formulari
-        initialStateForm();
-        
-    }//GEN-LAST:event_btnCleanActionPerformed
-
     private void btnAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddActionPerformed
-        
+
         //Verifiquem el contingut dels camps del formulari
         errorForm = checkForm();
-        
+
         if (!errorForm.isRequired() && !errorForm.isNotSame()) {
-            
+
             //No hi ha errors
-            
+
             //Netejem l'etiqueta dels missatges
             lblMessagesError.setText("");
-            
+
             ////////////////////////////////////////////////////////////////////////////
             //Conectem amb el servidor per afegir un usuari
             ////////////////////////////////////////////////////////////////////////////
@@ -565,22 +548,78 @@ public class UserAdd extends javax.swing.JInternalFrame {
             User user = new User(email, name, surname, address, postCode, city, password1);
             addUser.userRegister(user, PUBLIC_URL);
             
+            //Amaguem el formulari i tornem al login
+            Login login = new Login();
+            this.setVisible(false);
+            login.setVisible(true);
+
         } else if (errorForm.isRequired()) {
-            
+
             //Falta algun cap obligatori
-            
+
             //Mostrem el missatge
             lblMessagesError.setText(REQUIRED);
-            
+
         } else if (errorForm.isNotSame()) {
-            
+
             //Les contrasenyes no són iguals
             lblMessagesError.setText(NOTSAME);
-            
+
         }
- 
+
     }//GEN-LAST:event_btnAddActionPerformed
 
+    private void btnCleanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCleanActionPerformed
+
+        //Posem l'estat inicial del formulari
+        initialStateForm();
+
+    }//GEN-LAST:event_btnCleanActionPerformed
+
+    private void btnCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelActionPerformed
+
+        //Amaguem el formulari i mostrem el login
+        Login login = new Login();
+        this.setVisible(false);
+        login.setVisible(true);
+
+    }//GEN-LAST:event_btnCancelActionPerformed
+
+    /**
+     * @param args the command line arguments
+     */
+    public static void main(String args[]) {
+        /* Set the Nimbus look and feel */
+        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+         */
+        try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (ClassNotFoundException ex) {
+            java.util.logging.Logger.getLogger(NewUser.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (InstantiationException ex) {
+            java.util.logging.Logger.getLogger(NewUser.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            java.util.logging.Logger.getLogger(NewUser.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(NewUser.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+        //</editor-fold>
+        //</editor-fold>
+
+        /* Create and display the form */
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                new NewUser().setVisible(true);
+            }
+        });
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAdd;

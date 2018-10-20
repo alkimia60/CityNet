@@ -5,91 +5,128 @@
  */
 package com.openfactorybeans.citynet.desktop.forms;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
-import com.google.gson.reflect.TypeToken;
 import com.openfactorybeans.citynet.desktop.users.ListAllUsers;
 import com.openfactorybeans.citynet.desktop.users.TMUser;
 import com.openfactorybeans.citynet.desktop.users.User;
+import com.openfactorybeans.citynet.desktop.utils.JsonUtils;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.JOptionPane;
 
 /**
  *
  * @author Jose
  */
 public class UsersList extends javax.swing.JInternalFrame {
-    
-    //Per fer proves
-    private ListAllUsers lau;
-    private List<User> users;
-    private TMUser model;
-    
+
     //URL
     private static final String PUBLIC_URL = "http://ec2-35-180-7-53.eu-west-3.compute.amazonaws.com:8080/citynet/UserManager";
     
-    //Variable eque informa de la pàgina solicitada al servidor
+    //Variables finals de errors del servidor
+    private final String NO_TOKEN = "No valid token";
+    
+    //Variables finals del combobox del filtre
+    private final String ALL = "Tots";
+    private final String USER = "User";
+    private final String EDITOR = "Editor";
+    private final String ADMIN = "Admin";
+    
+    //Declaració de variables pel llistat
+    private ListAllUsers lau;
+    private List<User> users;
+    private TMUser model;
+    private String serverResponse;
+    private String listUsersJSon;
+    
+    //Variable que informa de la pàgina solicitada al servidor
     private int screen = 0;
-
+    
+    //Variable de finalització del llistat
+    private boolean endList;
+    
     /**
      * Creates new form UsersList
      */
     public UsersList() {
         initComponents();
         
+        System.out.println("UsersList. " + Login.token);
+        System.out.println("UsersList. " + Login.rol);
+        
+
         ////////////////////////////////////////////////////////////////////////////
-        //Conectem amb el servidor per obtenir els usuaris
+        //Conectem amb el servidor per obtenir els usuaris.
         ////////////////////////////////////////////////////////////////////////////
-        ListAllUsers lau = new ListAllUsers();
+        lau = new ListAllUsers();
+        serverResponse = lau.listAllUsers(PUBLIC_URL, screen, Login.token);
         
-        String listJSon = lau.listAllUsers(screen, PUBLIC_URL);
-        System.out.println("LLISTAT REBUT\n" + listJSon);
-        listJSon = "[{\"email\":\"a3@a3.com\",\"name\":\"a3\",\"surname\":\"a3\",\"address\":\"a3\",\"postcode\":\"08150\",\"city\":\"a3\",\"userLevel\":\"user\"},{\"email\":\"a4@a4.com\",\"name\":\"a\",\"surname\":\"a4\",\"address\":\"a4\",\"postcode\":\"08150\",\"city\":\"a4\",\"userLevel\":\"user\"},{\"email\":\"a5\",\"name\":\"a5\",\"surname\":\"a5\",\"address\":\"a5\",\"postcode\":\"08150\",\"city\":\"a5\",\"userLevel\":\"user\"},{\"email\":\"a6a6@a6.com\",\"name\":\"a6\",\"surname\":\"a6\",\"address\":\"a6\",\"postcode\":\"08150\",\"city\":\"a6\",\"userLevel\":\"user\"},{\"email\":\"a7\",\"name\":\"a7\",\"surname\":\"a7\",\"address\":\"a7\",\"postcode\":\"08150\",\"city\":\"a7\",\"userLevel\":\"user\"},{\"email\":\"aaa2@a.com\",\"name\":\"sergi2\",\"surname\":\"garrido2\",\"address\":\"joanmiro\",\"postcode\":\"08150\",\"city\":\"Parets\",\"userLevel\":\"user\"},{\"email\":\"aaaa@a.com\",\"name\":\"sergi\",\"surname\":\"garrido\",\"address\":\"Johnmiro\",\"postcode\":\"08150\",\"city\":\"parets\",\"userLevel\":\"user\"},{\"email\":\"abel@usuari.com\",\"name\":\"Abel\",\"surname\":\"Usuari\",\"address\":\"Carrer\",\"postcode\":\"08581\",\"city\":\"Barcelona\",\"userLevel\":\"user\"},{\"email\":\"adelamiret@yo.com\",\"name\":\"Adela\",\"surname\":\"Miret\",\"address\":\"Av. del Caminet, s/n\",\"postcode\":\"08541\",\"city\":\"En alguna població\",\"userLevel\":\"user\"},{\"email\":\"alberto@usuari.com\",\"name\":\"Alta\",\"surname\":\"Usuari\",\"address\":\"Carrer de l'usuari 9\",\"postcode\":\"08581\",\"city\":\"Mataró\",\"userLevel\":\"user\"}]";
-        //Passem de jSon a ArrayLisy
-        Gson gson = new Gson();
-        users = new ArrayList<>();
+        //Mirem si el servidor ha retornat un error
+        String serverMissage = JsonUtils.findJsonValue(serverResponse, "error");
         
-        //users = gson.fromJson(listJSon, new TypeToken<List<User>>(){}.getType());
-        
-        User[] user = gson.fromJson(listJSon, User[].class);
-        
-        for (User u : user) {
+        if (serverMissage.equals(NO_TOKEN)) {
             
-            users.add(u);
+            //No estem identificats
+            JOptionPane.showMessageDialog(null, "No s'ha iniciat cap sessió", "Login", JOptionPane.ERROR_MESSAGE);
+            
+        } else {
+        
+            //Si són susaris
+            listUsersJSon = serverResponse;
+
+            //Passem el Json a ArrayList 
+            users = new ArrayList<>();
+            users = JsonUtils.parseJsonUser(listUsersJSon);
+
+            //Comprovem les dades control
+            endList = JsonUtils.parseJsonControl(listUsersJSon);
+
+            //Cridem al mètode per canviar l'estat dels botons
+            buttonsStates();
+
+            //Omplim la taula amb l'Array
+            fillTable();
             
         }
 
-        //ompleArray();
-        fillTable();
-        
-    }
-    
-
-    /**
-     * Mètode per fer proves... ESBORRAR
-     */
-    public void ompleArray() {
-        
-        users = new ArrayList<>();
-        
-        User user1 = new User("uno@uno.com", "1111", "Olga", "Altes", "C/ Rasade, 1", "11111", "Figueres");
-        users.add(user1);
-        
-        User user2 = new User("dos@dos.com", "2222", "Rene", "Bouduou", "Concorde, 2", "22222", "París");
-        users.add(user2);
-        
     }
     
     /**
-     * Omple la taula per mostrar els usuaris
+     * Omple la taula per mostrar els usuaris a partir d'un Array
      */
     public void fillTable() {
         
         model = new TMUser(users);
-
         jTableUsers.setModel(model);
+        
+    }
+    
+    /**
+     * Mètode per canviar l'estat dels botosn d'avanç i enrederir
+     * segons les dades rebudes pel servidor
+     */
+    public void buttonsStates() {
+        
+        //Habilitem o deshabiitem el botó per enrederir
+        if (screen == 0) {
+            
+            btnPageMinus.setEnabled(false);
+            
+        } else {
+            
+            btnPageMinus.setEnabled(true);
+            
+        }
+        
+        //Habilitem o deshabiitem el botó per avanç
+        if (endList) {
+            
+            btnPagePlus.setEnabled(false);
+            
+        } else {
+            
+            btnPagePlus.setEnabled(true);
+            
+        }
         
     }
 
@@ -104,13 +141,17 @@ public class UsersList extends javax.swing.JInternalFrame {
 
         jScrollPane1 = new javax.swing.JScrollPane();
         jTableUsers = new javax.swing.JTable();
-        jPanelButtons = new javax.swing.JPanel();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
-        jButton4 = new javax.swing.JButton();
+        jPanelOptions = new javax.swing.JPanel();
+        jSeparator1 = new javax.swing.JSeparator();
+        jPanelAvRe = new javax.swing.JPanel();
+        btnPageMinus = new javax.swing.JButton();
+        btnPagePlus = new javax.swing.JButton();
+        jPanelFilter = new javax.swing.JPanel();
+        cbxFilter = new javax.swing.JComboBox<>();
+        btnFilter = new javax.swing.JButton();
 
         setClosable(true);
+        setTitle("Llistat d'usuaris");
 
         jTableUsers.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -126,7 +167,7 @@ public class UsersList extends javax.swing.JInternalFrame {
                 {null, null, null, null, null, null, null}
             },
             new String [] {
-                "Nom", "Cognoms", "Adreça", "CP", "Població", "Email", "Rol"
+                "Email", "Nom", "Cognoms", "Adreça", "CP", "Població", "Rol"
             }
         ) {
             Class[] types = new Class [] {
@@ -139,54 +180,112 @@ public class UsersList extends javax.swing.JInternalFrame {
         });
         jScrollPane1.setViewportView(jTableUsers);
 
-        jButton1.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
-        jButton1.setText("Primer");
-        jButton1.setMaximumSize(new java.awt.Dimension(90, 35));
-        jButton1.setMinimumSize(new java.awt.Dimension(90, 35));
-        jButton1.setPreferredSize(new java.awt.Dimension(90, 35));
+        jSeparator1.setOrientation(javax.swing.SwingConstants.VERTICAL);
 
-        jButton2.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
-        jButton2.setText("Anterior");
-        jButton2.setMaximumSize(new java.awt.Dimension(90, 35));
-        jButton2.setMinimumSize(new java.awt.Dimension(90, 35));
-        jButton2.setPreferredSize(new java.awt.Dimension(90, 35));
+        btnPageMinus.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        btnPageMinus.setText("<<");
+        btnPageMinus.setMaximumSize(new java.awt.Dimension(90, 35));
+        btnPageMinus.setMinimumSize(new java.awt.Dimension(90, 35));
+        btnPageMinus.setPreferredSize(new java.awt.Dimension(90, 35));
+        btnPageMinus.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnPageMinusActionPerformed(evt);
+            }
+        });
 
-        jButton3.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
-        jButton3.setText("Següent");
-        jButton3.setMaximumSize(new java.awt.Dimension(90, 35));
-        jButton3.setMinimumSize(new java.awt.Dimension(90, 35));
-        jButton3.setPreferredSize(new java.awt.Dimension(90, 35));
+        btnPagePlus.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        btnPagePlus.setText(">>");
+        btnPagePlus.setMaximumSize(new java.awt.Dimension(90, 35));
+        btnPagePlus.setMinimumSize(new java.awt.Dimension(90, 35));
+        btnPagePlus.setPreferredSize(new java.awt.Dimension(90, 35));
+        btnPagePlus.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnPagePlusActionPerformed(evt);
+            }
+        });
 
-        jButton4.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
-        jButton4.setText("Últim");
-        jButton4.setMaximumSize(new java.awt.Dimension(90, 35));
-        jButton4.setMinimumSize(new java.awt.Dimension(90, 35));
-        jButton4.setPreferredSize(new java.awt.Dimension(90, 35));
-
-        javax.swing.GroupLayout jPanelButtonsLayout = new javax.swing.GroupLayout(jPanelButtons);
-        jPanelButtons.setLayout(jPanelButtonsLayout);
-        jPanelButtonsLayout.setHorizontalGroup(
-            jPanelButtonsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanelButtonsLayout.createSequentialGroup()
+        javax.swing.GroupLayout jPanelAvReLayout = new javax.swing.GroupLayout(jPanelAvRe);
+        jPanelAvRe.setLayout(jPanelAvReLayout);
+        jPanelAvReLayout.setHorizontalGroup(
+            jPanelAvReLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanelAvReLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(btnPageMinus, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btnPagePlus, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
-        jPanelButtonsLayout.setVerticalGroup(
-            jPanelButtonsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanelButtonsLayout.createSequentialGroup()
+        jPanelAvReLayout.setVerticalGroup(
+            jPanelAvReLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanelAvReLayout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(jPanelButtonsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(jPanelAvReLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnPageMinus, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnPagePlus, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap())
+        );
+
+        cbxFilter.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        cbxFilter.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Tots", "User", "Editor", "Admin" }));
+        cbxFilter.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cbxFilterActionPerformed(evt);
+            }
+        });
+
+        btnFilter.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        btnFilter.setText("Filtrar");
+        btnFilter.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnFilterActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanelFilterLayout = new javax.swing.GroupLayout(jPanelFilter);
+        jPanelFilter.setLayout(jPanelFilterLayout);
+        jPanelFilterLayout.setHorizontalGroup(
+            jPanelFilterLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanelFilterLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(cbxFilter, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btnFilter)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        jPanelFilterLayout.setVerticalGroup(
+            jPanelFilterLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanelFilterLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanelFilterLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(cbxFilter, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnFilter))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        javax.swing.GroupLayout jPanelOptionsLayout = new javax.swing.GroupLayout(jPanelOptions);
+        jPanelOptions.setLayout(jPanelOptionsLayout);
+        jPanelOptionsLayout.setHorizontalGroup(
+            jPanelOptionsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanelOptionsLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jPanelAvRe, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jPanelFilter, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        jPanelOptionsLayout.setVerticalGroup(
+            jPanelOptionsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanelOptionsLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanelOptionsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jSeparator1)
+                    .addGroup(jPanelOptionsLayout.createSequentialGroup()
+                        .addGroup(jPanelOptionsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jPanelFilter, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jPanelAvRe, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
 
@@ -194,29 +293,88 @@ public class UsersList extends javax.swing.JInternalFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanelButtons, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 724, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(jPanelOptions, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 123, Short.MAX_VALUE)
-                .addComponent(jPanelButtons, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 190, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jPanelOptions, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(221, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void btnPagePlusActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPagePlusActionPerformed
+        
+        //Aumentem el número de pàgina per solicitar al servidor
+        screen++;
+        
+        listUsersJSon = lau.listAllUsers(PUBLIC_URL, screen, Login.token);
+
+        //Passem el Json a ArrayList 
+        users = new ArrayList<>();
+        users = JsonUtils.parseJsonUser(listUsersJSon);
+
+        //Comprovem les dades control
+        endList = JsonUtils.parseJsonControl(listUsersJSon);
+        
+        //Cridem al mètode per canviar l'estat dels botons
+        buttonsStates();
+
+        //Omplim la taula amb l'Array
+        fillTable();
+        
+    }//GEN-LAST:event_btnPagePlusActionPerformed
+
+    private void btnPageMinusActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPageMinusActionPerformed
+        
+        //Aumentem el número de pàgina per solicitar al servidor
+        screen--;
+        
+        listUsersJSon = lau.listAllUsers(PUBLIC_URL, screen, Login.token);
+
+        //Passem el Json a ArrayList 
+        users = new ArrayList<>();
+        users = JsonUtils.parseJsonUser(listUsersJSon);
+
+        //Comprovem les dades control
+        endList = JsonUtils.parseJsonControl(listUsersJSon);
+        
+        //Cridem al mètode per canviar l'estat dels botons
+        buttonsStates();
+
+        //Omplim la taula amb l'Array
+        fillTable();
+    }//GEN-LAST:event_btnPageMinusActionPerformed
+
+    private void cbxFilterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbxFilterActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_cbxFilterActionPerformed
+
+    private void btnFilterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFilterActionPerformed
+        
+        //Obtenim el index del item seleccionat del combobox
+        String filter = cbxFilter.getSelectedItem().toString();
+        
+    }//GEN-LAST:event_btnFilterActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
-    private javax.swing.JButton jButton4;
-    private javax.swing.JPanel jPanelButtons;
+    private javax.swing.JButton btnFilter;
+    private javax.swing.JButton btnPageMinus;
+    private javax.swing.JButton btnPagePlus;
+    private javax.swing.JComboBox<String> cbxFilter;
+    private javax.swing.JPanel jPanelAvRe;
+    private javax.swing.JPanel jPanelFilter;
+    private javax.swing.JPanel jPanelOptions;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JSeparator jSeparator1;
     private javax.swing.JTable jTableUsers;
     // End of variables declaration//GEN-END:variables
 }

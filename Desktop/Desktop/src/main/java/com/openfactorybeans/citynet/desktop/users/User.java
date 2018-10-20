@@ -18,15 +18,20 @@ public class User {
     
     //Declaració de variables dels camps del formulari
     private String email, password, name, surname, address, postcode, city, userLevel;
+    
+    //Default constructor
+    public User() {
+    }
+    
 
-    public User(String email, String password, String name, String surname, String address, String postcode, String city) {
+    public User(String email, String name, String surname, String address, String postcode, String city, String password) {
         this.email = email;
-        this.password = password;
         this.name = name;
         this.surname = surname;
         this.address = address;
         this.postcode = postcode;
         this.city = city;
+        this.password = password;
         this.userLevel = UL_USER;
     }
 

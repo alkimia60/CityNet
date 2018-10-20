@@ -30,9 +30,9 @@ import org.apache.http.util.EntityUtils;
 public class Add {
     
     /**
-     * Fa una connexió al servidor per realitzar el registre de l'usuari afegir
-     * @param user L'usuari a registrar les seves dades
-     * @param url La URL del servidor
+     * Fa una connexió al servidor per realitzar el registre d'un nou usuari
+     * @param user Usuari a registrar les seves dades
+     * @param url URL del servidor
      * @return 
      */
     public String userRegister(User user, String url) {
@@ -65,6 +65,7 @@ public class Add {
                 }
 
             };
+            
             String responseBody = httpclient.execute(httpPost, responseHandler);
             System.out.println("----------------------------------------");
             System.out.println(responseBody);
