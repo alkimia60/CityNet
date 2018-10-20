@@ -30,6 +30,7 @@ class ClientRequests {
     private static final String LOCAL_URL = "http://localhost:8084/citynet/UserManager";
     private static final String PUBLIC_URL = "http://ec2-35-180-7-53.eu-west-3.compute.amazonaws.com:8080/citynet/UserManager";
     private static final String LOCAL_LOGIN = "http://localhost:8084/citynet/Login";
+    private static final String PUBLIC_LOGIN = "http://ec2-35-180-7-53.eu-west-3.compute.amazonaws.com:8080/citynet/Login";
 
     private static String token; //Session token
     private static String rol;  //User role
@@ -37,20 +38,21 @@ class ClientRequests {
     public final static void main(String[] args) {
 
         ClientRequests cr = new ClientRequests();
-        User user = new User("aaaa@usuari.com", "p455w0rd", "Alta",
-                "Usuari", "Carrer de l'usuari 9", "08581", "Mataró");
+        User user = new User("gemma@rodriguez","pass" , "Gemma",
+                "Rodriguez", "Av. Diagonal", "08030", "Barcelona ");
 
         //Donar d'alta un usuari com objecte user
-        //cr.userRegister(user, LOCAL_URL);
-
+        //cr.userRegister(user, PUBLIC_URL);
         //Login usuari
-        //cr.userLogin(LOCAL_LOGIN, "aaa@usuari.com", "p455w0rd");
-
-        //cr.listAllUsers( LOCAL_URL,0,token);
-
+        cr.userLogin(PUBLIC_LOGIN, "diazgx@diba.cat", "xavu");
+        //List All Users
+        cr.listAllUsers(PUBLIC_URL, 0, token);
         //Donar de baixa un usuari pel seu email
-        //cr.userDelete("alex@usuari.com", LOCAL_URL,token);
-
+        //cr.userDelete("gemma@rodriguez.com", PUBLIC_URL,token);
+        //Change Password
+        //cr.changePassword("xavi", "xavixavi", PUBLIC_URL, token);
+        //Ask user profile
+        cr.askUserProfile(PUBLIC_URL, token);
     }
 
     /**
@@ -235,4 +237,87 @@ class ClientRequests {
         }
     }
 
+    private String changePassword(String oldPassword, String newPassword, String url, String token) {
+        try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
+            HttpPost httpPost = new HttpPost(url);
+
+            List<NameValuePair> nvps = new ArrayList<>();
+            nvps.add(new BasicNameValuePair("action", "ChangePassword"));
+            nvps.add(new BasicNameValuePair("oldPassword", oldPassword));
+            nvps.add(new BasicNameValuePair("newPassword", newPassword));
+            nvps.add(new BasicNameValuePair("token", token));
+
+            httpPost.setEntity(new UrlEncodedFormEntity(nvps));
+
+            System.out.println("Executing request " + httpPost.getRequestLine());
+
+            // Create a custom response handler
+            ResponseHandler<String> responseHandler = new ResponseHandler<String>() {
+
+                @Override
+                public String handleResponse(
+                        final HttpResponse response) throws ClientProtocolException, IOException {
+                    int status = response.getStatusLine().getStatusCode();
+                    if (status >= 200 && status < 300) {
+                        HttpEntity entity = response.getEntity();
+                        return entity != null ? EntityUtils.toString(entity) : null;
+                    } else {
+                        throw new ClientProtocolException("Unexpected response status: " + status);
+                    }
+                }
+
+            };
+            String responseBody = httpclient.execute(httpPost, responseHandler);
+            System.out.println("----------------------------------------");
+            System.out.println(responseBody);
+            return responseBody;
+
+        } catch (Exception ex) {
+            Logger.getLogger(ClientRequests.class
+                    .getName()).log(Level.SEVERE, null, ex);
+        }
+        return "Error userRegister";
+    }
+
+    private String askUserProfile(String url, String token) {
+        try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
+            HttpPost httpPost = new HttpPost(url);
+
+            List<NameValuePair> nvps = new ArrayList<>();
+            nvps.add(new BasicNameValuePair("action", "AskUserProfile"));
+            nvps.add(new BasicNameValuePair("token", token));
+
+            httpPost.setEntity(new UrlEncodedFormEntity(nvps));
+
+            System.out.println("Executing request " + httpPost.getRequestLine());
+
+            // Create a custom response handler
+            ResponseHandler<String> responseHandler = new ResponseHandler<String>() {
+
+                @Override
+                public String handleResponse(
+                        final HttpResponse response) throws ClientProtocolException, IOException {
+                    int status = response.getStatusLine().getStatusCode();
+                    if (status >= 200 && status < 300) {
+                        HttpEntity entity = response.getEntity();
+                        return entity != null ? EntityUtils.toString(entity) : null;
+                    } else {
+                        throw new ClientProtocolException("Unexpected response status: " + status);
+                    }
+                }
+
+            };
+            String responseBody = httpclient.execute(httpPost, responseHandler);
+            System.out.println("----------------------------------------");
+            System.out.println(responseBody);
+            return responseBody;
+
+        } catch (Exception ex) {
+            Logger.getLogger(ClientRequests.class
+                    .getName()).log(Level.SEVERE, null, ex);
+        }
+        return "Error";
+    }
+
 }
+
