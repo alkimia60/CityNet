@@ -9,7 +9,6 @@ import citynet.utils.AuthenticationUtils;
 import citynet.utils.DBConnection;
 import citynet.utils.TextUtils;
 import citynet.model.User;
-
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -173,11 +172,6 @@ public class UserDao {
             if (deleted == 1) {
                 result = TextUtils.jsonOkMessage("User deleted");
             }
-
-            //preparedStmt.setString(1, userStr);
-            //boolean val= preparedStmt.execute();
-            //return "{" + preparedStmt.execute() + "}";
-            //return "{"Status":"Ok"}";
             return result;
         } catch (SQLException ex) {
             Logger.getLogger(UserDao.class.getName()).log(Level.SEVERE, null, ex);
@@ -322,10 +316,7 @@ public class UserDao {
         Connection connection = null;
         PreparedStatement preparedStmt = null;
 
-        //String query = "UPDATE SET (password = \'" + new AuthenticationUtils().hashPassword(password) + ") WHERE email = \'" + user + "\'";
         String query = "UPDATE users SET password = ? WHERE email = ?";
-        /*String query = "INSERT INTO users (email, password, name, surname, "
-                + "address, postcode, city, user_level) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";*/
         try {
             connection = DBConnection.getConnection();
             preparedStmt = connection.prepareStatement(query);
@@ -399,7 +390,6 @@ public class UserDao {
     public String UpdateUserData(String userStr) {
         Connection connection = null;
         PreparedStatement preparedStmt = null;
-        ResultSet rs = null;
         Gson gson = new Gson();
 
         User user = (User) gson.fromJson(userStr, User.class);
@@ -411,7 +401,6 @@ public class UserDao {
         try {
             connection = DBConnection.getConnection();
             preparedStmt = connection.prepareStatement(query);
-
             preparedStmt.setString(1, user.getName().trim());
             preparedStmt.setString(2, user.getSurname().trim());
             preparedStmt.setString(3, user.getAddress().trim());
@@ -423,13 +412,6 @@ public class UserDao {
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
-            try {
-                if (rs != null && !rs.isClosed()) {
-                    rs.close();
-                }
-            } catch (Exception e) {
-                System.out.println(e.getMessage());
-                /* ignored */ }
             try {
                 if (preparedStmt != null && !preparedStmt.isClosed()) {
                     preparedStmt.close();
@@ -447,4 +429,39 @@ public class UserDao {
         return TextUtils.jsonErrorMessage("User could not be updated");
     }
 
+        public String UpdateUserRol(String userStr,String rol) {
+        Connection connection = null;
+        PreparedStatement preparedStmt = null;
+
+        //Comprova si hi ha camps buits
+        if (TextUtils.isJsonEmptyValues(userStr)) {
+            return TextUtils.jsonErrorMessage("Empty fields in User object");
+        }
+        String query = "UPDATE users SET user_level = ? WHERE email = ?";
+        try {
+            connection = DBConnection.getConnection();
+            preparedStmt = connection.prepareStatement(query);
+            preparedStmt.setString(1,rol.trim());
+            preparedStmt.setString(2, userStr.trim());
+            preparedStmt.execute();
+            return TextUtils.jsonOkMessage("Rol updated");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (preparedStmt != null && !preparedStmt.isClosed()) {
+                    preparedStmt.close();
+                }
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+                /* ignored */ }
+            try {
+                if (connection != null && !connection.isClosed()) {
+                    connection.close();
+                }
+            } catch (Exception e) {
+                /* ignored */ }
+        }
+        return TextUtils.jsonErrorMessage("Rol could not be updated");
+    }
 }

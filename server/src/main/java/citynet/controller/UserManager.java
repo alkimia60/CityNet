@@ -17,7 +17,6 @@ import java.util.List;
 import com.google.gson.Gson;
 import citynet.token.TokenUtils;
 import citynet.utils.AuthenticationUtils;
-import java.util.HashMap;
 
 public class UserManager extends HttpServlet {
 
@@ -37,8 +36,7 @@ public class UserManager extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        String action = "";
-        //StringUtils su = new TextUtils();
+        String action;
 
         if (request.getParameter("action") != null) {
             action = request.getParameter("action");
@@ -47,7 +45,7 @@ public class UserManager extends HttpServlet {
                 case "ListAllUsers":
                     token = request.getParameter("token");
                     if (new TokenUtils().isValidToken(token)) {
-                        int screen = 0;
+                        int screen;
                         String screenStr = request.getParameter("screen");
                         if (TextUtils.isInteger(screenStr)) {
                             screen = Integer.parseInt(screenStr);
@@ -56,7 +54,7 @@ public class UserManager extends HttpServlet {
                             sendMessage(response, TextUtils.jsonErrorMessage("Param. screen format exception"));
                         }
                     } else {
-                        sendMessage(response, TextUtils.jsonErrorMessage("No valid token"));
+                        sendMessage(response, TextUtils.jsonErrorMessage("Not a valid token"));
                     }
                     break;
                 case "UserRegister":
@@ -67,7 +65,7 @@ public class UserManager extends HttpServlet {
                     if (new TokenUtils().isValidToken(token)) {
                         replyUserDelete(response, request.getParameter("user"));
                     } else {
-                        sendMessage(response, TextUtils.jsonErrorMessage("No valid token"));
+                        sendMessage(response, TextUtils.jsonErrorMessage("Not a valid token"));
                     }
                     break;
                 case "ChangePassword":
@@ -87,7 +85,7 @@ public class UserManager extends HttpServlet {
                             sendMessage(response, TextUtils.jsonErrorMessage("Invalid password"));
                         }
                     } else {
-                        sendMessage(response, TextUtils.jsonErrorMessage("No valid token"));
+                        sendMessage(response, TextUtils.jsonErrorMessage("Not a valid token"));
                     }
                     break;
                 case "AskUserProfile":
@@ -97,7 +95,7 @@ public class UserManager extends HttpServlet {
                         //Obté les dades de l'usuari
                         replyAskUserProfile(response, user);
                     } else {
-                        sendMessage(response, TextUtils.jsonErrorMessage("No valid token"));
+                        sendMessage(response, TextUtils.jsonErrorMessage("Not a valid token"));
                     }
                     break;
                 case "UpdateUserProfile":
@@ -115,7 +113,21 @@ public class UserManager extends HttpServlet {
                             replyUpdateUserProfile(response, userData);
                         }
                     } else {
-                        sendMessage(response, TextUtils.jsonErrorMessage("No valid token"));
+                        sendMessage(response, TextUtils.jsonErrorMessage("Not a valid token"));
+                    }
+                    break;
+                case "UpdateUserRol":
+                    token = request.getParameter("token");
+                    if (new TokenUtils().isValidToken(token)) {
+                        String user = request.getParameter("user");
+                        if (!ud.isValidUser(user)) {
+                            sendMessage(response, TextUtils.jsonErrorMessage("Not a valid user"));
+                        } else {
+                            String rol = request.getParameter("rol");
+                            replyUpdateUserRol(response, user, rol);
+                        }
+                    } else {
+                        sendMessage(response, TextUtils.jsonErrorMessage("Not a valid token"));
                     }
                     break;
 
@@ -123,7 +135,7 @@ public class UserManager extends HttpServlet {
                     token = request.getParameter("token");
                     String filter = request.getParameter("filter");
                     if (new TokenUtils().isValidToken(token)) {
-                        int screen = 0;
+                        int screen;
                         String screenStr = request.getParameter("screen");
                         if (TextUtils.isInteger(screenStr)) {
                             screen = Integer.parseInt(screenStr);
@@ -132,7 +144,7 @@ public class UserManager extends HttpServlet {
                             sendMessage(response, TextUtils.jsonErrorMessage("Param. screen format exception"));
                         }
                     } else {
-                        sendMessage(response, TextUtils.jsonErrorMessage("No valid token"));
+                        sendMessage(response, TextUtils.jsonErrorMessage("Not a valid token"));
                     }
                     break;
 
@@ -146,11 +158,9 @@ public class UserManager extends HttpServlet {
     }
 
     private void sendMessage(HttpServletResponse response, String message) throws IOException {
-//        StringBuilder reply = new StringBuilder();
-//        reply.append(message);
-        PrintWriter out = response.getWriter();
-        out.append(message);
-        out.close();
+        try (PrintWriter out = response.getWriter()) {
+            out.append(message);
+        }
     }
 
     private void replyListAllUsers(HttpServletResponse response, int n, int m, String filter) throws IOException {
@@ -272,6 +282,13 @@ public class UserManager extends HttpServlet {
         response.setContentType("application/json;charset=UTF-8");
         StringBuilder reply = new StringBuilder();
         reply.append(ud.UpdateUserData(user));
+        sendMessage(response, reply.toString());
+    }
+
+    private void replyUpdateUserRol(HttpServletResponse response, String user, String rol) throws IOException {
+        response.setContentType("application/json;charset=UTF-8");
+        StringBuilder reply = new StringBuilder();
+        reply.append(ud.UpdateUserRol(user, rol));
         sendMessage(response, reply.toString());
     }
 }
