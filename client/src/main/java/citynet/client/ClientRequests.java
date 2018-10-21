@@ -17,12 +17,10 @@ import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
 
 class ClientRequests {
@@ -38,7 +36,7 @@ class ClientRequests {
     public final static void main(String[] args) {
 
         ClientRequests cr = new ClientRequests();
-        User user = new User("alex@usuri.com", "pass", "Alex",
+        User user = new User("alex@usuari.com", "pass", "Alex",
                 "Diaz", "Carrer Florida 30", "08016", "Barcelona ");
 
         User userUpdate = new User("diazgx@diba.cat", null, "Alejandro",
@@ -47,9 +45,9 @@ class ClientRequests {
         //Donar d'alta un usuari com objecte user
         //cr.userRegister(PUBLIC_URL,user);
         //Login usuari
-        cr.userLogin(PUBLIC_LOGIN, "diazgx@diba.cat", "pass");
+        cr.userLogin(LOCAL_LOGIN, "diazgx@diba.cat", "xavixavi");
         //List All Users
-        cr.listAllUsers(PUBLIC_URL, token, 0);
+        cr.listAllUsers(LOCAL_URL, token, 0);
         //Donar de baixa un usuari pel seu email
         //cr.userDelete(PUBLIC_URL, token, "alex@usuri.com");
         //Change Password
@@ -61,7 +59,9 @@ class ClientRequests {
         //List All Users filter admin, editor, user
         //si no és un dels tres valors retorna tots els usuaris
         //pot substituir a listAllUsers
-        cr.listAllUsersFilter(PUBLIC_URL, token, 0, "admin");
+        cr.listAllUsersFilter(LOCAL_URL, token, 0, User.UL_EDITOR);
+        //update user rol
+        cr.updateUserRol(LOCAL_URL, token, "alex@usuari.com", User.UL_EDITOR);
 
     }
 
@@ -87,22 +87,7 @@ class ClientRequests {
             System.out.println("Executing request " + httpPost.getRequestLine());
 
             // Create a custom response handler
-            ResponseHandler<String> responseHandler = new ResponseHandler<String>() {
-
-                @Override
-                public String handleResponse(
-                        final HttpResponse response) throws ClientProtocolException, IOException {
-                    int status = response.getStatusLine().getStatusCode();
-                    if (status >= 200 && status < 300) {
-                        HttpEntity entity = response.getEntity();
-                        return entity != null ? EntityUtils.toString(entity) : null;
-                    } else {
-                        throw new ClientProtocolException("Unexpected response status: " + status);
-                    }
-                }
-
-            };
-            String responseBody = httpclient.execute(httpPost, responseHandler);
+            String responseBody = httpclient.execute(httpPost, customResponseHandler());
             System.out.println("----------------------------------------");
             System.out.println(responseBody);
             return responseBody;
@@ -128,22 +113,7 @@ class ClientRequests {
             System.out.println("Executing request " + httpPost.getRequestLine());
 
             // Create a custom response handler
-            ResponseHandler<String> responseHandler = new ResponseHandler<String>() {
-
-                @Override
-                public String handleResponse(
-                        final HttpResponse response) throws ClientProtocolException, IOException {
-                    int status = response.getStatusLine().getStatusCode();
-                    if (status >= 200 && status < 300) {
-                        HttpEntity entity = response.getEntity();
-                        return entity != null ? EntityUtils.toString(entity) : null;
-                    } else {
-                        throw new ClientProtocolException("Unexpected response status: " + status);
-                    }
-                }
-
-            };
-            String responseBody = httpclient.execute(httpPost, responseHandler);
+            String responseBody = httpclient.execute(httpPost, customResponseHandler());
             System.out.println("----------------------------------------");
             System.out.println(responseBody);
             return responseBody;
@@ -169,22 +139,7 @@ class ClientRequests {
             System.out.println("Executing request " + httpPost.getRequestLine());
 
             // Create a custom response handler
-            ResponseHandler<String> responseHandler = new ResponseHandler<String>() {
-
-                @Override
-                public String handleResponse(
-                        final HttpResponse response) throws ClientProtocolException, IOException {
-                    int status = response.getStatusLine().getStatusCode();
-                    if (status >= 200 && status < 300) {
-                        HttpEntity entity = response.getEntity();
-                        return entity != null ? EntityUtils.toString(entity) : null;
-                    } else {
-                        throw new ClientProtocolException("Unexpected response status: " + status);
-                    }
-                }
-
-            };
-            String responseBody = httpclient.execute(httpPost, responseHandler);
+            String responseBody = httpclient.execute(httpPost, customResponseHandler());
             System.out.println("----------------------------------------");
             System.out.println(responseBody);
             return responseBody;
@@ -193,7 +148,7 @@ class ClientRequests {
             Logger.getLogger(ClientRequests.class
                     .getName()).log(Level.SEVERE, null, ex);
         }
-        return "Error userRegister";
+        return "Error userDelete";
     }
 
     private boolean userLogin(String url, String user, String password) {
@@ -209,27 +164,14 @@ class ClientRequests {
             System.out.println("Executing request " + httpPost.getRequestLine());
 
             // Create a custom response handler
-            ResponseHandler<String> responseHandler = new ResponseHandler<String>() {
-
-                @Override
-                public String handleResponse(
-                        final HttpResponse response) throws ClientProtocolException, IOException {
-                    int status = response.getStatusLine().getStatusCode();
-                    if (status >= 200 && status < 300) {
-                        HttpEntity entity = response.getEntity();
-                        return entity != null ? EntityUtils.toString(entity) : null;
-                    } else {
-                        throw new ClientProtocolException("Unexpected response status: " + status);
-                    }
-                }
-
-            };
-            String responseBody = httpclient.execute(httpPost, responseHandler);
+            String responseBody = httpclient.execute(httpPost, customResponseHandler());
             System.out.println(responseBody);
+            
+            //Comprova que dins la resposta no hi hagi una clau "error"
+            // i que sí hi hagi una clau token
             String error = JsonUtils.findJsonValue(responseBody, "error");
-
-            if ((error == "No json data")
-                    & (JsonUtils.findJsonValue(responseBody, "token") != "No json data")) {
+            if (("No json data".equals(error))
+                    && (!"No json data".equals(JsonUtils.findJsonValue(responseBody, "token")))) {
                 token = JsonUtils.findJsonValue(responseBody, "token");
                 rol = JsonUtils.findJsonValue(responseBody, "rol");
                 return true;
@@ -262,22 +204,7 @@ class ClientRequests {
             System.out.println("Executing request " + httpPost.getRequestLine());
 
             // Create a custom response handler
-            ResponseHandler<String> responseHandler = new ResponseHandler<String>() {
-
-                @Override
-                public String handleResponse(
-                        final HttpResponse response) throws ClientProtocolException, IOException {
-                    int status = response.getStatusLine().getStatusCode();
-                    if (status >= 200 && status < 300) {
-                        HttpEntity entity = response.getEntity();
-                        return entity != null ? EntityUtils.toString(entity) : null;
-                    } else {
-                        throw new ClientProtocolException("Unexpected response status: " + status);
-                    }
-                }
-
-            };
-            String responseBody = httpclient.execute(httpPost, responseHandler);
+            String responseBody = httpclient.execute(httpPost, customResponseHandler());
             System.out.println("----------------------------------------");
             System.out.println(responseBody);
             return responseBody;
@@ -286,7 +213,7 @@ class ClientRequests {
             Logger.getLogger(ClientRequests.class
                     .getName()).log(Level.SEVERE, null, ex);
         }
-        return "Error userRegister";
+        return "Error changePassword";
     }
 
     private String askUserProfile(String url, String token) {
@@ -302,22 +229,7 @@ class ClientRequests {
             System.out.println("Executing request " + httpPost.getRequestLine());
 
             // Create a custom response handler
-            ResponseHandler<String> responseHandler = new ResponseHandler<String>() {
-
-                @Override
-                public String handleResponse(
-                        final HttpResponse response) throws ClientProtocolException, IOException {
-                    int status = response.getStatusLine().getStatusCode();
-                    if (status >= 200 && status < 300) {
-                        HttpEntity entity = response.getEntity();
-                        return entity != null ? EntityUtils.toString(entity) : null;
-                    } else {
-                        throw new ClientProtocolException("Unexpected response status: " + status);
-                    }
-                }
-
-            };
-            String responseBody = httpclient.execute(httpPost, responseHandler);
+            String responseBody = httpclient.execute(httpPost, customResponseHandler());
             System.out.println("----------------------------------------");
             System.out.println(responseBody);
             return responseBody;
@@ -326,7 +238,7 @@ class ClientRequests {
             Logger.getLogger(ClientRequests.class
                     .getName()).log(Level.SEVERE, null, ex);
         }
-        return "Error";
+        return "Error askUserProfile";
     }
 
     private String updateUserProfile(String url, String token, User userToUpdate) {
@@ -344,22 +256,7 @@ class ClientRequests {
             System.out.println("Executing request " + httpPost.getRequestLine());
 
             // Create a custom response handler
-            ResponseHandler<String> responseHandler = new ResponseHandler<String>() {
-
-                @Override
-                public String handleResponse(
-                        final HttpResponse response) throws ClientProtocolException, IOException {
-                    int status = response.getStatusLine().getStatusCode();
-                    if (status >= 200 && status < 300) {
-                        HttpEntity entity = response.getEntity();
-                        return entity != null ? EntityUtils.toString(entity) : null;
-                    } else {
-                        throw new ClientProtocolException("Unexpected response status: " + status);
-                    }
-                }
-
-            };
-            String responseBody = httpclient.execute(httpPost, responseHandler);
+            String responseBody = httpclient.execute(httpPost, customResponseHandler());
             System.out.println("----------------------------------------");
             System.out.println(responseBody);
             return responseBody;
@@ -368,7 +265,7 @@ class ClientRequests {
             Logger.getLogger(ClientRequests.class
                     .getName()).log(Level.SEVERE, null, ex);
         }
-        return "Error userRegister";
+        return "Error updateUserProfile";
     }
 
     private String listAllUsersFilter(String url, String token, int screen, String filter) {
@@ -387,22 +284,7 @@ class ClientRequests {
             System.out.println("Executing request " + httpPost.getRequestLine());
 
             // Create a custom response handler
-            ResponseHandler<String> responseHandler = new ResponseHandler<String>() {
-
-                @Override
-                public String handleResponse(
-                        final HttpResponse response) throws ClientProtocolException, IOException {
-                    int status = response.getStatusLine().getStatusCode();
-                    if (status >= 200 && status < 300) {
-                        HttpEntity entity = response.getEntity();
-                        return entity != null ? EntityUtils.toString(entity) : null;
-                    } else {
-                        throw new ClientProtocolException("Unexpected response status: " + status);
-                    }
-                }
-
-            };
-            String responseBody = httpclient.execute(httpPost, responseHandler);
+            String responseBody = httpclient.execute(httpPost, customResponseHandler());
             System.out.println("----------------------------------------");
             System.out.println(responseBody);
             return responseBody;
@@ -411,7 +293,51 @@ class ClientRequests {
             Logger.getLogger(ClientRequests.class
                     .getName()).log(Level.SEVERE, null, ex);
         }
-        return "Error listAllUsers";
+        return "Error listAllUsersFilter";
+    }
+
+    private String updateUserRol(String url, String token, String user, String newRol) {
+        try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
+            HttpPost httpPost = new HttpPost(url);
+
+            List<NameValuePair> nvps = new ArrayList<>();
+            nvps.add(new BasicNameValuePair("action", "UpdateUserRol"));
+            nvps.add(new BasicNameValuePair("token", token));
+            nvps.add(new BasicNameValuePair("user", user));
+            nvps.add(new BasicNameValuePair("rol", newRol));
+
+            httpPost.setEntity(new UrlEncodedFormEntity(nvps));
+
+            System.out.println("Executing request " + httpPost.getRequestLine());
+            // Create a custom response handler
+            String responseBody = httpclient.execute(httpPost, customResponseHandler());
+            System.out.println("----------------------------------------");
+            System.out.println(responseBody);
+            return responseBody;
+
+        } catch (Exception ex) {
+            Logger.getLogger(ClientRequests.class
+                    .getName()).log(Level.SEVERE, null, ex);
+        }
+        return "Error updateUserRol";
+    }
+
+    private ResponseHandler<String> customResponseHandler() {
+        ResponseHandler<String> responseHandler = new ResponseHandler<String>() {
+
+            @Override
+            public String handleResponse(
+                    final HttpResponse response) throws ClientProtocolException, IOException {
+                int status = response.getStatusLine().getStatusCode();
+                if (status >= 200 && status < 300) {
+                    HttpEntity entity = response.getEntity();
+                    return entity != null ? EntityUtils.toString(entity) : null;
+                } else {
+                    throw new ClientProtocolException("Unexpected response status: " + status);
+                }
+            }
+        };
+        return responseHandler;
     }
 
 }
