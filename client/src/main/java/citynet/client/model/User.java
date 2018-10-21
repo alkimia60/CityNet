@@ -24,6 +24,7 @@ public class User {
         this.userLevel = UL_USER;
     }
 
+    
     public String getEmail() {
         return email;
     }

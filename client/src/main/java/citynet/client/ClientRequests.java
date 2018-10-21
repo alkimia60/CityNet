@@ -38,21 +38,31 @@ class ClientRequests {
     public final static void main(String[] args) {
 
         ClientRequests cr = new ClientRequests();
-        User user = new User("gemma@rodriguez","pass" , "Gemma",
-                "Rodriguez", "Av. Diagonal", "08030", "Barcelona ");
+        User user = new User("alex@usuri.com", "pass", "Alex",
+                "Diaz", "Carrer Florida 30", "08016", "Barcelona ");
+
+        User userUpdate = new User("diazgx@diba.cat", null, "Alejandro",
+                "Diaz Garzon", "Av. Torras i Bages", " 08016", " Sta. Coloma de Gramenet ");
 
         //Donar d'alta un usuari com objecte user
-        //cr.userRegister(user, PUBLIC_URL);
+        //cr.userRegister(PUBLIC_URL,user);
         //Login usuari
-        cr.userLogin(PUBLIC_LOGIN, "diazgx@diba.cat", "xavu");
+        cr.userLogin(PUBLIC_LOGIN, "diazgx@diba.cat", "pass");
         //List All Users
-        cr.listAllUsers(PUBLIC_URL, 0, token);
+        cr.listAllUsers(PUBLIC_URL, token, 0);
         //Donar de baixa un usuari pel seu email
-        //cr.userDelete("gemma@rodriguez.com", PUBLIC_URL,token);
+        //cr.userDelete(PUBLIC_URL, token, "alex@usuri.com");
         //Change Password
-        //cr.changePassword("xavi", "xavixavi", PUBLIC_URL, token);
+        //cr.changePassword(PUBLIC_URL, token, "old", "new");
         //Ask user profile
-        cr.askUserProfile(PUBLIC_URL, token);
+        //cr.askUserProfile(PUBLIC_URL, token);
+        //Update user profile
+        //cr.updateUserProfile(PUBLIC_URL, token, userUpdate);
+        //List All Users filter admin, editor, user
+        //si no és un dels tres valors retorna tots els usuaris
+        //pot substituir a listAllUsers
+        cr.listAllUsersFilter(PUBLIC_URL, token, 0, "admin");
+
     }
 
     /**
@@ -62,14 +72,14 @@ class ClientRequests {
      * @return String with startOfTable, endOfTable and the fields of the
      * records between #. All records separated by \n
      */
-    private String listAllUsers(String url, int screen, String token) {
+    private String listAllUsers(String url, String token, int screen) {
         try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
             HttpPost httpPost = new HttpPost(url);
 
             List<NameValuePair> nvps = new ArrayList<>();
             nvps.add(new BasicNameValuePair("action", "ListAllUsers"));
-            nvps.add(new BasicNameValuePair("screen", String.valueOf(screen)));
             nvps.add(new BasicNameValuePair("token", token));
+            nvps.add(new BasicNameValuePair("screen", String.valueOf(screen)));
 
             httpPost.setEntity(new UrlEncodedFormEntity(nvps));
             //httpPost.addHeader("Authorization", token);
@@ -104,14 +114,14 @@ class ClientRequests {
         return "Error listAllUsers";
     }
 
-    private String userRegister(User user, String url) {
+    private String userRegister(String url, User user) {
         try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
             HttpPost httpPost = new HttpPost(url);
 
             Gson gson = new Gson();
             List<NameValuePair> nvps = new ArrayList<>();
-            nvps.add(new BasicNameValuePair("user", gson.toJson(user)));
             nvps.add(new BasicNameValuePair("action", "UserRegister"));
+            nvps.add(new BasicNameValuePair("user", gson.toJson(user)));
 
             httpPost.setEntity(new UrlEncodedFormEntity(nvps));
 
@@ -145,14 +155,14 @@ class ClientRequests {
         return "Error userRegister";
     }
 
-    private String userDelete(String userToDelete, String url, String token) {
+    private String userDelete(String url, String token, String userToDelete) {
         try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
             HttpPost httpPost = new HttpPost(url);
 
             List<NameValuePair> nvps = new ArrayList<>();
             nvps.add(new BasicNameValuePair("action", "UserDelete"));
-            nvps.add(new BasicNameValuePair("user", userToDelete));
             nvps.add(new BasicNameValuePair("token", token));
+            nvps.add(new BasicNameValuePair("user", userToDelete));
 
             httpPost.setEntity(new UrlEncodedFormEntity(nvps));
 
@@ -237,15 +247,15 @@ class ClientRequests {
         }
     }
 
-    private String changePassword(String oldPassword, String newPassword, String url, String token) {
+    private String changePassword(String url, String token, String oldPassword, String newPassword) {
         try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
             HttpPost httpPost = new HttpPost(url);
 
             List<NameValuePair> nvps = new ArrayList<>();
             nvps.add(new BasicNameValuePair("action", "ChangePassword"));
+            nvps.add(new BasicNameValuePair("token", token));
             nvps.add(new BasicNameValuePair("oldPassword", oldPassword));
             nvps.add(new BasicNameValuePair("newPassword", newPassword));
-            nvps.add(new BasicNameValuePair("token", token));
 
             httpPost.setEntity(new UrlEncodedFormEntity(nvps));
 
@@ -319,5 +329,89 @@ class ClientRequests {
         return "Error";
     }
 
-}
+    private String updateUserProfile(String url, String token, User userToUpdate) {
+        try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
+            HttpPost httpPost = new HttpPost(url);
 
+            Gson gson = new Gson();
+            List<NameValuePair> nvps = new ArrayList<>();
+            nvps.add(new BasicNameValuePair("action", "UpdateUserProfile"));
+            nvps.add(new BasicNameValuePair("token", token));
+            nvps.add(new BasicNameValuePair("user", gson.toJson(userToUpdate)));
+
+            httpPost.setEntity(new UrlEncodedFormEntity(nvps));
+
+            System.out.println("Executing request " + httpPost.getRequestLine());
+
+            // Create a custom response handler
+            ResponseHandler<String> responseHandler = new ResponseHandler<String>() {
+
+                @Override
+                public String handleResponse(
+                        final HttpResponse response) throws ClientProtocolException, IOException {
+                    int status = response.getStatusLine().getStatusCode();
+                    if (status >= 200 && status < 300) {
+                        HttpEntity entity = response.getEntity();
+                        return entity != null ? EntityUtils.toString(entity) : null;
+                    } else {
+                        throw new ClientProtocolException("Unexpected response status: " + status);
+                    }
+                }
+
+            };
+            String responseBody = httpclient.execute(httpPost, responseHandler);
+            System.out.println("----------------------------------------");
+            System.out.println(responseBody);
+            return responseBody;
+
+        } catch (Exception ex) {
+            Logger.getLogger(ClientRequests.class
+                    .getName()).log(Level.SEVERE, null, ex);
+        }
+        return "Error userRegister";
+    }
+
+    private String listAllUsersFilter(String url, String token, int screen, String filter) {
+        try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
+            HttpPost httpPost = new HttpPost(url);
+
+            List<NameValuePair> nvps = new ArrayList<>();
+            nvps.add(new BasicNameValuePair("action", "ListAllUsersFilter"));
+            nvps.add(new BasicNameValuePair("token", token));
+            nvps.add(new BasicNameValuePair("screen", String.valueOf(screen)));
+            nvps.add(new BasicNameValuePair("filter", filter));
+
+            httpPost.setEntity(new UrlEncodedFormEntity(nvps));
+            //httpPost.addHeader("Authorization", token);
+
+            System.out.println("Executing request " + httpPost.getRequestLine());
+
+            // Create a custom response handler
+            ResponseHandler<String> responseHandler = new ResponseHandler<String>() {
+
+                @Override
+                public String handleResponse(
+                        final HttpResponse response) throws ClientProtocolException, IOException {
+                    int status = response.getStatusLine().getStatusCode();
+                    if (status >= 200 && status < 300) {
+                        HttpEntity entity = response.getEntity();
+                        return entity != null ? EntityUtils.toString(entity) : null;
+                    } else {
+                        throw new ClientProtocolException("Unexpected response status: " + status);
+                    }
+                }
+
+            };
+            String responseBody = httpclient.execute(httpPost, responseHandler);
+            System.out.println("----------------------------------------");
+            System.out.println(responseBody);
+            return responseBody;
+
+        } catch (Exception ex) {
+            Logger.getLogger(ClientRequests.class
+                    .getName()).log(Level.SEVERE, null, ex);
+        }
+        return "Error listAllUsers";
+    }
+
+}
