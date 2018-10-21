@@ -45,9 +45,9 @@ class ClientRequests {
         //Donar d'alta un usuari com objecte user
         //cr.userRegister(PUBLIC_URL,user);
         //Login usuari
-        cr.userLogin(LOCAL_LOGIN, "diazgx@diba.cat", "xavixavi");
+        cr.userLogin(PUBLIC_LOGIN, "diazgx@diba.cat", "pass");
         //List All Users
-        cr.listAllUsers(LOCAL_URL, token, 0);
+        cr.listAllUsers(PUBLIC_URL, token, 0);
         //Donar de baixa un usuari pel seu email
         //cr.userDelete(PUBLIC_URL, token, "alex@usuri.com");
         //Change Password
@@ -59,9 +59,9 @@ class ClientRequests {
         //List All Users filter admin, editor, user
         //si no és un dels tres valors retorna tots els usuaris
         //pot substituir a listAllUsers
-        cr.listAllUsersFilter(LOCAL_URL, token, 0, User.UL_EDITOR);
+        cr.listAllUsersFilter(PUBLIC_URL, token, 0, User.UL_EDITOR);
         //update user rol
-        cr.updateUserRol(LOCAL_URL, token, "alex@usuari.com", User.UL_EDITOR);
+        cr.updateUserRol(PUBLIC_URL, token, "alex@usuari.com", User.UL_EDITOR);
 
     }
 
