@@ -51,7 +51,7 @@ public class UserManager extends HttpServlet {
                         String screenStr = request.getParameter("screen");
                         if (TextUtils.isInteger(screenStr)) {
                             screen = Integer.parseInt(screenStr);
-                            replyListAllUsers(response, screen * LIST_INCREASE, LIST_INCREASE);
+                            replyListAllUsers(response, screen * LIST_INCREASE, LIST_INCREASE, "%");
                         } else {
                             sendMessage(response, TextUtils.jsonErrorMessage("Param. screen format exception"));
                         }
@@ -100,6 +100,41 @@ public class UserManager extends HttpServlet {
                         sendMessage(response, TextUtils.jsonErrorMessage("No valid token"));
                     }
                     break;
+                case "UpdateUserProfile":
+                    token = request.getParameter("token");
+                    if (new TokenUtils().isValidToken(token)) {
+                        String user = new TokenUtils().JWTTokenUser(token); //Obté l'usuari del token
+                        //Obté les dades a modificar de l'usuari
+                        String userData = request.getParameter("user");
+                        //Obté l'email identificador de l'usuari
+                        String userToDelete = TextUtils.findJsonValue(userData, "email");
+                        //Comprova si l'usuari a modificar és el mateix del token
+                        if (!user.equals(userToDelete)) {
+                            sendMessage(response, TextUtils.jsonErrorMessage("Wrong user"));
+                        } else {
+                            replyUpdateUserProfile(response, userData);
+                        }
+                    } else {
+                        sendMessage(response, TextUtils.jsonErrorMessage("No valid token"));
+                    }
+                    break;
+
+                case "ListAllUsersFilter":
+                    token = request.getParameter("token");
+                    String filter = request.getParameter("filter");
+                    if (new TokenUtils().isValidToken(token)) {
+                        int screen = 0;
+                        String screenStr = request.getParameter("screen");
+                        if (TextUtils.isInteger(screenStr)) {
+                            screen = Integer.parseInt(screenStr);
+                            replyListAllUsers(response, screen * LIST_INCREASE, LIST_INCREASE, filter);
+                        } else {
+                            sendMessage(response, TextUtils.jsonErrorMessage("Param. screen format exception"));
+                        }
+                    } else {
+                        sendMessage(response, TextUtils.jsonErrorMessage("No valid token"));
+                    }
+                    break;
 
                 default:
                     sendMessage(response, TextUtils.jsonErrorMessage("Param. action format exception"));
@@ -118,12 +153,14 @@ public class UserManager extends HttpServlet {
         out.close();
     }
 
-    private void replyListAllUsers(HttpServletResponse response, int n, int m) throws IOException {
+    private void replyListAllUsers(HttpServletResponse response, int n, int m, String filter) throws IOException {
         response.setContentType("application/json;charset=UTF-8");
-
+        if (!filter.equals("admin") && !filter.equals("editor") && !filter.equals("user")) {
+            filter = "%";
+        }
         StringBuilder reply = new StringBuilder();
 
-        List<User> users = ud.getAllUsers(n, m);
+        List<User> users = ud.getAllUsers(n, m, filter);
         if (users.isEmpty()) {
             reply.append(TextUtils.jsonErrorMessage("No user results"));
         } else {
@@ -228,6 +265,13 @@ public class UserManager extends HttpServlet {
         Gson gson = new Gson();
         StringBuilder reply = new StringBuilder();
         reply.append(gson.toJson(ud.findUserData(user)));
+        sendMessage(response, reply.toString());
+    }
+
+    private void replyUpdateUserProfile(HttpServletResponse response, String user) throws IOException {
+        response.setContentType("application/json;charset=UTF-8");
+        StringBuilder reply = new StringBuilder();
+        reply.append(ud.UpdateUserData(user));
         sendMessage(response, reply.toString());
     }
 }

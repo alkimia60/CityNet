@@ -27,7 +27,7 @@ public class UserDao {
 //    public UserDao() {
 //        connection = DBConnection.getConnection();
 //    }
-    public List<User> getAllUsers(int n, int m) {
+    public List<User> getAllUsers(int n, int m, String rol) {
         Connection connection = null;
         Statement statement = null;
         ResultSet rs = null;
@@ -35,7 +35,7 @@ public class UserDao {
         try {
             connection = DBConnection.getConnection();
             statement = connection.createStatement();
-            rs = statement.executeQuery("select * from users order by email limit " + n + "," + m);
+            rs = statement.executeQuery("SELECT * FROM users WHERE user_level LIKE \'" + rol + "\'ORDER BY email LIMIT " + n + "," + m);
             while (rs.next()) {
                 User user = new User();
                 //user.setId(rs.getInt("id"));
@@ -120,10 +120,10 @@ public class UserDao {
         Gson gson = new Gson();
 
         User user = (User) gson.fromJson(userStr, User.class);
-        if (TextUtils.isJsonEmptyValues(userStr)){
+        if (TextUtils.isJsonEmptyValues(userStr)) {
             return TextUtils.jsonErrorMessage("Empty fields in User object");
         }
-        
+
         String query = "INSERT INTO users (email, password, name, surname, "
                 + "address, postcode, city, user_level) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         AuthenticationUtils au = new AuthenticationUtils();
@@ -156,7 +156,7 @@ public class UserDao {
             } catch (Exception e) {
                 /* ignored */ }
         }
-        return TextUtils.jsonErrorMessage("The user could not be registered");
+        return TextUtils.jsonErrorMessage("User could not be registered");
     }
 
     public String userDelete(String userEmail) {
@@ -394,6 +394,57 @@ public class UserDao {
                 /* ignored */ }
         }
         return user;
+    }
+
+    public String UpdateUserData(String userStr) {
+        Connection connection = null;
+        PreparedStatement preparedStmt = null;
+        ResultSet rs = null;
+        Gson gson = new Gson();
+
+        User user = (User) gson.fromJson(userStr, User.class);
+        //Comprova si hi ha camps buits
+        if (TextUtils.isJsonEmptyValues(userStr)) {
+            return TextUtils.jsonErrorMessage("Empty fields in User object");
+        }
+        String query = "UPDATE users SET name = ?, surname = ?, address = ?, postcode = ?, city= ? WHERE email = ?";
+        try {
+            connection = DBConnection.getConnection();
+            preparedStmt = connection.prepareStatement(query);
+
+            preparedStmt.setString(1, user.getName().trim());
+            preparedStmt.setString(2, user.getSurname().trim());
+            preparedStmt.setString(3, user.getAddress().trim());
+            preparedStmt.setString(4, user.getPostcode().trim());
+            preparedStmt.setString(5, user.getCity().trim());
+            preparedStmt.setString(6, user.getEmail().trim());
+            preparedStmt.execute();
+            return TextUtils.jsonOkMessage("User updated");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (rs != null && !rs.isClosed()) {
+                    rs.close();
+                }
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+                /* ignored */ }
+            try {
+                if (preparedStmt != null && !preparedStmt.isClosed()) {
+                    preparedStmt.close();
+                }
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+                /* ignored */ }
+            try {
+                if (connection != null && !connection.isClosed()) {
+                    connection.close();
+                }
+            } catch (Exception e) {
+                /* ignored */ }
+        }
+        return TextUtils.jsonErrorMessage("User could not be updated");
     }
 
 }
