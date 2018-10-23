@@ -16,9 +16,6 @@ import java.awt.Color;
  */
 public class UserAdd extends javax.swing.JInternalFrame {
     
-    //URL
-    private static final String PUBLIC_URL = "http://ec2-35-180-7-53.eu-west-3.compute.amazonaws.com:8080/citynet/UserManager";
-    
     //Inicialització missatges d'error
     final String REQUIRED = "Els camps són obligatoris o el format no és correcte";
     final String NOTSAME = "Les contrasenyes no són iguals";
@@ -563,7 +560,7 @@ public class UserAdd extends javax.swing.JInternalFrame {
             ////////////////////////////////////////////////////////////////////////////
             Add addUser = new Add();
             User user = new User(email, name, surname, address, postCode, city, password1);
-            addUser.userRegister(user, PUBLIC_URL);
+            addUser.userRegister(user, UsersList.PUBLIC_URL);
             
         } else if (errorForm.isRequired()) {
             

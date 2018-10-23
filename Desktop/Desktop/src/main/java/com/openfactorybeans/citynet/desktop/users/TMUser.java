@@ -56,7 +56,7 @@ public class TMUser implements TableModel {
                 break;
                 
             case 4:
-                columName = "CP";
+                columName = "Codi Postal";
                 break;
                 
             case 5:

@@ -8,6 +8,7 @@ package com.openfactorybeans.citynet.desktop.forms;
 import com.openfactorybeans.citynet.desktop.users.ListAllUsers;
 import com.openfactorybeans.citynet.desktop.users.TMUser;
 import com.openfactorybeans.citynet.desktop.users.User;
+import com.openfactorybeans.citynet.desktop.utils.FormsUtils;
 import com.openfactorybeans.citynet.desktop.utils.JsonUtils;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +21,7 @@ import javax.swing.JOptionPane;
 public class UsersList extends javax.swing.JInternalFrame {
 
     //URL
-    private static final String PUBLIC_URL = "http://ec2-35-180-7-53.eu-west-3.compute.amazonaws.com:8080/citynet/UserManager";
+    public static final String PUBLIC_URL = "http://ec2-35-180-7-53.eu-west-3.compute.amazonaws.com:8080/citynet/UserManager";
     
     //Variables finals de errors del servidor
     private final String NO_TOKEN = "No valid token";
@@ -31,10 +32,19 @@ public class UsersList extends javax.swing.JInternalFrame {
     private final String EDITOR = "Editor";
     private final String ADMIN = "Admin";
     
+    //Variables finals dels noms de les columnes de la taula
+    private final int EMAIL = 0;
+    private final int NAME = 1;
+    private final int SURNAME = 2;
+    private final int ADDRESS = 3;
+    private final int POSTALCODE = 4;
+    private final int CITY = 5;
+    private final int ROL = 6;
+    
     //Declaració de variables pel llistat
     private ListAllUsers lau;
     private List<User> users;
-    private TMUser model;
+    private TMUser modelTable;
     private String serverResponse;
     private String listUsersJSon;
     
@@ -49,10 +59,6 @@ public class UsersList extends javax.swing.JInternalFrame {
      */
     public UsersList() {
         initComponents();
-        
-        System.out.println("UsersList. " + Login.token);
-        System.out.println("UsersList. " + Login.rol);
-        
 
         ////////////////////////////////////////////////////////////////////////////
         //Conectem amb el servidor per obtenir els usuaris.
@@ -66,7 +72,7 @@ public class UsersList extends javax.swing.JInternalFrame {
         if (serverMissage.equals(NO_TOKEN)) {
             
             //No estem identificats
-            JOptionPane.showMessageDialog(null, "No s'ha iniciat cap sessió", "Login", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "No s'ha iniciat cap sessió o la sessió ha finalitzat", "CityNet - Login", JOptionPane.ERROR_MESSAGE);
             
         } else {
         
@@ -95,8 +101,8 @@ public class UsersList extends javax.swing.JInternalFrame {
      */
     public void fillTable() {
         
-        model = new TMUser(users);
-        jTableUsers.setModel(model);
+        modelTable = new TMUser(users);
+        jTableUsers.setModel(modelTable);
         
     }
     
@@ -146,12 +152,20 @@ public class UsersList extends javax.swing.JInternalFrame {
         jPanelAvRe = new javax.swing.JPanel();
         btnPageMinus = new javax.swing.JButton();
         btnPagePlus = new javax.swing.JButton();
-        jPanelFilter = new javax.swing.JPanel();
-        cbxFilter = new javax.swing.JComboBox<>();
-        btnFilter = new javax.swing.JButton();
+        jPanelActions = new javax.swing.JPanel();
+        btnModify = new javax.swing.JButton();
+        btnDelete = new javax.swing.JButton();
+        btnChangeUserLevel = new javax.swing.JButton();
+        jSeparator2 = new javax.swing.JSeparator();
+        jPanelDetail = new javax.swing.JPanel();
 
         setClosable(true);
         setTitle("Llistat d'usuaris");
+        addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                formFocusGained(evt);
+            }
+        });
 
         jTableUsers.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -167,15 +181,22 @@ public class UsersList extends javax.swing.JInternalFrame {
                 {null, null, null, null, null, null, null}
             },
             new String [] {
-                "Email", "Nom", "Cognoms", "Adreça", "CP", "Població", "Rol"
+                "Email", "Nom", "Cognoms", "Adreça", "Codi Postal", "Població", "Rol"
             }
         ) {
             Class[] types = new Class [] {
                 java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
             };
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false, false, false
+            };
 
             public Class getColumnClass(int columnIndex) {
                 return types [columnIndex];
+            }
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
             }
         });
         jScrollPane1.setViewportView(jTableUsers);
@@ -225,41 +246,47 @@ public class UsersList extends javax.swing.JInternalFrame {
                 .addContainerGap())
         );
 
-        cbxFilter.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
-        cbxFilter.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Tots", "User", "Editor", "Admin" }));
-        cbxFilter.addActionListener(new java.awt.event.ActionListener() {
+        btnModify.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        btnModify.setText("Modificar");
+
+        btnDelete.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        btnDelete.setText("Eliminar");
+        btnDelete.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cbxFilterActionPerformed(evt);
+                btnDeleteActionPerformed(evt);
             }
         });
 
-        btnFilter.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
-        btnFilter.setText("Filtrar");
-        btnFilter.addActionListener(new java.awt.event.ActionListener() {
+        btnChangeUserLevel.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        btnChangeUserLevel.setText("Canviar Rol");
+        btnChangeUserLevel.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnFilterActionPerformed(evt);
+                btnChangeUserLevelActionPerformed(evt);
             }
         });
 
-        javax.swing.GroupLayout jPanelFilterLayout = new javax.swing.GroupLayout(jPanelFilter);
-        jPanelFilter.setLayout(jPanelFilterLayout);
-        jPanelFilterLayout.setHorizontalGroup(
-            jPanelFilterLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanelFilterLayout.createSequentialGroup()
+        javax.swing.GroupLayout jPanelActionsLayout = new javax.swing.GroupLayout(jPanelActions);
+        jPanelActions.setLayout(jPanelActionsLayout);
+        jPanelActionsLayout.setHorizontalGroup(
+            jPanelActionsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanelActionsLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(cbxFilter, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(btnModify)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btnFilter)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(btnDelete)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btnChangeUserLevel)
+                .addContainerGap())
         );
-        jPanelFilterLayout.setVerticalGroup(
-            jPanelFilterLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanelFilterLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanelFilterLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(cbxFilter, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnFilter))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        jPanelActionsLayout.setVerticalGroup(
+            jPanelActionsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanelActionsLayout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(jPanelActionsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnModify)
+                    .addComponent(btnDelete)
+                    .addComponent(btnChangeUserLevel))
+                .addContainerGap())
         );
 
         javax.swing.GroupLayout jPanelOptionsLayout = new javax.swing.GroupLayout(jPanelOptions);
@@ -272,8 +299,8 @@ public class UsersList extends javax.swing.JInternalFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanelFilter, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(jPanelActions, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(188, Short.MAX_VALUE))
         );
         jPanelOptionsLayout.setVerticalGroup(
             jPanelOptionsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -281,22 +308,32 @@ public class UsersList extends javax.swing.JInternalFrame {
                 .addContainerGap()
                 .addGroup(jPanelOptionsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jSeparator1)
+                    .addComponent(jPanelActions, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(jPanelOptionsLayout.createSequentialGroup()
-                        .addGroup(jPanelOptionsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jPanelFilter, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jPanelAvRe, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(jPanelAvRe, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
+        );
+
+        javax.swing.GroupLayout jPanelDetailLayout = new javax.swing.GroupLayout(jPanelDetail);
+        jPanelDetail.setLayout(jPanelDetailLayout);
+        jPanelDetailLayout.setHorizontalGroup(
+            jPanelDetailLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 0, Short.MAX_VALUE)
+        );
+        jPanelDetailLayout.setVerticalGroup(
+            jPanelDetailLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 268, Short.MAX_VALUE)
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 724, Short.MAX_VALUE)
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(jPanelOptions, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING)
+            .addComponent(jPanelOptions, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(jSeparator2)
+            .addComponent(jPanelDetail, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -304,7 +341,10 @@ public class UsersList extends javax.swing.JInternalFrame {
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 190, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanelOptions, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(221, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jPanelDetail, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
@@ -315,20 +355,39 @@ public class UsersList extends javax.swing.JInternalFrame {
         //Aumentem el número de pàgina per solicitar al servidor
         screen++;
         
-        listUsersJSon = lau.listAllUsers(PUBLIC_URL, screen, Login.token);
-
-        //Passem el Json a ArrayList 
-        users = new ArrayList<>();
-        users = JsonUtils.parseJsonUser(listUsersJSon);
-
-        //Comprovem les dades control
-        endList = JsonUtils.parseJsonControl(listUsersJSon);
+        ////////////////////////////////////////////////////////////////////////////
+        //Conectem amb el servidor per obtenir la pàgina següent dels usuaris.
+        ////////////////////////////////////////////////////////////////////////////
+        lau = new ListAllUsers();
+        serverResponse = lau.listAllUsers(PUBLIC_URL, screen, Login.token);
         
-        //Cridem al mètode per canviar l'estat dels botons
-        buttonsStates();
+        //Mirem si el servidor ha retornat un error
+        String serverMissage = JsonUtils.findJsonValue(serverResponse, "error");
+        
+        if (serverMissage.equals(NO_TOKEN)) {
+            
+            //No estem identificats
+            JOptionPane.showMessageDialog(null, "No s'ha iniciat cap sessió o la sessió ha finalitzat", "CityNet - Login", JOptionPane.ERROR_MESSAGE);
+            
+        } else {
+        
+            //Si són susaris
+            listUsersJSon = serverResponse;
 
-        //Omplim la taula amb l'Array
-        fillTable();
+            //Passem el Json a ArrayList 
+            users = new ArrayList<>();
+            users = JsonUtils.parseJsonUser(listUsersJSon);
+
+            //Comprovem les dades control
+            endList = JsonUtils.parseJsonControl(listUsersJSon);
+
+            //Cridem al mètode per canviar l'estat dels botons
+            buttonsStates();
+
+            //Omplim la taula amb l'Array
+            fillTable();
+            
+        }
         
     }//GEN-LAST:event_btnPagePlusActionPerformed
 
@@ -337,44 +396,138 @@ public class UsersList extends javax.swing.JInternalFrame {
         //Aumentem el número de pàgina per solicitar al servidor
         screen--;
         
-        listUsersJSon = lau.listAllUsers(PUBLIC_URL, screen, Login.token);
-
-        //Passem el Json a ArrayList 
-        users = new ArrayList<>();
-        users = JsonUtils.parseJsonUser(listUsersJSon);
-
-        //Comprovem les dades control
-        endList = JsonUtils.parseJsonControl(listUsersJSon);
+        ////////////////////////////////////////////////////////////////////////////
+        //Conectem amb el servidor per obtenir la pàgina anterior dels usuaris.
+        ////////////////////////////////////////////////////////////////////////////
+        lau = new ListAllUsers();
+        serverResponse = lau.listAllUsers(PUBLIC_URL, screen, Login.token);
         
-        //Cridem al mètode per canviar l'estat dels botons
-        buttonsStates();
+        //Mirem si el servidor ha retornat un error
+        String serverMissage = JsonUtils.findJsonValue(serverResponse, "error");
+        
+        if (serverMissage.equals(NO_TOKEN)) {
+            
+            //No estem identificats
+            JOptionPane.showMessageDialog(null, "No s'ha iniciat cap sessió o la sessió ha finalitzat", "CityNet - Login", JOptionPane.ERROR_MESSAGE);
+            
+        } else {
+        
+            //Si són usaris
+            listUsersJSon = serverResponse;
 
-        //Omplim la taula amb l'Array
-        fillTable();
+            //Passem el Json a ArrayList 
+            users = new ArrayList<>();
+            users = JsonUtils.parseJsonUser(listUsersJSon);
+
+            //Comprovem les dades control
+            endList = JsonUtils.parseJsonControl(listUsersJSon);
+
+            //Cridem al mètode per canviar l'estat dels botons
+            buttonsStates();
+
+            //Omplim la taula amb l'Array
+            fillTable();
+            
+        }
     }//GEN-LAST:event_btnPageMinusActionPerformed
 
-    private void cbxFilterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbxFilterActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_cbxFilterActionPerformed
+    private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
 
-    private void btnFilterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFilterActionPerformed
+        //Obtenir la fila del email
+        int selectedRow = jTableUsers.getSelectedRow();
         
-        //Obtenim el index del item seleccionat del combobox
-        String filter = cbxFilter.getSelectedItem().toString();
+        if (selectedRow != -1) {
+            
+            //Obtenim el valor dels camps de la fila
+            String email = modelTable.getValueAt(selectedRow, EMAIL).toString();
+            String name = modelTable.getValueAt(selectedRow, NAME).toString();
+            String surname = modelTable.getValueAt(selectedRow, SURNAME).toString();
+            String address = modelTable.getValueAt(selectedRow, ADDRESS).toString();
+            String postalCode = modelTable.getValueAt(selectedRow, POSTALCODE).toString();
+            String city = modelTable.getValueAt(selectedRow, CITY).toString();
+            
+            //Netejem qualsevol finestra oberta anteriorment en l'escrptori
+            jPanelDetail.removeAll();
+            jPanelDetail.repaint();
+
+            //Instanciem el InternalFrame
+            UserDelete userDelete = new UserDelete(email, name, surname, address, postalCode, city);
+            
+            //Afegim el formulari al panel d'eliminar
+            jPanelDetail.add(userDelete);
+
+            //Centrem la finestra
+            FormsUtils.centerJInternalFrame(jPanelDetail, userDelete);
+
+            //El fem visible
+            userDelete.setVisible(true);
         
-    }//GEN-LAST:event_btnFilterActionPerformed
+        } else {
+            
+            //No hi ha cap fila seleccionada
+            JOptionPane.showMessageDialog(null, "Has de seleccionar un usuari", "CityNet - Eliminar usuari", JOptionPane.ERROR_MESSAGE);
+            
+        }
+    }//GEN-LAST:event_btnDeleteActionPerformed
+
+    private void formFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_formFocusGained
+    }//GEN-LAST:event_formFocusGained
+
+    private void btnChangeUserLevelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnChangeUserLevelActionPerformed
+        
+        //Obtenir la fila del email
+        int selectedRow = jTableUsers.getSelectedRow();
+        
+        if (selectedRow != -1) {
+            
+            //Obtenim l'usuari, el nom i el rol
+            String email = modelTable.getValueAt(selectedRow, EMAIL).toString();
+            String name = modelTable.getValueAt(selectedRow, NAME).toString();
+            String surname = modelTable.getValueAt(selectedRow, SURNAME).toString();
+            String rol = modelTable.getValueAt(selectedRow, ROL).toString();
+            
+            //Passarem el nom complert
+            String nameSurname = name + " " + surname;
+            
+            //Netejem qualsevol finestra oberta anteriorment en l'escrptori
+            jPanelDetail.removeAll();
+            jPanelDetail.repaint();
+
+            //Instanciem el InternalFrame
+            UserUpdateRol userUpdateRol = new UserUpdateRol(email, nameSurname, rol);
+            
+            //Afegim el formulari al panel d'eliminar
+            jPanelDetail.add(userUpdateRol);
+
+            //Centrem la finestra
+            FormsUtils.centerJInternalFrame(jPanelDetail, userUpdateRol);
+
+            //El fem visible
+            userUpdateRol.setVisible(true);
+        
+        } else {
+            
+            //No hi ha cap fila seleccionada
+            JOptionPane.showMessageDialog(null, "Has de seleccionar un usuari", "CityNet - Canviar rol", JOptionPane.ERROR_MESSAGE);
+            
+        }
+        
+    }//GEN-LAST:event_btnChangeUserLevelActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnFilter;
+    private javax.swing.JButton btnChangeUserLevel;
+    private javax.swing.JButton btnDelete;
+    private javax.swing.JButton btnModify;
     private javax.swing.JButton btnPageMinus;
     private javax.swing.JButton btnPagePlus;
-    private javax.swing.JComboBox<String> cbxFilter;
+    private javax.swing.JPanel jPanelActions;
     private javax.swing.JPanel jPanelAvRe;
-    private javax.swing.JPanel jPanelFilter;
+    private javax.swing.JPanel jPanelDetail;
     private javax.swing.JPanel jPanelOptions;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JSeparator jSeparator1;
+    private javax.swing.JSeparator jSeparator2;
     private javax.swing.JTable jTableUsers;
     // End of variables declaration//GEN-END:variables
 }

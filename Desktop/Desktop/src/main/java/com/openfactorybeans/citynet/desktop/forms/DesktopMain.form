@@ -9,27 +9,22 @@
             <Property name="text" type="java.lang.String" value="Usuaris"/>
           </Properties>
           <SubComponents>
-            <MenuItem class="javax.swing.JMenuItem" name="jMenuItemAddUser">
+            <MenuItem class="javax.swing.JMenuItem" name="optionAddUser">
               <Properties>
-                <Property name="text" type="java.lang.String" value="Afegir"/>
+                <Property name="text" type="java.lang.String" value="Afegir usuari"/>
               </Properties>
               <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItemAddUserActionPerformed"/>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="optionAddUserActionPerformed"/>
               </Events>
             </MenuItem>
-            <MenuItem class="javax.swing.JMenuItem" name="jMenuItemModifyUser">
-              <Properties>
-                <Property name="text" type="java.lang.String" value="Modificar"/>
-              </Properties>
+            <MenuItem class="javax.swing.JPopupMenu$Separator" name="separatorUsers">
             </MenuItem>
-            <MenuItem class="javax.swing.JPopupMenu$Separator" name="jSeparator1">
-            </MenuItem>
-            <MenuItem class="javax.swing.JMenuItem" name="jMenuItemListUsers">
+            <MenuItem class="javax.swing.JMenuItem" name="optionListUsers">
               <Properties>
-                <Property name="text" type="java.lang.String" value="Llistar"/>
+                <Property name="text" type="java.lang.String" value="Llistar usuaris"/>
               </Properties>
               <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItemListUsersActionPerformed"/>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="optionListUsersActionPerformed"/>
               </Events>
             </MenuItem>
           </SubComponents>
@@ -38,25 +33,47 @@
           <Properties>
             <Property name="text" type="java.lang.String" value="Contenidors"/>
           </Properties>
+          <SubComponents>
+            <MenuItem class="javax.swing.JMenuItem" name="opctionAddContainer">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Afegir contenidor"/>
+              </Properties>
+            </MenuItem>
+            <MenuItem class="javax.swing.JPopupMenu$Separator" name="separatorContainers">
+            </MenuItem>
+            <MenuItem class="javax.swing.JMenuItem" name="optionListContainers">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Llistar contenidors"/>
+              </Properties>
+            </MenuItem>
+          </SubComponents>
         </Menu>
         <Menu class="javax.swing.JMenu" name="jMenuMyMenu">
           <Properties>
-            <Property name="text" type="java.lang.String" value="El meu men&#xfa;"/>
+            <Property name="text" type="java.lang.String" value="Perfil usuari"/>
           </Properties>
           <SubComponents>
-            <MenuItem class="javax.swing.JMenuItem" name="jMenuItemDataUser">
+            <MenuItem class="javax.swing.JMenuItem" name="optionModifyUserProfile">
               <Properties>
                 <Property name="text" type="java.lang.String" value="Modificar dades"/>
               </Properties>
             </MenuItem>
-            <MenuItem class="javax.swing.JPopupMenu$Separator" name="jSeparator2">
+            <MenuItem class="javax.swing.JMenuItem" name="optionChangePass">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Canviar contrasenya"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="optionChangePassActionPerformed"/>
+              </Events>
             </MenuItem>
-            <MenuItem class="javax.swing.JMenuItem" name="jMenuItemLogout">
+            <MenuItem class="javax.swing.JPopupMenu$Separator" name="separatorProfile">
+            </MenuItem>
+            <MenuItem class="javax.swing.JMenuItem" name="optionLogout">
               <Properties>
                 <Property name="text" type="java.lang.String" value="Tancar sessi&#xf3;"/>
               </Properties>
               <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItemLogoutActionPerformed"/>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="optionLogoutActionPerformed"/>
               </Events>
             </MenuItem>
           </SubComponents>

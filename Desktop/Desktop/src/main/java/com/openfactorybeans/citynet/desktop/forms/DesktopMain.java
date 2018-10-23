@@ -63,15 +63,18 @@ public class DesktopMain extends javax.swing.JFrame {
         jDesktop = new javax.swing.JDesktopPane();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenuUsers = new javax.swing.JMenu();
-        jMenuItemAddUser = new javax.swing.JMenuItem();
-        jMenuItemModifyUser = new javax.swing.JMenuItem();
-        jSeparator1 = new javax.swing.JPopupMenu.Separator();
-        jMenuItemListUsers = new javax.swing.JMenuItem();
+        optionAddUser = new javax.swing.JMenuItem();
+        separatorUsers = new javax.swing.JPopupMenu.Separator();
+        optionListUsers = new javax.swing.JMenuItem();
         jMenuContainers = new javax.swing.JMenu();
+        opctionAddContainer = new javax.swing.JMenuItem();
+        separatorContainers = new javax.swing.JPopupMenu.Separator();
+        optionListContainers = new javax.swing.JMenuItem();
         jMenuMyMenu = new javax.swing.JMenu();
-        jMenuItemDataUser = new javax.swing.JMenuItem();
-        jSeparator2 = new javax.swing.JPopupMenu.Separator();
-        jMenuItemLogout = new javax.swing.JMenuItem();
+        optionModifyUserProfile = new javax.swing.JMenuItem();
+        optionChangePass = new javax.swing.JMenuItem();
+        separatorProfile = new javax.swing.JPopupMenu.Separator();
+        optionLogout = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -88,44 +91,57 @@ public class DesktopMain extends javax.swing.JFrame {
 
         jMenuUsers.setText("Usuaris");
 
-        jMenuItemAddUser.setText("Afegir");
-        jMenuItemAddUser.addActionListener(new java.awt.event.ActionListener() {
+        optionAddUser.setText("Afegir usuari");
+        optionAddUser.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItemAddUserActionPerformed(evt);
+                optionAddUserActionPerformed(evt);
             }
         });
-        jMenuUsers.add(jMenuItemAddUser);
+        jMenuUsers.add(optionAddUser);
+        jMenuUsers.add(separatorUsers);
 
-        jMenuItemModifyUser.setText("Modificar");
-        jMenuUsers.add(jMenuItemModifyUser);
-        jMenuUsers.add(jSeparator1);
-
-        jMenuItemListUsers.setText("Llistar");
-        jMenuItemListUsers.addActionListener(new java.awt.event.ActionListener() {
+        optionListUsers.setText("Llistar usuaris");
+        optionListUsers.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItemListUsersActionPerformed(evt);
+                optionListUsersActionPerformed(evt);
             }
         });
-        jMenuUsers.add(jMenuItemListUsers);
+        jMenuUsers.add(optionListUsers);
 
         jMenuBar1.add(jMenuUsers);
 
         jMenuContainers.setText("Contenidors");
+
+        opctionAddContainer.setText("Afegir contenidor");
+        jMenuContainers.add(opctionAddContainer);
+        jMenuContainers.add(separatorContainers);
+
+        optionListContainers.setText("Llistar contenidors");
+        jMenuContainers.add(optionListContainers);
+
         jMenuBar1.add(jMenuContainers);
 
-        jMenuMyMenu.setText("El meu menú");
+        jMenuMyMenu.setText("Perfil usuari");
 
-        jMenuItemDataUser.setText("Modificar dades");
-        jMenuMyMenu.add(jMenuItemDataUser);
-        jMenuMyMenu.add(jSeparator2);
+        optionModifyUserProfile.setText("Modificar dades");
+        jMenuMyMenu.add(optionModifyUserProfile);
 
-        jMenuItemLogout.setText("Tancar sessió");
-        jMenuItemLogout.addActionListener(new java.awt.event.ActionListener() {
+        optionChangePass.setText("Canviar contrasenya");
+        optionChangePass.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItemLogoutActionPerformed(evt);
+                optionChangePassActionPerformed(evt);
             }
         });
-        jMenuMyMenu.add(jMenuItemLogout);
+        jMenuMyMenu.add(optionChangePass);
+        jMenuMyMenu.add(separatorProfile);
+
+        optionLogout.setText("Tancar sessió");
+        optionLogout.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                optionLogoutActionPerformed(evt);
+            }
+        });
+        jMenuMyMenu.add(optionLogout);
 
         jMenuBar1.add(jMenuMyMenu);
 
@@ -145,7 +161,7 @@ public class DesktopMain extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jMenuItemListUsersActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemListUsersActionPerformed
+    private void optionListUsersActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_optionListUsersActionPerformed
         
         //Netejem qualsevol finestra oberta anteriorment en l'escrptori
         jDesktop.removeAll();
@@ -167,9 +183,9 @@ public class DesktopMain extends javax.swing.JFrame {
         //El fem visible
         userList.setVisible(true);
         
-    }//GEN-LAST:event_jMenuItemListUsersActionPerformed
+    }//GEN-LAST:event_optionListUsersActionPerformed
 
-    private void jMenuItemLogoutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemLogoutActionPerformed
+    private void optionLogoutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_optionLogoutActionPerformed
         
         //Anulem les dades de sessió
         Login.token = null;
@@ -179,9 +195,9 @@ public class DesktopMain extends javax.swing.JFrame {
         Login login = new Login();
         this.setVisible(false);
         login.setVisible(true);
-    }//GEN-LAST:event_jMenuItemLogoutActionPerformed
+    }//GEN-LAST:event_optionLogoutActionPerformed
 
-    private void jMenuItemAddUserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemAddUserActionPerformed
+    private void optionAddUserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_optionAddUserActionPerformed
         
         //Netejem qualsevol finestra oberta anteriorment en l'escrptori
         jDesktop.removeAll();
@@ -194,13 +210,32 @@ public class DesktopMain extends javax.swing.JFrame {
         jDesktop.add(userAdd);
         
         //Centrem la finestra
-        FormsUtils.centerWindow(jDesktop, userAdd);
+        FormsUtils.centerDesktop(jDesktop, userAdd);
         
         //El fem visible
         userAdd.setVisible(true);
         
+    }//GEN-LAST:event_optionAddUserActionPerformed
+
+    private void optionChangePassActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_optionChangePassActionPerformed
         
-    }//GEN-LAST:event_jMenuItemAddUserActionPerformed
+        //Netejem qualsevol finestra oberta anteriorment en l'escrptori
+        jDesktop.removeAll();
+        jDesktop.repaint();
+        
+        //Instanciem el JFrame CanviarContrasenya
+        UserChangePassword userChangePass = new UserChangePassword();
+        
+        //Afegim el formulari de canviar la contrasenya a l'escriptori
+        jDesktop.add(userChangePass);
+        
+        //Centrem la finestra
+        FormsUtils.centerDesktop(jDesktop, userChangePass);
+        
+        //El fem visible
+        userChangePass.setVisible(true);
+        
+    }//GEN-LAST:event_optionChangePassActionPerformed
 
     /**
      * @param args the command line arguments
@@ -241,7 +276,7 @@ public class DesktopMain extends javax.swing.JFrame {
      * Mètode per centrar els jInternalFrame dintre d'un jDesktopPane
      * @param internalFrame que es vol centrar
      */
-    /*public void centerWindow(JInternalFrame internalFrame) {
+    /*public void centerDesktop(JInternalFrame internalFrame) {
         
         //Obtenim els valors x, y amb la mida de l'escriptori dividit per 2 menys la mida del jInternalFrame dividit per 2
         int x = (jDesktop.getWidth() / 2) - (internalFrame.getWidth() / 2);
@@ -256,14 +291,17 @@ public class DesktopMain extends javax.swing.JFrame {
     private javax.swing.JDesktopPane jDesktop;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenu jMenuContainers;
-    private javax.swing.JMenuItem jMenuItemAddUser;
-    private javax.swing.JMenuItem jMenuItemDataUser;
-    private javax.swing.JMenuItem jMenuItemListUsers;
-    private javax.swing.JMenuItem jMenuItemLogout;
-    private javax.swing.JMenuItem jMenuItemModifyUser;
     private javax.swing.JMenu jMenuMyMenu;
     private javax.swing.JMenu jMenuUsers;
-    private javax.swing.JPopupMenu.Separator jSeparator1;
-    private javax.swing.JPopupMenu.Separator jSeparator2;
+    private javax.swing.JMenuItem opctionAddContainer;
+    private javax.swing.JMenuItem optionAddUser;
+    private javax.swing.JMenuItem optionChangePass;
+    private javax.swing.JMenuItem optionListContainers;
+    private javax.swing.JMenuItem optionListUsers;
+    private javax.swing.JMenuItem optionLogout;
+    private javax.swing.JMenuItem optionModifyUserProfile;
+    private javax.swing.JPopupMenu.Separator separatorContainers;
+    private javax.swing.JPopupMenu.Separator separatorProfile;
+    private javax.swing.JPopupMenu.Separator separatorUsers;
     // End of variables declaration//GEN-END:variables
 }

@@ -19,13 +19,19 @@ public class Login extends javax.swing.JFrame {
     //Variables de sessió
     public static String token;
     public static String rol;
+    
+    //Comptador d'intents
+    int attempts = 0;
 
     /**
      * Creates new form Login
      */
+    
     public Login() {
         initComponents();
         setLocationRelativeTo(null);
+        
+        txtUser.requestFocus();
     }
 
     /**
@@ -83,6 +89,8 @@ public class Login extends javax.swing.JFrame {
 
         txtUser.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
         txtUser.setForeground(new java.awt.Color(0, 0, 0));
+        txtUser.setToolTipText("Email");
+        txtUser.setNextFocusableComponent(pswPassword);
 
         lblPassword.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
         lblPassword.setForeground(new java.awt.Color(255, 255, 255));
@@ -90,6 +98,7 @@ public class Login extends javax.swing.JFrame {
 
         pswPassword.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
         pswPassword.setForeground(new java.awt.Color(0, 0, 0));
+        pswPassword.setNextFocusableComponent(btnLogin);
 
         lblMessages.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
         lblMessages.setForeground(new java.awt.Color(102, 0, 0));
@@ -213,6 +222,12 @@ public class Login extends javax.swing.JFrame {
             
             //Identificació amb errors
             lblMessages.setText("Dades incorrectes");
+            
+            attempts++;
+            
+            if (attempts > 2) {
+                this.dispose();
+            }
             
         }
 
