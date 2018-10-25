@@ -1,14 +1,11 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.openfactorybeans.citynet.desktop.forms;
 
 import com.openfactorybeans.citynet.desktop.users.UpdateUserRol;
+import javax.swing.JTable;
 
 /**
- *
+ * Formulari per canviar el rol d'un usuari
+ * 
  * @author Jose
  */
 public class UserUpdateRol extends javax.swing.JInternalFrame {
@@ -166,8 +163,20 @@ public class UserUpdateRol extends javax.swing.JInternalFrame {
 
     private void btnNewUserLevelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNewUserLevelActionPerformed
 
-        //Obtenim els valor del nou rol
-        rol = cbxUserLevel.getSelectedItem().toString();
+        //Obtenim els index del nou rol
+        int rolIndex = cbxUserLevel.getSelectedIndex();
+        switch (rolIndex) {
+            case 0:
+                rol = "user";
+                break;
+                
+            case 1:
+                rol = "editor";
+                break;
+                
+            case 2:
+                rol = "admin";
+        }
         
         ////////////////////////////////////////////////////////////////////////////
         //Conectem amb el servidor per eliminar un usuari
@@ -183,6 +192,7 @@ public class UserUpdateRol extends javax.swing.JInternalFrame {
 
         //Tanquem el formulari
         this.dispose();
+        
     }//GEN-LAST:event_btnCancelActionPerformed
 
 

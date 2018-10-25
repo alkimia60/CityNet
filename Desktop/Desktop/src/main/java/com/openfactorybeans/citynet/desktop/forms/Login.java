@@ -1,14 +1,10 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.openfactorybeans.citynet.desktop.forms;
 
 import com.openfactorybeans.citynet.desktop.users.UserLogin;
 
 /**
- *
+ * Classe principal de l'aplicació
+ * 
  * @author Jose
  */
 public class Login extends javax.swing.JFrame {
@@ -226,7 +222,7 @@ public class Login extends javax.swing.JFrame {
             attempts++;
             
             if (attempts > 2) {
-                this.dispose();
+                System.exit(0);
             }
             
         }
@@ -235,7 +231,7 @@ public class Login extends javax.swing.JFrame {
 
     private void btnNewUserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNewUserActionPerformed
         
-        //Instanciem el JFram de nou usuari
+        //Instanciem el JFrame de nou usuari
         NewUser newUser = new NewUser();
         newUser.setVisible(true);
         this.setVisible(false);

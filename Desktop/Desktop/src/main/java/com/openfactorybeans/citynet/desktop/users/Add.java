@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.openfactorybeans.citynet.desktop.users;
 
 import java.io.IOException;
@@ -24,7 +19,8 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 
 /**
- *
+ * Codificació afegir un nou usuari a la base de dades del servidor
+ * 
  * @author Jose
  */
 public class Add {
@@ -47,8 +43,6 @@ public class Add {
 
             httpPost.setEntity(new UrlEncodedFormEntity(nvps));
 
-            System.out.println("Executing request " + httpPost.getRequestLine());
-
             // Create a custom response handler
             ResponseHandler<String> responseHandler = new ResponseHandler<String>() {
 
@@ -67,8 +61,8 @@ public class Add {
             };
             
             String responseBody = httpclient.execute(httpPost, responseHandler);
-            System.out.println("----------------------------------------");
-            System.out.println(responseBody);
+            //System.out.println("----------------------------------------");
+            //System.out.println(responseBody);
             return responseBody;
 
         } catch (Exception ex) {

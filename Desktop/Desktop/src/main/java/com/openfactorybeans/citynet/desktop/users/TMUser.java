@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.openfactorybeans.citynet.desktop.users;
 
 import java.util.List;
@@ -10,7 +5,8 @@ import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
 
 /**
- *
+ * Codificació per definir la taula d'usuaris (Table Model)
+ * 
  * @author Jose
  */
 public class TMUser implements TableModel {

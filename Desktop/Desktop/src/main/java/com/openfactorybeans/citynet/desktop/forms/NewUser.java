@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.openfactorybeans.citynet.desktop.forms;
 
 import com.openfactorybeans.citynet.desktop.errors.ErrorForm;
@@ -11,7 +6,9 @@ import com.openfactorybeans.citynet.desktop.users.User;
 import java.awt.Color;
 
 /**
- *
+ * Formulari d'alta de nous usuaris
+ * S'ha arribat a partir de la pantalla de login
+ * 
  * @author Jose
  */
 public class NewUser extends javax.swing.JFrame {
@@ -41,9 +38,8 @@ public class NewUser extends javax.swing.JFrame {
         initialStateForm();
     }
     
-        /**
-     * Estat inicial del formulari amb els camps sense dades i
-     * el panel de missatges ocult
+    /**
+     * Estat inicial del formulari amb els camps sense dades i el panel de missatges ocult
      */
     public void initialStateForm() {
         
@@ -59,11 +55,11 @@ public class NewUser extends javax.swing.JFrame {
         
     }
     
-        /**
-     * Verifica que els camps són correctes per afegir l'usuari.
-     * En cas contrari, mostrarà un missatge d'error.
-     * @return errors Serà true si no hi ha errors i false si hi ha errors
-     */
+    /**
+    * Verifica que els camps són correctes per afegir l'usuari.
+    * En cas contrari, mostrarà un missatge d'error.
+    * @return errors Serà true si no hi ha errors i false si hi ha errors
+    */
         public ErrorForm checkForm() {
         
         //Posem els errors a false

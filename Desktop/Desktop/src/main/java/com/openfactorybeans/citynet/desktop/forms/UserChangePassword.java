@@ -1,14 +1,10 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.openfactorybeans.citynet.desktop.forms;
 
 import com.openfactorybeans.citynet.desktop.users.ChangePassword;
 
 /**
- *
+ * Formulari per canviar la contrasenya
+ * 
  * @author Jose
  */
 public class UserChangePassword extends javax.swing.JInternalFrame {

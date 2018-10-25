@@ -16,7 +16,8 @@ import java.util.List;
 import java.util.logging.Level;
 
 /**
- *
+ * Codificació d'utilitats json
+ * 
  * @author Jose
  */
 public class JsonUtils {

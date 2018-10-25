@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.openfactorybeans.citynet.desktop.forms;
 
 import com.openfactorybeans.citynet.desktop.users.ListAllUsers;
@@ -15,7 +10,8 @@ import java.util.List;
 import javax.swing.JOptionPane;
 
 /**
- *
+ * Formulari que llista els usuaris i dona més opcios per fer accions
+ * 
  * @author Jose
  */
 public class UsersList extends javax.swing.JInternalFrame {
@@ -107,7 +103,7 @@ public class UsersList extends javax.swing.JInternalFrame {
     }
     
     /**
-     * Mètode per canviar l'estat dels botosn d'avanç i enrederir
+     * Mètode per canviar l'estat dels botons d'avançar i enrederir
      * segons les dades rebudes pel servidor
      */
     public void buttonsStates() {
@@ -115,22 +111,22 @@ public class UsersList extends javax.swing.JInternalFrame {
         //Habilitem o deshabiitem el botó per enrederir
         if (screen == 0) {
             
-            btnPageMinus.setEnabled(false);
+            btnRePag.setEnabled(false);
             
         } else {
             
-            btnPageMinus.setEnabled(true);
+            btnRePag.setEnabled(true);
             
         }
         
         //Habilitem o deshabiitem el botó per avanç
         if (endList) {
             
-            btnPagePlus.setEnabled(false);
+            btnAvPag.setEnabled(false);
             
         } else {
             
-            btnPagePlus.setEnabled(true);
+            btnAvPag.setEnabled(true);
             
         }
         
@@ -150,8 +146,8 @@ public class UsersList extends javax.swing.JInternalFrame {
         jPanelOptions = new javax.swing.JPanel();
         jSeparator1 = new javax.swing.JSeparator();
         jPanelAvRe = new javax.swing.JPanel();
-        btnPageMinus = new javax.swing.JButton();
-        btnPagePlus = new javax.swing.JButton();
+        btnRePag = new javax.swing.JButton();
+        btnAvPag = new javax.swing.JButton();
         jPanelActions = new javax.swing.JPanel();
         btnModify = new javax.swing.JButton();
         btnDelete = new javax.swing.JButton();
@@ -199,29 +195,34 @@ public class UsersList extends javax.swing.JInternalFrame {
                 return canEdit [columnIndex];
             }
         });
+        jTableUsers.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                jTableUsersFocusGained(evt);
+            }
+        });
         jScrollPane1.setViewportView(jTableUsers);
 
         jSeparator1.setOrientation(javax.swing.SwingConstants.VERTICAL);
 
-        btnPageMinus.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
-        btnPageMinus.setText("<<");
-        btnPageMinus.setMaximumSize(new java.awt.Dimension(90, 35));
-        btnPageMinus.setMinimumSize(new java.awt.Dimension(90, 35));
-        btnPageMinus.setPreferredSize(new java.awt.Dimension(90, 35));
-        btnPageMinus.addActionListener(new java.awt.event.ActionListener() {
+        btnRePag.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        btnRePag.setText("<<");
+        btnRePag.setMaximumSize(new java.awt.Dimension(90, 35));
+        btnRePag.setMinimumSize(new java.awt.Dimension(90, 35));
+        btnRePag.setPreferredSize(new java.awt.Dimension(90, 35));
+        btnRePag.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnPageMinusActionPerformed(evt);
+                btnRePagActionPerformed(evt);
             }
         });
 
-        btnPagePlus.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
-        btnPagePlus.setText(">>");
-        btnPagePlus.setMaximumSize(new java.awt.Dimension(90, 35));
-        btnPagePlus.setMinimumSize(new java.awt.Dimension(90, 35));
-        btnPagePlus.setPreferredSize(new java.awt.Dimension(90, 35));
-        btnPagePlus.addActionListener(new java.awt.event.ActionListener() {
+        btnAvPag.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        btnAvPag.setText(">>");
+        btnAvPag.setMaximumSize(new java.awt.Dimension(90, 35));
+        btnAvPag.setMinimumSize(new java.awt.Dimension(90, 35));
+        btnAvPag.setPreferredSize(new java.awt.Dimension(90, 35));
+        btnAvPag.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnPagePlusActionPerformed(evt);
+                btnAvPagActionPerformed(evt);
             }
         });
 
@@ -231,9 +232,9 @@ public class UsersList extends javax.swing.JInternalFrame {
             jPanelAvReLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanelAvReLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(btnPageMinus, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(btnRePag, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btnPagePlus, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(btnAvPag, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanelAvReLayout.setVerticalGroup(
@@ -241,8 +242,8 @@ public class UsersList extends javax.swing.JInternalFrame {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanelAvReLayout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(jPanelAvReLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnPageMinus, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnPagePlus, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(btnRePag, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnAvPag, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
         );
 
@@ -350,7 +351,7 @@ public class UsersList extends javax.swing.JInternalFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void btnPagePlusActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPagePlusActionPerformed
+    private void btnAvPagActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAvPagActionPerformed
         
         //Aumentem el número de pàgina per solicitar al servidor
         screen++;
@@ -389,9 +390,9 @@ public class UsersList extends javax.swing.JInternalFrame {
             
         }
         
-    }//GEN-LAST:event_btnPagePlusActionPerformed
+    }//GEN-LAST:event_btnAvPagActionPerformed
 
-    private void btnPageMinusActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPageMinusActionPerformed
+    private void btnRePagActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRePagActionPerformed
         
         //Aumentem el número de pàgina per solicitar al servidor
         screen--;
@@ -429,7 +430,7 @@ public class UsersList extends javax.swing.JInternalFrame {
             fillTable();
             
         }
-    }//GEN-LAST:event_btnPageMinusActionPerformed
+    }//GEN-LAST:event_btnRePagActionPerformed
 
     private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
 
@@ -489,7 +490,7 @@ public class UsersList extends javax.swing.JInternalFrame {
             //Passarem el nom complert
             String nameSurname = name + " " + surname;
             
-            //Netejem qualsevol finestra oberta anteriorment en l'escrptori
+            //Netejem qualsevol finestra oberta anteriorment en l'escriptori
             jPanelDetail.removeAll();
             jPanelDetail.repaint();
 
@@ -501,7 +502,7 @@ public class UsersList extends javax.swing.JInternalFrame {
 
             //Centrem la finestra
             FormsUtils.centerJInternalFrame(jPanelDetail, userUpdateRol);
-
+            
             //El fem visible
             userUpdateRol.setVisible(true);
         
@@ -514,13 +515,51 @@ public class UsersList extends javax.swing.JInternalFrame {
         
     }//GEN-LAST:event_btnChangeUserLevelActionPerformed
 
+    private void jTableUsersFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTableUsersFocusGained
+
+        ////////////////////////////////////////////////////////////////////////////
+        //Conectem amb el servidor per obtenir la pàgina anterior dels usuaris.
+        ////////////////////////////////////////////////////////////////////////////
+        lau = new ListAllUsers();
+        serverResponse = lau.listAllUsers(PUBLIC_URL, screen, Login.token);
+        
+        //Mirem si el servidor ha retornat un error
+        String serverMissage = JsonUtils.findJsonValue(serverResponse, "error");
+        
+        if (serverMissage.equals(NO_TOKEN)) {
+            
+            //No estem identificats
+            JOptionPane.showMessageDialog(null, "No s'ha iniciat cap sessió o la sessió ha finalitzat", "CityNet - Login", JOptionPane.ERROR_MESSAGE);
+            
+        } else {
+        
+            //Si són usaris
+            listUsersJSon = serverResponse;
+
+            //Passem el Json a ArrayList 
+            users = new ArrayList<>();
+            users = JsonUtils.parseJsonUser(listUsersJSon);
+
+            //Comprovem les dades control
+            endList = JsonUtils.parseJsonControl(listUsersJSon);
+
+            //Cridem al mètode per canviar l'estat dels botons
+            buttonsStates();
+
+            //Omplim la taula amb l'Array
+            fillTable();
+            
+        }
+        
+    }//GEN-LAST:event_jTableUsersFocusGained
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnAvPag;
     private javax.swing.JButton btnChangeUserLevel;
     private javax.swing.JButton btnDelete;
     private javax.swing.JButton btnModify;
-    private javax.swing.JButton btnPageMinus;
-    private javax.swing.JButton btnPagePlus;
+    private javax.swing.JButton btnRePag;
     private javax.swing.JPanel jPanelActions;
     private javax.swing.JPanel jPanelAvRe;
     private javax.swing.JPanel jPanelDetail;

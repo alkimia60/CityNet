@@ -110,6 +110,9 @@
               <TableHeader reorderingAllowed="true" resizingAllowed="true"/>
             </Property>
           </Properties>
+          <Events>
+            <EventHandler event="focusGained" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="jTableUsersFocusGained"/>
+          </Events>
         </Component>
       </SubComponents>
     </Container>
@@ -159,9 +162,9 @@
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="btnPageMinus" min="-2" max="-2" attributes="0"/>
+                      <Component id="btnRePag" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="btnPagePlus" min="-2" max="-2" attributes="0"/>
+                      <Component id="btnAvPag" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="32767" attributes="0"/>
                   </Group>
               </Group>
@@ -171,8 +174,8 @@
                   <Group type="102" alignment="1" attributes="0">
                       <EmptySpace max="32767" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="btnPageMinus" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="btnPagePlus" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="btnRePag" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="btnAvPag" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                   </Group>
@@ -180,7 +183,7 @@
             </DimensionLayout>
           </Layout>
           <SubComponents>
-            <Component class="javax.swing.JButton" name="btnPageMinus">
+            <Component class="javax.swing.JButton" name="btnRePag">
               <Properties>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Dialog" size="14" style="1"/>
@@ -197,10 +200,10 @@
                 </Property>
               </Properties>
               <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnPageMinusActionPerformed"/>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnRePagActionPerformed"/>
               </Events>
             </Component>
-            <Component class="javax.swing.JButton" name="btnPagePlus">
+            <Component class="javax.swing.JButton" name="btnAvPag">
               <Properties>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Dialog" size="14" style="1"/>
@@ -217,7 +220,7 @@
                 </Property>
               </Properties>
               <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnPagePlusActionPerformed"/>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnAvPagActionPerformed"/>
               </Events>
             </Component>
           </SubComponents>

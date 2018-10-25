@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.openfactorybeans.citynet.desktop.utils;
 
 import javax.swing.JDesktopPane;
@@ -10,11 +5,16 @@ import javax.swing.JInternalFrame;
 import javax.swing.JPanel;
 
 /**
- *
+ * Codificació d'utilitats dels formularis
  * @author Jose
  */
 public class FormsUtils {
     
+    /**
+     * Mètode per centrar les finestres en un desktop
+     * @param jDesktop L'escriptori on es vol centrar
+     * @param internalFrame La finestra que es vol centrar
+     */
     public static void centerDesktop(JDesktopPane jDesktop, JInternalFrame internalFrame) {
         
         //Obtenim els valors x, y amb la mida de l'escriptori dividit per 2 menys la mida del jInternalFrame dividit per 2
@@ -26,6 +26,11 @@ public class FormsUtils {
         
     }
     
+    /**
+     * Mètode per centrar les finestres en un panel
+     * @param jPanel El panel on el vol centrar
+     * @param jInternal La finestra que es vol centrar
+     */
     public static void centerJInternalFrame(JPanel jPanel, JInternalFrame jInternal) {
         
         //Obtenim els valors x, y amb la mida de l'escriptori dividit per 2 menys la mida del jInternalFrame dividit per 2

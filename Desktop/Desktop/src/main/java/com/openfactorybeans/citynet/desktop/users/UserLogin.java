@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.openfactorybeans.citynet.desktop.users;
 
 import com.openfactorybeans.citynet.desktop.forms.Login;
@@ -25,7 +20,8 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 
 /**
- *
+ * Codificació d'identificació d'un usuari a la base de dades del servidor per poder accedir a l'aplicació
+ * 
  * @author Jose
  */
 public class UserLogin {
@@ -40,7 +36,6 @@ public class UserLogin {
             
             httpPost.setEntity(new UrlEncodedFormEntity(nvps));
 
-            System.out.println("Executing request " + httpPost.getRequestLine());
 
             // Create a custom response handler
             ResponseHandler<String> responseHandler = new ResponseHandler<String>() {
@@ -59,7 +54,7 @@ public class UserLogin {
 
             };
             String responseBody = httpclient.execute(httpPost, responseHandler);
-            System.out.println(responseBody);
+            //System.out.println(responseBody);
             String error = JsonUtils.findJsonValue(responseBody, "error");
 
             if ((error == "No json data")

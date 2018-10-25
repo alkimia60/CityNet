@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.openfactorybeans.citynet.desktop.forms;
 
 import com.openfactorybeans.citynet.desktop.users.User;
@@ -42,12 +37,12 @@ public class DesktopMain extends javax.swing.JFrame {
             
         } else if (Login.rol.equals(User.UL_EDITOR)) {
             
-            //User Level "edior". Deshabilitem el menú d'usuaris
+            //User Level "editor". Deshabilitem el menú d'usuaris
             jMenuUsers.setVisible(false);
             
         }
         
-        //Si es admin ja están tots els menás activats
+        //Si es admin ja están tots els menús activats
         
     }
 
@@ -272,20 +267,6 @@ public class DesktopMain extends javax.swing.JFrame {
         });
     }
     
-    /**
-     * Mètode per centrar els jInternalFrame dintre d'un jDesktopPane
-     * @param internalFrame que es vol centrar
-     */
-    /*public void centerDesktop(JInternalFrame internalFrame) {
-        
-        //Obtenim els valors x, y amb la mida de l'escriptori dividit per 2 menys la mida del jInternalFrame dividit per 2
-        int x = (jDesktop.getWidth() / 2) - (internalFrame.getWidth() / 2);
-        int y = (jDesktop.getHeight() / 2) - (internalFrame.getHeight() / 2);
-        
-        //La posicionem al mig
-        internalFrame.setLocation(x, y);
-        
-    }*/
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JDesktopPane jDesktop;

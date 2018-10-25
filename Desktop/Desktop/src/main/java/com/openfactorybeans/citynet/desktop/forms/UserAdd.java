@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.openfactorybeans.citynet.desktop.forms;
 
 import com.openfactorybeans.citynet.desktop.errors.ErrorForm;
@@ -11,7 +6,9 @@ import com.openfactorybeans.citynet.desktop.users.User;
 import java.awt.Color;
 
 /**
- *
+ * Formulari per afegir un nou usuari
+ * S'ha arribat aquí a través de l'opció del menú usuari del escriptori
+ * 
  * @author Jose
  */
 public class UserAdd extends javax.swing.JInternalFrame {
@@ -561,6 +558,9 @@ public class UserAdd extends javax.swing.JInternalFrame {
             Add addUser = new Add();
             User user = new User(email, name, surname, address, postCode, city, password1);
             addUser.userRegister(user, UsersList.PUBLIC_URL);
+            
+            //Tanquem el formulari
+            this.dispose();
             
         } else if (errorForm.isRequired()) {
             
