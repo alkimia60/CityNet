@@ -10,8 +10,18 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ *
+ * Class of utilities for json Objects
+ */
 public class JsonUtils {
 
+    /**
+     * Find of a json key
+     * @param jsonData
+     * @param key
+     * @return value of the json key
+     */
     public static String findJsonValue(String jsonData, String key) {
         String value = "No json data";
         if (jsonData == null) {
