@@ -1,0 +1,3 @@
+- Desapareix ListAllUsers. Per a llistar tots els usuaris cal fer servir ListAllUsersFilter posant en el paràmetre "filter" = ""
+- Afegits i modificats alguns missatges d'error (afegit "User already exists" quan ja existeix l'usuari a la BD) 
+- Desapareix el servlet Login. Per a fer un login s'ha de fer servir el servlet UserManager amb el paràmetre "action" = "Login" Caldrà dons modificar la URL de la funció client per a fer el login (cal fer servir la URL de l'UserManager) i afegir-li aquest paràmetre "action" = "Login"

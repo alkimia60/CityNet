@@ -1,14 +1,11 @@
+/*
+ * @author Francisco Javier Diaz Garzon
+ */
 package citynet.controller;
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-import citynet.utils.AuthenticationUtils;
+import citynet.utils.AuthUtils;
 import citynet.utils.TextUtils;
 import citynet.dao.UserDao;
-import citynet.token.TokenUtils;
 import java.io.IOException;
 import java.io.PrintWriter;
 import javax.servlet.ServletException;
@@ -18,16 +15,12 @@ import javax.servlet.http.HttpServletResponse;
 
 /**
  *
- * @author diazg
+ * Servlet to manage user log in
  */
 public class Login extends HttpServlet {
 
-//    private final long TOKEN_EXP_TIME = 900000;
-    //private final UserDao ud = new UserDao();
-
     /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-     * methods.
+     * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
      *
      * @param request servlet request
      * @param response servlet response
@@ -37,30 +30,24 @@ public class Login extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("application/json;charset=UTF-8");
-        String reply = "";
-        TokenUtils token = new TokenUtils();
-        PrintWriter out = response.getWriter();
-        try {
-            String user = request.getParameter("user");
-            String password = request.getParameter("password");
+        String reply;
+        try (PrintWriter out = response.getWriter()) {
+            String user = request.getParameter("user"); //email of the user
+            String password = request.getParameter("password"); // password of the user
             UserDao ud = new UserDao();
-            if (ud.isValidUser(user)) {
-                String hashedPassword = ud.findUserHashedPassword(user);
-                AuthenticationUtils au = new AuthenticationUtils();
-                if (au.checkPass(password, hashedPassword)) {
-                    String rol = ud.findUserRol(user);
-                    reply = TextUtils.jsonTokenRolMessage(token.createJWT(user, TokenUtils.TOKEN_EXP_TIME), rol);
+            if (ud.isUserInDB(user)) { //Checks if the user is in the DB
+                String hashedPassword = ud.findUserHashedPassword(user); //Search the password hash in db
+                if (AuthUtils.checkPass(password, hashedPassword)) { //Checks if the passwords match
+                    String rol = ud.findUserRol(user); //Search the user role in db
+                    //Returns json with session token and user role
+                    reply = TextUtils.jsonTokenRolMessage(AuthUtils.createJWT(user, AuthUtils.TOKEN_EXP_TIME), rol);
                 } else {
-                    reply = TextUtils.jsonErrorMessage("Invalid password");
+                    reply = TextUtils.jsonErrorMessage("Invalid password"); //If the passwords dont match returns error
                 }
             } else {
-                reply = TextUtils.jsonErrorMessage("Invalid user");
+                reply = TextUtils.jsonErrorMessage("User does not exist");//If the user isnot in db returns error
             }
-        } catch (Exception e) {
-            reply = TextUtils.jsonErrorMessage("Can't log user");
-        } finally {
             out.append(reply);
-            out.close();
         }
     }
 

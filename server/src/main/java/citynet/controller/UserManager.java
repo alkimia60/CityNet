@@ -1,6 +1,5 @@
 /*
  * @author Francisco Javier Diaz Garzon
- * Main class to manage client requests
  */
 package citynet.controller;
 
@@ -15,14 +14,17 @@ import citynet.model.User;
 import citynet.utils.TextUtils;
 import java.util.List;
 import com.google.gson.Gson;
-import citynet.token.TokenUtils;
-import citynet.utils.AuthenticationUtils;
+import citynet.utils.AuthUtils;
 
+/**
+ *
+ * Servlet to manage User Object requests
+ */
 public class UserManager extends HttpServlet {
 
     private static final int LIST_INCREASE = 10; //number of rows to return
     private final UserDao ud = new UserDao();
-    //StringUtils su = new TextUtils();
+    private String token;
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -36,177 +38,124 @@ public class UserManager extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        String action;
+        String action;//Explanation of the request
 
         if (request.getParameter("action") != null) {
             action = request.getParameter("action");
-            String token;
             switch (action) {
-                case "ListAllUsers":
-                    token = request.getParameter("token");
-                    if (new TokenUtils().isValidToken(token)) {
-                        int screen;
-                        String screenStr = request.getParameter("screen");
-                        if (TextUtils.isInteger(screenStr)) {
-                            screen = Integer.parseInt(screenStr);
-                            replyListAllUsers(response, screen * LIST_INCREASE, LIST_INCREASE, "%");
-                        } else {
-                            sendMessage(response, TextUtils.jsonErrorMessage("Param. screen format exception"));
-                        }
-                    } else {
-                        sendMessage(response, TextUtils.jsonErrorMessage("Not a valid token"));
-                    }
+                //case "ListAllUsers":
+                case "ListAllUsersFilter":
+                    replyListAllUsers(request, response);
                     break;
                 case "UserRegister":
-                    replyUserRegister(response, request.getParameter("user"));
+                    replyUserRegister(request, response);
                     break;
                 case "UserDelete":
-                    token = request.getParameter("token");
-                    if (new TokenUtils().isValidToken(token)) {
-                        replyUserDelete(response, request.getParameter("user"));
-                    } else {
-                        sendMessage(response, TextUtils.jsonErrorMessage("Not a valid token"));
-                    }
+                    replyUserDelete(request, response);
                     break;
                 case "ChangePassword":
-                    token = request.getParameter("token");
-                    //Is valid token. Comprova si el token conté usuari i si l'usuari és a la BD
-                    if (new TokenUtils().isValidToken(token)) {
-                        String user = new TokenUtils().JWTTokenUser(token);
-                        String oldPassword = request.getParameter("oldPassword");
-                        String newPassword = request.getParameter("newPassword");
-                        //Busca el hash del password de l'usuari a la BD
-                        String hashedPassword = ud.findUserHashedPassword(user);
-                        AuthenticationUtils au = new AuthenticationUtils();
-                        //is valid password. Comprova el hash del password antic amb el de la BD
-                        if (au.checkPass(oldPassword, hashedPassword)) {
-                            replyChangePassword(response, user, newPassword);
-                        } else {
-                            sendMessage(response, TextUtils.jsonErrorMessage("Invalid password"));
-                        }
-                    } else {
-                        sendMessage(response, TextUtils.jsonErrorMessage("Not a valid token"));
-                    }
+                    replyChangePassword(request, response);
                     break;
                 case "AskUserProfile":
-                    token = request.getParameter("token");
-                    if (new TokenUtils().isValidToken(token)) {
-                        String user = new TokenUtils().JWTTokenUser(token); //Obté l'usuari del token
-                        //Obté les dades de l'usuari
-                        replyAskUserProfile(response, user);
-                    } else {
-                        sendMessage(response, TextUtils.jsonErrorMessage("Not a valid token"));
-                    }
+                    replyAskUserProfile(request, response);
                     break;
                 case "UpdateUserProfile":
-                    token = request.getParameter("token");
-                    if (new TokenUtils().isValidToken(token)) {
-                        String user = new TokenUtils().JWTTokenUser(token); //Obté l'usuari del token
-                        //Obté les dades a modificar de l'usuari
-                        String userData = request.getParameter("user");
-                        //Obté l'email identificador de l'usuari
-                        String userToDelete = TextUtils.findJsonValue(userData, "email");
-                        //Comprova si l'usuari a modificar és el mateix del token
-                        if (!user.equals(userToDelete)) {
-                            sendMessage(response, TextUtils.jsonErrorMessage("Wrong user"));
-                        } else {
-                            replyUpdateUserProfile(response, userData);
-                        }
-                    } else {
-                        sendMessage(response, TextUtils.jsonErrorMessage("Not a valid token"));
-                    }
+                    replyUpdateUserProfile(request, response);
                     break;
                 case "UpdateUserRol":
-                    token = request.getParameter("token");
-                    if (new TokenUtils().isValidToken(token)) {
-                        String user = request.getParameter("user");
-                        if (!ud.isValidUser(user)) {
-                            sendMessage(response, TextUtils.jsonErrorMessage("Not a valid user"));
-                        } else {
-                            String rol = request.getParameter("rol");
-                            replyUpdateUserRol(response, user, rol);
-                        }
-                    } else {
-                        sendMessage(response, TextUtils.jsonErrorMessage("Not a valid token"));
-                    }
+                    replyUpdateUserRol(request, response);
                     break;
-
-                case "ListAllUsersFilter":
-                    token = request.getParameter("token");
-                    String filter = request.getParameter("filter");
-                    if (new TokenUtils().isValidToken(token)) {
-                        int screen;
-                        String screenStr = request.getParameter("screen");
-                        if (TextUtils.isInteger(screenStr)) {
-                            screen = Integer.parseInt(screenStr);
-                            replyListAllUsers(response, screen * LIST_INCREASE, LIST_INCREASE, filter);
-                        } else {
-                            sendMessage(response, TextUtils.jsonErrorMessage("Param. screen format exception"));
-                        }
-                    } else {
-                        sendMessage(response, TextUtils.jsonErrorMessage("Not a valid token"));
-                    }
+                case "UserLogin":
+                    replyUserLogin(request, response);
                     break;
-
                 default:
-                    sendMessage(response, TextUtils.jsonErrorMessage("Param. action format exception"));
+                    sendMessage(response, TextUtils.jsonErrorMessage("Unknown action value"));
                     break;
             }
         } else {
-            sendMessage(response, TextUtils.jsonErrorMessage("Incorrect parameters"));
+            sendMessage(response, TextUtils.jsonErrorMessage("Null action parameter"));
         }
     }
 
+    /**
+     * Sends resonse to client
+     *
+     * @param response servlet response
+     * @param message String to return
+     * @throws IOException
+     */
     private void sendMessage(HttpServletResponse response, String message) throws IOException {
         try (PrintWriter out = response.getWriter()) {
             out.append(message);
         }
     }
 
-    private void replyListAllUsers(HttpServletResponse response, int n, int m, String filter) throws IOException {
-        response.setContentType("application/json;charset=UTF-8");
-        if (!filter.equals("admin") && !filter.equals("editor") && !filter.equals("user")) {
+    /**
+     *
+     * @param request servlet request
+     * @param response servlet response
+     * @throws IOException
+     */
+    private void replyListAllUsers(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        token = request.getParameter("token");
+        String filter = request.getParameter("filter");
+        if (filter == null) {//If there is no filter parameter, the filter = "%"
             filter = "%";
         }
-        StringBuilder reply = new StringBuilder();
-
-        List<User> users = ud.getAllUsers(n, m, filter);
-        if (users.isEmpty()) {
-            reply.append(TextUtils.jsonErrorMessage("No user results"));
-        } else {
-            //Is the beginning of the table?
-            if (n == 0) {
-                reply.append("{\"control\":[{\"start\":\"true\"},");
-            } else {
-                reply.append("{\"control\":[{\"start\":\"false\"},");
-            }
-
-            //Is the end of the table?
-            if (ud.totalUserRows() <= (n + m)) {
-                reply.append("{\"end\":\"true\"}],");
-            } else {
-                reply.append("{\"end\":\"false\"}],");
-            }
-
-            reply.append("\"users\":[");
-            for (int i = 0; i < users.size(); i++) {
-                if (i != 0) {
-                    reply.append(",");
+        if (AuthUtils.isValidToken(token)) {//Checks if token is valid and token user is in DB
+            int screen;
+            String screenStr = request.getParameter("screen");//Current screen
+            if (TextUtils.isInteger(screenStr)) {//Checks if screen value is int
+                screen = Integer.parseInt(screenStr);//Parse to int
+                response.setContentType("application/json;charset=UTF-8");
+                //If filter is not admin or editor or user, filter = "%"
+                if (!filter.equals("admin") && !filter.equals("editor") && !filter.equals("user")) {
+                    filter = "%";
                 }
-                reply.append("{\"email\":\"").append(users.get(i).getEmail()).append("\",")
-                        .append("\"name\":\"" + users.get(i).getName() + "\",")
-                        .append("\"surname\":\"" + users.get(i).getSurname() + "\",")
-                        .append("\"address\":\"" + users.get(i).getAddress() + "\",")
-                        .append("\"postcode\":\"" + users.get(i).getPostcode() + "\",")
-                        .append("\"city\":\"" + users.get(i).getCity() + "\",")
-                        .append("\"userLevel\":\"" + users.get(i).getUserLevel() + "\"}");
+                int n = screen * LIST_INCREASE;//Cursor position in the table
+                int m = LIST_INCREASE;//Number of rows to return
+                //Gets List<User> of 10 users
+                List<User> users = ud.getAllUsers(n, m, filter);
+                StringBuilder reply = new StringBuilder();
+                if (users.isEmpty()) {
+                    reply.append(TextUtils.jsonErrorMessage("No user results"));
+                } else {//json with control and users elements
+                    //Is the beginning of the table?
+                    if (n == 0) {
+                        reply.append("{\"control\":[{\"start\":\"true\"},");
+                    } else {
+                        reply.append("{\"control\":[{\"start\":\"false\"},");
+                    }
+                    //Is the end of the table?
+                    if (ud.totalUserRows(filter) <= (n + m)) {
+                        reply.append("{\"end\":\"true\"}],");
+                    } else {
+                        reply.append("{\"end\":\"false\"}],");
+                    }
+                    //Json users element
+                    reply.append("\"users\":[");
+                    for (int i = 0; i < users.size(); i++) {
+                        if (i != 0) {
+                            reply.append(",");
+                        }
+                        reply.append("{\"email\":\"").append(users.get(i).getEmail()).append("\",")
+                                .append("\"name\":\"" + users.get(i).getName() + "\",")
+                                .append("\"surname\":\"" + users.get(i).getSurname() + "\",")
+                                .append("\"address\":\"" + users.get(i).getAddress() + "\",")
+                                .append("\"postcode\":\"" + users.get(i).getPostcode() + "\",")
+                                .append("\"city\":\"" + users.get(i).getCity() + "\",")
+                                .append("\"userLevel\":\"" + users.get(i).getUserLevel() + "\"}");
+                    }
+                    reply.append("]}");
+                }
+                sendMessage(response, reply.toString());
+
+            } else {
+                sendMessage(response, TextUtils.jsonErrorMessage("Param. screen format exception"));
             }
-            reply.append("]}");
+        } else {
+            sendMessage(response, TextUtils.jsonErrorMessage("Not a valid token"));
         }
-        sendMessage(response, reply.toString());
-//        PrintWriter out = response.getWriter();
-//        out.append(reply);
-//        out.close();
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
@@ -249,46 +198,176 @@ public class UserManager extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-    private void replyUserRegister(HttpServletResponse response, String user) throws IOException {
-        response.setContentType("application/json;charset=UTF-8");
-        StringBuilder reply = new StringBuilder();
-        reply.append(ud.userRegister(user));
-        sendMessage(response, reply.toString());
+    /**
+     * Register new user in DB
+     *
+     * @param request servlet request
+     * @param response servlet response
+     * @throws IOException
+     */
+    private void replyUserRegister(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String userEmail = TextUtils.findJsonValue(request.getParameter("user"), "email");
+        if (ud.isUserInDB(userEmail)) {//Checks if user is in DB
+            sendMessage(response, TextUtils.jsonErrorMessage("User already exists"));
+        } else {
+            response.setContentType("application/json;charset=UTF-8");
+            StringBuilder reply = new StringBuilder();
+            reply.append(ud.userRegister(request.getParameter("user")));//Register new user in DB
+            sendMessage(response, reply.toString());
+        }
     }
 
-    private void replyUserDelete(HttpServletResponse response, String user) throws IOException {
-        response.setContentType("application/json;charset=UTF-8");
-        StringBuilder reply = new StringBuilder();
-        reply.append(ud.userDelete(user));
-        sendMessage(response, reply.toString());
+    /**
+     * //Delete user in DB
+     *
+     * @param request servlet request
+     * @param response servlet response
+     * @throws IOException
+     */
+    private void replyUserDelete(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        token = request.getParameter("token");
+        if (AuthUtils.isValidToken(token)) {//Checks if token is valid and token user is in DB
+            response.setContentType("application/json;charset=UTF-8");
+            StringBuilder reply = new StringBuilder();
+            reply.append(ud.userDelete(request.getParameter("user")));//Delete user in DB
+            sendMessage(response, reply.toString());
+        } else {
+            sendMessage(response, TextUtils.jsonErrorMessage("Not a valid token"));
+        }
     }
 
-    private void replyChangePassword(HttpServletResponse response, String user, String password) throws IOException {
-        response.setContentType("application/json;charset=UTF-8");
-        StringBuilder reply = new StringBuilder();
-        reply.append(ud.changePassword(user, password));
-        sendMessage(response, reply.toString());
+    /**
+     * //Updates logged user password in DB
+     *
+     * @param request servlet request
+     * @param response servlet response
+     * @throws IOException
+     */
+    private void replyChangePassword(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        token = request.getParameter("token");
+        if (AuthUtils.isValidToken(token)) {//Checks if token is valid and token user is in DB
+            String user = AuthUtils.JWTTokenUser(token);//Gets token user
+            String oldPassword = request.getParameter("oldPassword");
+            String newPassword = request.getParameter("newPassword");
+            if (newPassword.trim().isEmpty()) {
+                sendMessage(response, TextUtils.jsonErrorMessage("New password is empty"));
+            } else {
+                //Searchs the password hash of the user in the BD
+                String hashedPassword = ud.findUserHashedPassword(user);//Search the password hash in DB
+                //Checks the hash of the old password with the BD
+                if (AuthUtils.checkPass(oldPassword, hashedPassword)) {//Checks if the passwords match
+                    response.setContentType("application/json;charset=UTF-8");
+                    StringBuilder reply = new StringBuilder();
+                    reply.append(ud.changePassword(user, newPassword));//Updates password in DB
+                    sendMessage(response, reply.toString());
+                } else {
+                    sendMessage(response, TextUtils.jsonErrorMessage("Password does not match"));
+                }
+            }
+
+        } else {
+            sendMessage(response, TextUtils.jsonErrorMessage("Not a valid token"));
+        }
+
     }
 
-    private void replyAskUserProfile(HttpServletResponse response, String user) throws IOException {
-        response.setContentType("application/json;charset=UTF-8");
-        Gson gson = new Gson();
-        StringBuilder reply = new StringBuilder();
-        reply.append(gson.toJson(ud.findUserData(user)));
-        sendMessage(response, reply.toString());
+    /**
+     * Gets logged user profile data in json format
+     *
+     * @param request servlet request
+     * @param response servlet response
+     * @throws IOException
+     */
+    private void replyAskUserProfile(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        token = request.getParameter("token");
+        if (AuthUtils.isValidToken(token)) {//Checks if token is valid and token user is in DB
+            String user = AuthUtils.JWTTokenUser(token); //Gets token user
+            response.setContentType("application/json;charset=UTF-8");
+            Gson gson = new Gson();
+            StringBuilder reply = new StringBuilder();
+            reply.append(gson.toJson(ud.findUserData(user)));//Gets user profile data in json format
+            sendMessage(response, reply.toString());
+        } else {
+            sendMessage(response, TextUtils.jsonErrorMessage("Not a valid token"));
+        }
     }
 
-    private void replyUpdateUserProfile(HttpServletResponse response, String user) throws IOException {
-        response.setContentType("application/json;charset=UTF-8");
-        StringBuilder reply = new StringBuilder();
-        reply.append(ud.UpdateUserData(user));
-        sendMessage(response, reply.toString());
+    /**
+     * Updates logged user profile in DB
+     *
+     * @param request servlet request
+     * @param response servlet response
+     * @throws IOException
+     */
+    private void replyUpdateUserProfile(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        token = request.getParameter("token");
+        if (AuthUtils.isValidToken(token)) {//Checks if token is valid and token user is in DB
+            String user = AuthUtils.JWTTokenUser(token); //Gets token user
+            //Gets user data to update
+            String userData = request.getParameter("user");
+            //Gets mail of profile user to update
+            String userToDelete = TextUtils.findJsonValue(userData, "email");
+            //Checks if user to update and token user match
+            if (!user.equals(userToDelete)) {
+                sendMessage(response, TextUtils.jsonErrorMessage("Logged user different to profile user"));
+            } else {
+                response.setContentType("application/json;charset=UTF-8");
+                StringBuilder reply = new StringBuilder();
+                reply.append(ud.UpdateUserData(userData));//Updates user profile
+                sendMessage(response, reply.toString());
+            }
+        } else {
+            sendMessage(response, TextUtils.jsonErrorMessage("Not a valid token"));
+        }
+
     }
 
-    private void replyUpdateUserRol(HttpServletResponse response, String user, String rol) throws IOException {
+    /**
+     * Updates user role in DB
+     *
+     * @param request servlet request
+     * @param response servlet response
+     * @throws IOException
+     */
+    private void replyUpdateUserRol(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        token = request.getParameter("token");
+        if (AuthUtils.isValidToken(token)) {//Checks if token is valid and token user is in DB
+            String user = request.getParameter("user");
+            if (!ud.isUserInDB(user)) {//Checks if requested user is in DB
+                sendMessage(response, TextUtils.jsonErrorMessage("Not a valid user"));
+            } else {
+                String rol = request.getParameter("rol");
+                response.setContentType("application/json;charset=UTF-8");
+                StringBuilder reply = new StringBuilder();
+                reply.append(ud.UpdateUserRol(user, rol));//Updates user role
+                sendMessage(response, reply.toString());
+            }
+        } else {
+            sendMessage(response, TextUtils.jsonErrorMessage("Not a valid token"));
+        }
+    }
+
+    private void replyUserLogin(HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setContentType("application/json;charset=UTF-8");
-        StringBuilder reply = new StringBuilder();
-        reply.append(ud.UpdateUserRol(user, rol));
-        sendMessage(response, reply.toString());
+        String reply;
+        try (PrintWriter out = response.getWriter()) {
+            String user = request.getParameter("user"); //email of the user
+            String password = request.getParameter("password"); // password of the user
+            UserDao ud = new UserDao();
+            if (ud.isUserInDB(user)) { //Checks if the user is in the DB
+                String hashedPassword = ud.findUserHashedPassword(user); //Search the password hash in db
+                if (AuthUtils.checkPass(password, hashedPassword)) { //Checks if the passwords match
+                    String rol = ud.findUserRol(user); //Search the user role in db
+                    //Returns json with session token and user role
+                    reply = TextUtils.jsonTokenRolMessage(AuthUtils.createJWT(user, AuthUtils.TOKEN_EXP_TIME), rol);
+                } else {
+                    reply = TextUtils.jsonErrorMessage("Invalid password"); //If the passwords dont match returns error
+                }
+            } else {
+                reply = TextUtils.jsonErrorMessage("User does not exist");//If the user isnot in db returns error
+            }
+            out.append(reply);
+
+        }
     }
 }

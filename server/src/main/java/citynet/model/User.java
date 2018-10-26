@@ -1,10 +1,13 @@
 /**
  *
  * @author Francisco Javier Diaz Garzon
- * Class user model
  */
 package citynet.model;
 
+/**
+ *
+ * User model class
+ */
 public class User {
 
     private String email, password, name, surname, address, postcode, city, userLevel;
