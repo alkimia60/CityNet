@@ -5,16 +5,16 @@
         <servlet-class>citynet.controller.UserManager</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>Login</servlet-name>
-        <servlet-class>citynet.controller.Login</servlet-class>
+        <servlet-name>ContainerManager</servlet-name>
+        <servlet-class>citynet.controller.ContainerManager</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>UserManager</servlet-name>
         <url-pattern>/UserManager</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>Login</servlet-name>
-        <url-pattern>/Login</url-pattern>
+        <servlet-name>ContainerManager</servlet-name>
+        <url-pattern>/ContainerManager</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>

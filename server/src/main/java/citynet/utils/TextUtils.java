@@ -78,7 +78,7 @@ public class TextUtils {
             Iterator<JsonNode> elements = rootNode.elements();
             while (elements.hasNext()) {
                 JsonNode key = elements.next();
-                if (key.textValue().trim().isEmpty()) {
+                if (key.isTextual()&&key.textValue().trim().isEmpty()) {
                     return true;
                 }
             }

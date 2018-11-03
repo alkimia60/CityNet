@@ -43,7 +43,6 @@ public class UserManager extends HttpServlet {
         if (request.getParameter("action") != null) {
             action = request.getParameter("action");
             switch (action) {
-                //case "ListAllUsers":
                 case "ListAllUsersFilter":
                     replyListAllUsers(request, response);
                     break;
@@ -353,7 +352,7 @@ public class UserManager extends HttpServlet {
         try (PrintWriter out = response.getWriter()) {
             String user = request.getParameter("user"); //email of the user
             String password = request.getParameter("password"); // password of the user
-            UserDao ud = new UserDao();
+            //UserDao ud = new UserDao();
             if (ud.isUserInDB(user)) { //Checks if the user is in the DB
                 String hashedPassword = ud.findUserHashedPassword(user); //Search the password hash in db
                 if (AuthUtils.checkPass(password, hashedPassword)) { //Checks if the passwords match

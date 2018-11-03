@@ -1,3 +1,17 @@
-- Desapareix ListAllUsers. Per a llistar tots els usuaris cal fer servir ListAllUsersFilter posant en el par�metre "filter" = ""
-- Afegits i modificats alguns missatges d'error (afegit "User already exists" quan ja existeix l'usuari a la BD) 
-- Desapareix el servlet Login. Per a fer un login s'ha de fer servir el servlet UserManager amb el par�metre "action" = "Login" Caldr� dons modificar la URL de la funci� client per a fer el login (cal fer servir la URL de l'UserManager) i afegir-li aquest par�metre "action" = "Login"
+- action = ContainerRegister.
+    parameters:
+        String token    token de sessió
+        String id       identificador de 6 caracters alfanumèrics
+        String type     ha de ser un d'aquests {"paper", "glass", "packaging", "organic", "trash"}
+        double longitude   format p.e.: 41.38994598
+        double latitude    format p.e.: 2.22962594
+    return:
+        json amb ok o error
+- action = ListAllContainers
+    parameters:
+        String token        token de sessió
+        int screen          pantalla des de la que es demana el llistat
+        String filterField  columna per la que es vol filtrar. Si no és vàlida, ho mostra tot
+        String filterValue  valor del camp que es vol filtrar. Si no és vàlida, ho mostra tot
+    return:
+        json amb un llistat dels contenidors, filtrats, de 10 en 10, situant el cursor segons el paràmetre screen, i informació de si està al començament o no i al final o no de la llista.
