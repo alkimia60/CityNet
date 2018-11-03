@@ -27,10 +27,10 @@ class ClientRequests {
 
     private static final String LOCAL_URL = "http://localhost:8084/citynet/UserManager";
     private static final String PUBLIC_URL = "http://ec2-35-180-7-53.eu-west-3.compute.amazonaws.com:8080/citynet/UserManager";
-    private static final String URL = LOCAL_URL;
+    private static final String URL = PUBLIC_URL;
 
-    private static String token; //Session token
-    private static String rol;  //User role
+    public static String token; //Session token
+    public static String rol;  //User role
 
     public final static void main(String[] args) {
 
@@ -46,7 +46,7 @@ class ClientRequests {
         //Register a user as a user object
         //cr.userRegister(URL, user);
         //User login
-        cr.userLogin(URL, "diazgx9@diba.cat", "nou");
+        cr.userLogin(URL, "diazgx@diba.cat", "xavixavi");
         //Unsubscribe a user by email
         //cr.userDelete(URL, token, "diazgx9@diba.cat");
         //Change Password
@@ -174,7 +174,7 @@ class ClientRequests {
      * @param password password of the user to login
      * @return boolean true of false whether log in or not
      */
-    private boolean userLogin(String url, String user, String password) {
+    public boolean userLogin(String url, String user, String password) {
         try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
             HttpPost httpPost = new HttpPost(url);
             //List of paràmeters to send
@@ -325,8 +325,7 @@ class ClientRequests {
      * @param url servlet location
      * @param token session token
      * @param screen current application screen number, starting with 0
-     * @param filter User role for which you want to filter ("admin", "editor",
-     * "user" or any word for all users)
+     * @param filter User role for which you want to filter ("admin", "editor", "user" or any word for all users)
      * @return json String with elements startOfTable, endOfTable and the user
      * objects
      */
