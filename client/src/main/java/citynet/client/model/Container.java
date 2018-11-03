@@ -17,7 +17,7 @@ public class Container {
     public Container() {
     }
 
-    public Container(String id, String type, int latitude, int longitude) {
+    public Container(String id, String type, double latitude, double longitude) {
         this.id = id;
         this.type = type;
         this.latitude = latitude;
@@ -28,7 +28,7 @@ public class Container {
         return latitude;
     }
 
-    public void setLatitude(int latitude) {
+    public void setLatitude(double latitude) {
         this.latitude = latitude;
     }
 
@@ -36,7 +36,7 @@ public class Container {
         return longitude;
     }
 
-    public void setLongitude(int longitude) {
+    public void setLongitude(double longitude) {
         this.longitude = longitude;
     }
 

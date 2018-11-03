@@ -27,7 +27,7 @@ public class ContainerRequests {
 
     private static final String LOCAL_URL = "http://localhost:8084/citynet/ContainerManager";
     private static final String PUBLIC_URL = "http://ec2-35-180-7-53.eu-west-3.compute.amazonaws.com:8080/citynet/ContainerManager";
-    private static final String URL = LOCAL_URL;
+    private static final String URL = PUBLIC_URL;
     private static String sessionToken; //Session token
 
     public final static void main(String[] args) {
@@ -37,10 +37,10 @@ public class ContainerRequests {
         sessionToken = ClientRequests.token;
 
         //Container to register
-        Container container = new Container("aaa333", Container.CONTAINER_TYPES[0], 25, 8);
+        Container container = new Container("CCC999", Container.CONTAINER_TYPES[4], 41.454545, 2.4545454);
         ContainerRequests contRqsts = new ContainerRequests();
         //Register container
-        //contRqsts.containerRegister(URL, sessionToken, container);
+        contRqsts.containerRegister(URL, sessionToken, container);
         //List all Containers with filter
         contRqsts.listAllContainersFilter(URL, sessionToken, 0, "type", "trash");
         
