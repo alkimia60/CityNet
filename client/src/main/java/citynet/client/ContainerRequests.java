@@ -42,14 +42,17 @@ public class ContainerRequests {
         //Register container
         contRqsts.containerRegister(URL, sessionToken, container);
         //List all Containers with filter
-        contRqsts.listAllContainersFilter(URL, sessionToken, 0, "type", "trash");
+        contRqsts.listAllContainers(URL, sessionToken, 0, "type", "trash");
+        //Find Container Incident by container id
+        contRqsts.containerIncident(URL, sessionToken, container.getId());
         
     }
 
+ 
     /**
      * Function to request the registration of a container
-     *
      * @param url Servlet location
+     * @param sessionToken 
      * @param container Container object to register
      * @return json String with elements "ok" or "error"
      */
@@ -104,23 +107,23 @@ public class ContainerRequests {
     }
 
     /**
-     * Function to request 10 rows of all containers ordered by id by user role
+     * Function to request 10 rows of all containers ordered by id
      *
      * @param url servlet location
-     * @param token session token
+     * @param sessionToken session token
      * @param screen current application screen number, starting with 0
      * @param filterField field that want to be filtered. If it is not valid, it shows everything
      * @param filterValue value of the field for which it is to be filtered. If it is not valid, it shows everything
      * @return json String with elements startOfTable, endOfTable and the
      * filtered containers objects
      */
-    private String listAllContainersFilter(String url, String token, int screen, String filterField, String filterValue) {
+    private String listAllContainers(String url, String sessionToken, int screen, String filterField, String filterValue) {
         try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
             HttpPost httpPost = new HttpPost(url);
             //List of paràmeters to send
             List<NameValuePair> nvps = new ArrayList<>();
             nvps.add(new BasicNameValuePair("action", "ListAllContainers"));
-            nvps.add(new BasicNameValuePair("token", token));
+            nvps.add(new BasicNameValuePair("token", sessionToken));
             nvps.add(new BasicNameValuePair("screen", String.valueOf(screen)));
             nvps.add(new BasicNameValuePair("filterField", filterField));
             nvps.add(new BasicNameValuePair("filterValue", filterValue));
@@ -139,7 +142,41 @@ public class ContainerRequests {
             Logger.getLogger(ClientRequests.class
                     .getName()).log(Level.SEVERE, null, ex);
         }
-        return "Error listAllUsersFilter";
+        return "Error listAllContainers";
     }
 
+       /**
+     * Function to request the incident of a container
+     *
+     * @param url Servlet location
+     * @param containerId id of the container to find incident
+     * @return json String with incidnet or "error"
+     */
+    private String containerIncident(String url, String sessionToken, String containerId) {
+        try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
+            HttpPost httpPost = new HttpPost(url);
+            //Gson object to convert Container Object into String
+            Gson gson = new Gson();
+            //List of paràmeters to send
+            List<NameValuePair> nvps = new ArrayList<>();
+            nvps.add(new BasicNameValuePair("action", "ContainerIncident"));
+            nvps.add(new BasicNameValuePair("token", sessionToken));
+            nvps.add(new BasicNameValuePair("container", gson.toJson(containerId)));
+
+            httpPost.setEntity(new UrlEncodedFormEntity(nvps));
+
+            System.out.println("Executing request " + httpPost.getRequestLine());
+
+            // Create a custom response handler
+            String responseBody = httpclient.execute(httpPost, customResponseHandler());
+            System.out.println("----------------------------------------");
+            System.out.println(responseBody);
+            return responseBody; //Server response
+
+        } catch (Exception ex) {
+            Logger.getLogger(ClientRequests.class
+                    .getName()).log(Level.SEVERE, null, ex);
+        }
+        return "Error containerIncident";
+    }
 }
