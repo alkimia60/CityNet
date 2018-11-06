@@ -40,11 +40,11 @@ public class ContainerRequests {
         Container container = new Container("CCC999", Container.CONTAINER_TYPES[4], 41.454545, 2.4545454);
         ContainerRequests contRqsts = new ContainerRequests();
         //Register container
-        contRqsts.containerRegister(URL, sessionToken, container);
+        //contRqsts.containerRegister(URL, sessionToken, container);
         //List all Containers with filter
-        contRqsts.listAllContainers(URL, sessionToken, 0, "type", "trash");
-        //Find Container Incident by container id
-        contRqsts.containerIncident(URL, sessionToken, container.getId());
+        //contRqsts.listAllContainers(URL, sessionToken, 0, "type", "trash");
+        //Find Container open Incident by container id
+        contRqsts.containerIncident(URL, sessionToken, "CCC999");
         
     }
 
@@ -146,7 +146,7 @@ public class ContainerRequests {
     }
 
        /**
-     * Function to request the incident of a container
+     * Function to request the open incident of a container
      *
      * @param url Servlet location
      * @param containerId id of the container to find incident
@@ -161,7 +161,7 @@ public class ContainerRequests {
             List<NameValuePair> nvps = new ArrayList<>();
             nvps.add(new BasicNameValuePair("action", "ContainerIncident"));
             nvps.add(new BasicNameValuePair("token", sessionToken));
-            nvps.add(new BasicNameValuePair("container", gson.toJson(containerId)));
+            nvps.add(new BasicNameValuePair("containerId", containerId));
 
             httpPost.setEntity(new UrlEncodedFormEntity(nvps));
 
