@@ -20,6 +20,10 @@ public class UserUpdateRol extends javax.swing.JInternalFrame {
     
     /**
      * Creates new form UserUpdateRol
+     * 
+     * @param email
+     * @param name
+     * @param rol 
      */
     public UserUpdateRol(String email, String name, String rol) {
         initComponents();
@@ -191,7 +195,7 @@ public class UserUpdateRol extends javax.swing.JInternalFrame {
         //Conectem amb el servidor per canviar el rol d'un usuari
         ////////////////////////////////////////////////////////////////////////////
         UpdateUserRol updateUserRol = new UpdateUserRol();
-        serverResponse = updateUserRol.updateUserRol(UsersList.PUBLIC_URL, Login.token, email, rol);
+        serverResponse = updateUserRol.updateUserRol(Login.PUBLIC_URL_USERS, Login.token, email, rol);
         
         //Mirem el tipus de missatge que retorna el servidor
         serverMessageOK = JsonUtils.findJsonValue(serverResponse, "OK");

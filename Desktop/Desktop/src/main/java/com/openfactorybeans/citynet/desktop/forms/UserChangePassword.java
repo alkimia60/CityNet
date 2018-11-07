@@ -185,7 +185,7 @@ public class UserChangePassword extends javax.swing.JInternalFrame {
         //Conectem amb el servidor per canviar la contrasenya d'un usuari
         ////////////////////////////////////////////////////////////////////////////
         ChangePassword changePassUser = new ChangePassword();
-        serverResponse = changePassUser.changePassword(UsersList.PUBLIC_URL, Login.token, oldPass, newPass1);
+        serverResponse = changePassUser.changePassword(Login.PUBLIC_URL_USERS, Login.token, oldPass, newPass1);
         
         //Mirem el tipus de missatge que retorna el servidor
         serverMessageOK = JsonUtils.findJsonValue(serverResponse, "OK");

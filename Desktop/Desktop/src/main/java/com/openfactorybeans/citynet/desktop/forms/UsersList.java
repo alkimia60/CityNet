@@ -15,9 +15,6 @@ import javax.swing.JOptionPane;
  * @author Jose
  */
 public class UsersList extends javax.swing.JInternalFrame {
-
-    //URL
-    public static final String PUBLIC_URL = "http://ec2-35-180-7-53.eu-west-3.compute.amazonaws.com:8080/citynet/UserManager";
     
     //Variables finals del combobox del filtre
     private final String ALL = "all";
@@ -66,7 +63,7 @@ public class UsersList extends javax.swing.JInternalFrame {
         //Conectem amb el servidor per obtenir els usuaris.
         ////////////////////////////////////////////////////////////////////////////
         listUsers = new ListUsers();
-        serverResponse = listUsers.listUsers(PUBLIC_URL, Login.token, screen, filter);
+        serverResponse = listUsers.listUsers(Login.PUBLIC_URL_USERS, Login.token, screen, filter);
         
         //Mirem el tipus de missatge que retorna el servidor
         serverMessageOK = JsonUtils.findJsonValue(serverResponse, "users");
@@ -402,7 +399,7 @@ public class UsersList extends javax.swing.JInternalFrame {
         //Conectem amb el servidor per obtenir la pàgina següent dels usuaris.
         ////////////////////////////////////////////////////////////////////////////
         listUsers = new ListUsers();
-        serverResponse = listUsers.listUsers(PUBLIC_URL, Login.token, screen, filter);
+        serverResponse = listUsers.listUsers(Login.PUBLIC_URL_USERS, Login.token, screen, filter);
         
         //Mirem el tipus de missatge que retorna el servidor
         serverMessageOK = JsonUtils.findJsonValue(serverResponse, "users");
@@ -454,7 +451,7 @@ public class UsersList extends javax.swing.JInternalFrame {
         //Conectem amb el servidor per obtenir la pàgina anterior dels usuaris.
         ////////////////////////////////////////////////////////////////////////////
         listUsers = new ListUsers();
-        serverResponse = listUsers.listUsers(PUBLIC_URL, Login.token, screen, filter);
+        serverResponse = listUsers.listUsers(Login.PUBLIC_URL_USERS, Login.token, screen, filter);
         
         //Mirem el tipus de missatge que retorna el servidor
         serverMessageOK = JsonUtils.findJsonValue(serverResponse, "users");
@@ -614,7 +611,7 @@ public class UsersList extends javax.swing.JInternalFrame {
         //Conectem amb el servidor per obtenir la pàgina anterior dels usuaris.
         ////////////////////////////////////////////////////////////////////////////
         listUsers = new ListUsers();
-        serverResponse = listUsers.listUsers(PUBLIC_URL, Login.token, screen, filter);
+        serverResponse = listUsers.listUsers(Login.PUBLIC_URL_USERS, Login.token, screen, filter);
         
         //Mirem el tipus de missatge que retorna el servidor
         serverMessageOK = JsonUtils.findJsonValue(serverResponse, "users");

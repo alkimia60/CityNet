@@ -19,8 +19,13 @@ public class UserDelete extends javax.swing.JInternalFrame {
 
     /**
      * Creates new form UserDelete
+     * @param email
+     * @param name
+     * @param surname
+     * @param address
+     * @param postalCode
+     * @param city 
      */
-
     public UserDelete(String email, String name, String surname, String address, String postalCode, String city) {
         initComponents();
         
@@ -229,7 +234,7 @@ public class UserDelete extends javax.swing.JInternalFrame {
         //Conectem amb el servidor per eliminar un usuari
         ////////////////////////////////////////////////////////////////////////////
         DeleteUser deleteUser = new DeleteUser();
-        serverResponse = deleteUser.userDelete(UsersList.PUBLIC_URL, Login.token, email);
+        serverResponse = deleteUser.userDelete(Login.PUBLIC_URL_USERS, Login.token, email);
         
         System.out.println("Resposta server al eliminar usuari: " + serverResponse);
         
