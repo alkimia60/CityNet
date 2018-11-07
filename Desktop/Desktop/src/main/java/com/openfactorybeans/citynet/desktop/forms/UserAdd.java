@@ -1,8 +1,9 @@
 package com.openfactorybeans.citynet.desktop.forms;
 
-import com.openfactorybeans.citynet.desktop.errors.ErrorForm;
-import com.openfactorybeans.citynet.desktop.users.Add;
+import com.openfactorybeans.citynet.desktop.errors.ErrorUserForm;
+import com.openfactorybeans.citynet.desktop.users.AddUser;
 import com.openfactorybeans.citynet.desktop.users.User;
+import com.openfactorybeans.citynet.desktop.utils.JsonUtils;
 import java.awt.Color;
 
 /**
@@ -16,9 +17,10 @@ public class UserAdd extends javax.swing.JInternalFrame {
     //Inicialització missatges d'error
     final String REQUIRED = "Els camps són obligatoris o el format no és correcte";
     final String NOTSAME = "Les contrasenyes no són iguals";
+    //final String NOTREGISTERED = "User could not be registered";
     
     //Declaració dels errors
-    ErrorForm errorForm = new ErrorForm();
+    ErrorUserForm errorForm = new ErrorUserForm();
     
     //Declaració de variables dels camps del formulari
     String name, surname, address, postCode, city, email, password1, password2;
@@ -58,7 +60,7 @@ public class UserAdd extends javax.swing.JInternalFrame {
      * En cas contrari, mostrarà un missatge d'error.
      * @return errors Serà true si no hi ha errors i false si hi ha errors
      */
-        public ErrorForm checkForm() {
+        public ErrorUserForm checkForm() {
         
         //Posem els errors a false
         errorForm.setRequired(false);
@@ -230,7 +232,7 @@ public class UserAdd extends javax.swing.JInternalFrame {
     private void initComponents() {
 
         jPanelMain = new javax.swing.JPanel();
-        jPanelPerosnalInfo = new javax.swing.JPanel();
+        jPanelPersonalInfo = new javax.swing.JPanel();
         lblTitlePersonalInfo = new javax.swing.JLabel();
         jSeparator1 = new javax.swing.JSeparator();
         lblName = new javax.swing.JLabel();
@@ -296,58 +298,58 @@ public class UserAdd extends javax.swing.JInternalFrame {
         txtCity.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
         txtCity.setText("City");
 
-        javax.swing.GroupLayout jPanelPerosnalInfoLayout = new javax.swing.GroupLayout(jPanelPerosnalInfo);
-        jPanelPerosnalInfo.setLayout(jPanelPerosnalInfoLayout);
-        jPanelPerosnalInfoLayout.setHorizontalGroup(
-            jPanelPerosnalInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanelPerosnalInfoLayout.createSequentialGroup()
+        javax.swing.GroupLayout jPanelPersonalInfoLayout = new javax.swing.GroupLayout(jPanelPersonalInfo);
+        jPanelPersonalInfo.setLayout(jPanelPersonalInfoLayout);
+        jPanelPersonalInfoLayout.setHorizontalGroup(
+            jPanelPersonalInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanelPersonalInfoLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanelPerosnalInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanelPerosnalInfoLayout.createSequentialGroup()
+                .addGroup(jPanelPersonalInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanelPersonalInfoLayout.createSequentialGroup()
                         .addComponent(lblTitlePersonalInfo)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jSeparator1))
-                    .addGroup(jPanelPerosnalInfoLayout.createSequentialGroup()
-                        .addGroup(jPanelPerosnalInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanelPersonalInfoLayout.createSequentialGroup()
+                        .addGroup(jPanelPersonalInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(lblSurname)
                             .addComponent(lblName)
                             .addComponent(lblAddress)
                             .addComponent(lblPostCode))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanelPerosnalInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(jPanelPersonalInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(txtSurname)
                             .addComponent(txtAddress)
-                            .addGroup(jPanelPerosnalInfoLayout.createSequentialGroup()
+                            .addGroup(jPanelPersonalInfoLayout.createSequentialGroup()
                                 .addComponent(txtPostCode, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(18, 18, 18)
                                 .addComponent(lblCity)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(txtCity))
-                            .addGroup(jPanelPerosnalInfoLayout.createSequentialGroup()
+                            .addGroup(jPanelPersonalInfoLayout.createSequentialGroup()
                                 .addComponent(txtName, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(0, 0, Short.MAX_VALUE)))))
                 .addContainerGap())
         );
-        jPanelPerosnalInfoLayout.setVerticalGroup(
-            jPanelPerosnalInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanelPerosnalInfoLayout.createSequentialGroup()
-                .addGroup(jPanelPerosnalInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+        jPanelPersonalInfoLayout.setVerticalGroup(
+            jPanelPersonalInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanelPersonalInfoLayout.createSequentialGroup()
+                .addGroup(jPanelPersonalInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 11, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(lblTitlePersonalInfo))
                 .addGap(18, 18, 18)
-                .addGroup(jPanelPerosnalInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addGroup(jPanelPersonalInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblName)
                     .addComponent(txtName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
-                .addGroup(jPanelPerosnalInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addGroup(jPanelPersonalInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblSurname)
                     .addComponent(txtSurname, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
-                .addGroup(jPanelPerosnalInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addGroup(jPanelPersonalInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblAddress)
                     .addComponent(txtAddress, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
-                .addGroup(jPanelPerosnalInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addGroup(jPanelPersonalInfoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblPostCode)
                     .addComponent(txtPostCode, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(lblCity)
@@ -396,9 +398,7 @@ public class UserAdd extends javax.swing.JInternalFrame {
                         .addGroup(jPanelLoginLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(txtEmail, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(pswPass2, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(jPanelLoginLayout.createSequentialGroup()
-                                .addComponent(pswPass1, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(87, 87, 87)))))
+                            .addComponent(pswPass1, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addContainerGap())
         );
         jPanelLoginLayout.setVerticalGroup(
@@ -494,7 +494,7 @@ public class UserAdd extends javax.swing.JInternalFrame {
         jPanelMain.setLayout(jPanelMainLayout);
         jPanelMainLayout.setHorizontalGroup(
             jPanelMainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanelPerosnalInfo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(jPanelPersonalInfo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(jPanelLogin, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(jPanelMessages, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(jPanelButtons, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -502,7 +502,7 @@ public class UserAdd extends javax.swing.JInternalFrame {
         jPanelMainLayout.setVerticalGroup(
             jPanelMainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanelMainLayout.createSequentialGroup()
-                .addComponent(jPanelPerosnalInfo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jPanelPersonalInfo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(jPanelLogin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -542,6 +542,11 @@ public class UserAdd extends javax.swing.JInternalFrame {
 
     private void btnAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddActionPerformed
         
+        //Variables de comunicació del servidor
+        String serverResponse;
+        String serverMessageError = null;
+        String serverMessageOK = null;
+        
         //Verifiquem el contingut dels camps del formulari
         errorForm = checkForm();
         
@@ -555,12 +560,31 @@ public class UserAdd extends javax.swing.JInternalFrame {
             ////////////////////////////////////////////////////////////////////////////
             //Conectem amb el servidor per afegir un usuari
             ////////////////////////////////////////////////////////////////////////////
-            Add addUser = new Add();
+            AddUser addUser = new AddUser();
             User user = new User(email, name, surname, address, postCode, city, password1);
-            addUser.userRegister(user, UsersList.PUBLIC_URL);
+            serverResponse = addUser.userRegister(user, UsersList.PUBLIC_URL);
             
-            //Tanquem el formulari
-            this.dispose();
+            //Mirem el tipus de missatge que retorna el servidor
+            serverMessageOK = JsonUtils.findJsonValue(serverResponse, "OK");
+            serverMessageError = JsonUtils.findJsonValue(serverResponse, "error");
+            
+            //Hi ha messatge OK?
+            if (serverMessageOK != null) {
+                
+                //Usuari registrat. Tanquem el formulari i tornem al login
+                Login login = new Login();
+                this.setVisible(false);
+                login.setVisible(true);
+                
+            }
+            
+            //Hi ha messatge d'error?
+            if (serverMessageError != null) {
+                
+                //No registrat. Mostrem el messatge
+                lblMessagesError.setText(serverMessageError);
+                
+            }
             
         } else if (errorForm.isRequired()) {
             
@@ -572,6 +596,8 @@ public class UserAdd extends javax.swing.JInternalFrame {
         } else if (errorForm.isNotSame()) {
             
             //Les contrasenyes no són iguals
+            
+            //Mostrem el missatge
             lblMessagesError.setText(NOTSAME);
             
         }
@@ -587,7 +613,7 @@ public class UserAdd extends javax.swing.JInternalFrame {
     private javax.swing.JPanel jPanelLogin;
     private javax.swing.JPanel jPanelMain;
     private javax.swing.JPanel jPanelMessages;
-    private javax.swing.JPanel jPanelPerosnalInfo;
+    private javax.swing.JPanel jPanelPersonalInfo;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JLabel lblAddress;

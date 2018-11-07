@@ -1,6 +1,8 @@
 package com.openfactorybeans.citynet.desktop.forms;
 
-import com.openfactorybeans.citynet.desktop.users.Delete;
+import com.openfactorybeans.citynet.desktop.users.DeleteUser;
+import com.openfactorybeans.citynet.desktop.utils.JsonUtils;
+import javax.swing.JOptionPane;
 
 /**
  * Formulario per eliminar un usuari
@@ -9,8 +11,11 @@ import com.openfactorybeans.citynet.desktop.users.Delete;
  */
 public class UserDelete extends javax.swing.JInternalFrame {
     
-    //Definició de la variable per identificar el usuari a eliminar
-    String email;
+    //Declaració de les variables
+    private String email;
+    private String serverResponse;
+    private String serverMessageError;
+    private String serverMessageOK;
 
     /**
      * Creates new form UserDelete
@@ -18,6 +23,7 @@ public class UserDelete extends javax.swing.JInternalFrame {
 
     public UserDelete(String email, String name, String surname, String address, String postalCode, String city) {
         initComponents();
+        
         btnCancel.requestFocus();
         
         this.email = email;
@@ -215,15 +221,47 @@ public class UserDelete extends javax.swing.JInternalFrame {
 
     private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
         
+        //Posem les variables de null per una nova comunicació amb el server
+        serverMessageError = null;
+        serverMessageOK = null;
+        
         ////////////////////////////////////////////////////////////////////////////
         //Conectem amb el servidor per eliminar un usuari
         ////////////////////////////////////////////////////////////////////////////
-        Delete deleteUser = new Delete();
-        deleteUser.userDelete(UsersList.PUBLIC_URL, Login.token, email);
+        DeleteUser deleteUser = new DeleteUser();
+        serverResponse = deleteUser.userDelete(UsersList.PUBLIC_URL, Login.token, email);
         
-        //Tanquem el formulari
-        this.dispose();
+        System.out.println("Resposta server al eliminar usuari: " + serverResponse);
         
+        //Mirem el tipus de missatge que retorna el servidor
+        serverMessageOK = JsonUtils.findJsonValue(serverResponse, "OK");
+        serverMessageError = JsonUtils.findJsonValue(serverResponse, "error");
+        
+        //Hi ha messatge d'error?
+        if (serverMessageError != null) {
+            
+            //Mostrem un missatge
+            JOptionPane.showMessageDialog(null, serverMessageError, "CityNet - Esborrar usuari", JOptionPane.ERROR_MESSAGE);
+            
+            //Si l'error és de sessió finalitzada...
+            if (serverMessageError.equals("Not a valid token")) {
+                
+                //Tanquem l'aplicació
+                System.exit(0);
+                
+            }
+            
+        }
+        
+        //Si s'ha canviat...
+        if (serverMessageOK != null) {
+            
+            //Mostrem un missatge
+            JOptionPane.showMessageDialog(null, serverMessageOK, "CityNet - Esborrar usuari", JOptionPane.INFORMATION_MESSAGE);
+            //Tanquem el formulari
+            this.dispose();
+            
+        }
         
     }//GEN-LAST:event_btnDeleteActionPerformed
 

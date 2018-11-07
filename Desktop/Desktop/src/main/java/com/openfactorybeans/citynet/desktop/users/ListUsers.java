@@ -1,5 +1,6 @@
 package com.openfactorybeans.citynet.desktop.users;
 
+import com.openfactorybeans.citynet.desktop.forms.Login;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,31 +19,26 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 
 /**
- * Codificació canviar la contrasenya de l'usuari a la base de dades del servidor
+ * Codificació llistar els usuaris de la base de dades del servidor amb opció
+ * per indicar un filtre o tots
  * 
  * @author Jose
  */
-public class ChangePassword {
+public class ListUsers {
     
-    /**
-     * Fa una connexió al servidor per modificar la conrasenya de l'usuari amb sessió iniciada
-     * @param url URL del servidor
-     * @param token Identificatiu de sessió iniciada
-     * @param oldPassword Contrasenya antiga
-     * @param newPassword Contrasenya nova
-     * @return Ok o error
-     */
-    public String changePassword(String url, String token, String oldPassword, String newPassword) {
+    public String listUsers(String url, String token, int screen, String filter) {
         try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
             HttpPost httpPost = new HttpPost(url);
 
             List<NameValuePair> nvps = new ArrayList<>();
-            nvps.add(new BasicNameValuePair("action", "ChangePassword"));
+            nvps.add(new BasicNameValuePair("action", "ListAllUsersFilter"));
             nvps.add(new BasicNameValuePair("token", token));
-            nvps.add(new BasicNameValuePair("oldPassword", oldPassword));
-            nvps.add(new BasicNameValuePair("newPassword", newPassword));
+            nvps.add(new BasicNameValuePair("screen", String.valueOf(screen)));
+            nvps.add(new BasicNameValuePair("filter", filter));
 
             httpPost.setEntity(new UrlEncodedFormEntity(nvps));
+
+            System.out.println("Executing request " + httpPost.getRequestLine());
 
             // Create a custom response handler
             String responseBody = httpclient.execute(httpPost, customResponseHandler());
@@ -51,10 +47,11 @@ public class ChangePassword {
             return responseBody;
 
         } catch (Exception ex) {
-            Logger.getLogger(ChangePassword.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ListUsers.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return "Error changePassword";
+        return "Error listAllUsersFilter";
     }
+    
     
     private ResponseHandler<String> customResponseHandler() {
         ResponseHandler<String> responseHandler = new ResponseHandler<String>() {

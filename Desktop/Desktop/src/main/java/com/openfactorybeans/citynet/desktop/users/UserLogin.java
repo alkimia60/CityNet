@@ -31,6 +31,7 @@ public class UserLogin {
             HttpPost httpPost = new HttpPost(url);
 
             List<NameValuePair> nvps = new ArrayList<>();
+            nvps.add(new BasicNameValuePair("action", "UserLogin"));
             nvps.add(new BasicNameValuePair("user", String.valueOf(user)));
             nvps.add(new BasicNameValuePair("password", password)); 
             
@@ -55,9 +56,11 @@ public class UserLogin {
             };
             String responseBody = httpclient.execute(httpPost, responseHandler);
             //System.out.println(responseBody);
-            String error = JsonUtils.findJsonValue(responseBody, "error");
+            String serverMessage = JsonUtils.findJsonValue(responseBody, "error");
+            
+            System.out.println("Login - Server message: " + serverMessage);
 
-            if ((error == "No json data")
+            if ((serverMessage == null)
                     & (JsonUtils.findJsonValue(responseBody, "token") != "No json data")) {
                 Login.token = JsonUtils.findJsonValue(responseBody, "token");
                 Login.rol = JsonUtils.findJsonValue(responseBody, "rol");

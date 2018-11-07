@@ -1,6 +1,8 @@
 package com.openfactorybeans.citynet.desktop.forms;
 
 import com.openfactorybeans.citynet.desktop.users.UpdateUserRol;
+import com.openfactorybeans.citynet.desktop.utils.JsonUtils;
+import javax.swing.JOptionPane;
 import javax.swing.JTable;
 
 /**
@@ -10,8 +12,11 @@ import javax.swing.JTable;
  */
 public class UserUpdateRol extends javax.swing.JInternalFrame {
 
-    //Definició de les variables per identificar el usuari que es vol canviar el rol
-    String email, name, rol;
+    //Posem les variables de null per una nova comunicació amb el server
+    private String email, name, rol;
+    private String serverResponse;
+    private String serverMessageError;
+    private String serverMessageOK;
     
     /**
      * Creates new form UserUpdateRol
@@ -163,6 +168,10 @@ public class UserUpdateRol extends javax.swing.JInternalFrame {
 
     private void btnNewUserLevelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNewUserLevelActionPerformed
 
+        //Posem les variables de null per una nova comunicació amb el server
+        serverMessageError = null;
+        serverMessageOK = null;
+        
         //Obtenim els index del nou rol
         int rolIndex = cbxUserLevel.getSelectedIndex();
         switch (rolIndex) {
@@ -179,10 +188,40 @@ public class UserUpdateRol extends javax.swing.JInternalFrame {
         }
         
         ////////////////////////////////////////////////////////////////////////////
-        //Conectem amb el servidor per eliminar un usuari
+        //Conectem amb el servidor per canviar el rol d'un usuari
         ////////////////////////////////////////////////////////////////////////////
         UpdateUserRol updateUserRol = new UpdateUserRol();
-        updateUserRol.updateUserRol(UsersList.PUBLIC_URL, Login.token, email, rol);
+        serverResponse = updateUserRol.updateUserRol(UsersList.PUBLIC_URL, Login.token, email, rol);
+        
+        //Mirem el tipus de missatge que retorna el servidor
+        serverMessageOK = JsonUtils.findJsonValue(serverResponse, "OK");
+        serverMessageError = JsonUtils.findJsonValue(serverResponse, "error");
+        
+        //Hi ha messatge d'error?
+        if (serverMessageError != null) {
+            
+            //Mostrem un missatge
+            JOptionPane.showMessageDialog(null, serverMessageError, "CityNet - Canviar rol", JOptionPane.ERROR_MESSAGE);
+            
+            //Si l'error és de sessió finalitzada...
+            if (serverMessageError.equals("Not a valid token")) {
+                
+                //Tanquem l'aplicació
+                System.exit(0);
+                
+            }
+            
+        }
+        
+        //Si s'ha canviat...
+        if (serverMessageOK != null) {
+            
+            //Mostrem un missatge
+            JOptionPane.showMessageDialog(null, serverMessageOK, "CityNet - Canviar rol", JOptionPane.INFORMATION_MESSAGE);
+            //Tanquem el formulari
+            this.dispose();
+            
+        }
 
         //Tanquem el formulari
         this.dispose();

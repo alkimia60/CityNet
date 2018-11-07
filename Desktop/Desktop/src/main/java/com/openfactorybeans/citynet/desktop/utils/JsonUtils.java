@@ -30,10 +30,10 @@ public class JsonUtils {
      */
     public static String findJsonValue(String jsonData, String key) {
         
-        String value = "No json data";
+        String value = null;
         
         if (jsonData == null) {
-            
+
             return value;
             
         }
@@ -52,29 +52,29 @@ public class JsonUtils {
                 JsonNode keyNode = rootNode.findValue(key);
                 
                 value = keyNode.asText();
-                
+
                 return value;
                 
             } else {
-                
+
                 return value;
-                
+
             }
 
         } catch (IOException ex) {
             java.util.logging.Logger.getLogger(JsonUtils.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+
         return value;
         
     }
     
     /**
-     * Passa a un ArrayList el contingut del json. converteix cada element en un objecte user
+     * Passa a un ArrayList el contingut del json. Converteix cada element en un objecte user
      * @param jsonData Cadena Json
      * @return El ArrayList amb els users
      */
-    public static List<User> parseJsonUser (String jsonData) {
+    public static List<User> parseJsonUsers (String jsonData) {
         
         List<User> users;
         users = new ArrayList<>();
@@ -120,8 +120,39 @@ public class JsonUtils {
         
     }
     
+    public static User parseJsonUser (String jsonData) {
+        
+        User user = new User();
+        
+        //Creació d'instància ObjectMapper
+        ObjectMapper objectMapper = new ObjectMapper();
+        
+        //Lectura Json
+        JsonNode rootNode;
+        
+        try {
+            
+            rootNode = objectMapper.readTree(jsonData); //Definim el node arrel
+            
+            //Passem les dades
+            user.setEmail(rootNode.findValue("email").asText());
+            user.setName(rootNode.findValue("name").asText());
+            user.setSurname(rootNode.findValue("surname").asText());
+            user.setAddress(rootNode.findValue("address").asText());
+            user.setPostcode(rootNode.findValue("postcode").asText());
+            user.setCity(rootNode.findValue("city").asText());
+            user.setPassword(null);
+            
+        } catch (IOException ex) {
+            java.util.logging.Logger.getLogger(JsonUtils.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        return user;
+        
+    }
+    
     /**
-     * Passa a un ArrayList el contingut del json. converteix cada element en un objecte user
+     * Mirem si el json retorna final de llistat
      * @param jsonData Cadena Json
      * @return true si és final de llistat o false si no és final de llistat
      */

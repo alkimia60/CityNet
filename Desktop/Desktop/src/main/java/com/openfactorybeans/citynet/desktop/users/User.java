@@ -9,9 +9,9 @@ public class User {
     //Variables de userLevel
     public static final String UL_USER = "user";
     public static final String UL_EDITOR = "editor";
-    public static final String UL_ADMIN = "admin";
+    private static final String UL_ADMIN = "admin";
     
-    //Declaració de variables dels camps del formulari
+    //Declaració de variables de la classe
     private String email, password, name, surname, address, postcode, city, userLevel;
     
     //Default constructor

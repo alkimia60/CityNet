@@ -1,6 +1,8 @@
 package com.openfactorybeans.citynet.desktop.forms;
 
 import com.openfactorybeans.citynet.desktop.users.ChangePassword;
+import com.openfactorybeans.citynet.desktop.utils.JsonUtils;
+import javax.swing.JOptionPane;
 
 /**
  * Formulari per canviar la contrasenya
@@ -9,15 +11,21 @@ import com.openfactorybeans.citynet.desktop.users.ChangePassword;
  */
 public class UserChangePassword extends javax.swing.JInternalFrame {
     
-    //Definició de la variable per modificar la contrasenya
-    String oldPass, newPass1, newPass2;
-    char[] oldP, newP1, newP2;
+    //Declaració de variables
+    private String oldPass, newPass1, newPass2;
+    private char[] oldP, newP1, newP2;
+    private String serverResponse;
+    private String serverMessageOK;
+    private String serverMessageError;
+    
+    
 
     /**
      * Creates new form UserChangePassword
      */
     public UserChangePassword() {
         initComponents();
+     
     }
 
     /**
@@ -157,26 +165,58 @@ public class UserChangePassword extends javax.swing.JInternalFrame {
 
     private void btnChangePassActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnChangePassActionPerformed
 
+        //Posem les variables de null per una nova comunicació amb el server
+        serverMessageError = null;
+        serverMessageOK = null;
+        
         //Obtenim els valor de la contrasenya antiga
         oldP = jPassOldPass.getPassword();
         oldPass = new String(oldP); //Passem el password a String
         
-        //Obtenim els valor de la contrasenya antiga
+        //Obtenim els valor de la contrasenya nova
         newP1 = jPassNewPass1.getPassword();
         newPass1 = new String(newP1); //Passem el password a String
         
-        //Obtenim els valor de la contrasenya antiga
+        //Obtenim els valor de la contrasenya nova repetida
         newP2 = jPassNewPass2.getPassword();
         newPass2 = new String(newP2); //Passem el password a String
         
         ////////////////////////////////////////////////////////////////////////////
-        //Conectem amb el servidor per eliminar un usuari
+        //Conectem amb el servidor per canviar la contrasenya d'un usuari
         ////////////////////////////////////////////////////////////////////////////
         ChangePassword changePassUser = new ChangePassword();
-        changePassUser.changePassword(UsersList.PUBLIC_URL, Login.token, oldPass, newPass1);
+        serverResponse = changePassUser.changePassword(UsersList.PUBLIC_URL, Login.token, oldPass, newPass1);
         
-        //Tanquem el formulari
-        this.dispose();
+        //Mirem el tipus de missatge que retorna el servidor
+        serverMessageOK = JsonUtils.findJsonValue(serverResponse, "OK");
+        serverMessageError = JsonUtils.findJsonValue(serverResponse, "error");
+        
+        //Hi ha messatge d'error?
+        if (serverMessageError != null) {
+            
+            //Mostrem un missatge
+            JOptionPane.showMessageDialog(null, serverMessageError, "CityNet - Canviar contrasenya", JOptionPane.ERROR_MESSAGE);
+            
+            //Si l'error és de sessió finalitzada...
+            if (serverMessageError.equals("Not a valid token")) {
+                
+                //Tanquem l'aplicació
+                System.exit(0);
+                
+            }
+            
+        }
+        
+        //Si s'ha canviat...
+        if (serverMessageOK != null) {
+            
+            //Mostrem un missatge
+            JOptionPane.showMessageDialog(null, serverMessageOK, "CityNet - Canviar contrasenya", JOptionPane.INFORMATION_MESSAGE);
+            //Tanquem el formulari
+            this.dispose();
+            
+        }
+        
 
     }//GEN-LAST:event_btnChangePassActionPerformed
 

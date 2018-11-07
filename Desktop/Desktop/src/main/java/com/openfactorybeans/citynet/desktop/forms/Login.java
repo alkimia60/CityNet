@@ -10,7 +10,9 @@ import com.openfactorybeans.citynet.desktop.users.UserLogin;
 public class Login extends javax.swing.JFrame {
     
     //URL
-    private static final String PUBLIC_URL = "http://ec2-35-180-7-53.eu-west-3.compute.amazonaws.com:8080/citynet/Login";
+    //private static final String PUBLIC_URL_USERS = "http://ec2-35-180-7-53.eu-west-3.compute.amazonaws.com:8080/citynet/Login";
+    public static final String PUBLIC_URL_USERS = "http://ec2-35-180-7-53.eu-west-3.compute.amazonaws.com:8080/citynet/UserManager";
+    public static final String PUBLIC_URL_CONTAINERS = "http://ec2-35-180-7-53.eu-west-3.compute.amazonaws.com:8080/citynet/ContainerManager";
     
     //Variables de sessió
     public static String token;
@@ -205,7 +207,7 @@ public class Login extends javax.swing.JFrame {
         //Conectem amb el servidor per iniciar sessió.
         ////////////////////////////////////////////////////////////////////////////
         UserLogin uLogin = new UserLogin();
-        boolean login = uLogin.userLogin(PUBLIC_URL, user, pass);
+        boolean login = uLogin.userLogin(PUBLIC_URL_USERS, user, pass);
         
         if (login) {
             

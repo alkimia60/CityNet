@@ -108,6 +108,11 @@ public class DesktopMain extends javax.swing.JFrame {
         jMenuContainers.setText("Contenidors");
 
         opctionAddContainer.setText("Afegir contenidor");
+        opctionAddContainer.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                opctionAddContainerActionPerformed(evt);
+            }
+        });
         jMenuContainers.add(opctionAddContainer);
         jMenuContainers.add(separatorContainers);
 
@@ -119,6 +124,11 @@ public class DesktopMain extends javax.swing.JFrame {
         jMenuMyMenu.setText("Perfil usuari");
 
         optionModifyUserProfile.setText("Modificar dades");
+        optionModifyUserProfile.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                optionModifyUserProfileActionPerformed(evt);
+            }
+        });
         jMenuMyMenu.add(optionModifyUserProfile);
 
         optionChangePass.setText("Canviar contrasenya");
@@ -231,6 +241,46 @@ public class DesktopMain extends javax.swing.JFrame {
         userChangePass.setVisible(true);
         
     }//GEN-LAST:event_optionChangePassActionPerformed
+
+    private void optionModifyUserProfileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_optionModifyUserProfileActionPerformed
+        
+        //Netejem qualsevol finestra oberta anteriorment en l'escrptori
+        jDesktop.removeAll();
+        jDesktop.repaint();
+        
+        //Instanciem el JFrame per modificar les dades de perfil d'usuari
+        UserUpdateProfile userUpdateProfile = new UserUpdateProfile();
+        
+        //Afegim el formulari a l'escriptori
+        jDesktop.add(userUpdateProfile);
+        
+        //Centrem la finestra
+        FormsUtils.centerDesktop(jDesktop, userUpdateProfile);
+        
+        //El fem visible
+        userUpdateProfile.setVisible(true);
+        
+    }//GEN-LAST:event_optionModifyUserProfileActionPerformed
+
+    private void opctionAddContainerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_opctionAddContainerActionPerformed
+        
+        //Netejem qualsevol finestra oberta anteriorment en l'escrptori
+        jDesktop.removeAll();
+        jDesktop.repaint();
+        
+        //Instanciem el JFrame per modificar les dades de perfil d'usuari
+        ContainerAdd containerAdd = new ContainerAdd();
+        
+        //Afegirm el formulari a l'escriptori
+        jDesktop.add(containerAdd);
+        
+        //Centrem la finestra
+        FormsUtils.centerDesktop(jDesktop, containerAdd);
+        
+        //El fem visible
+        containerAdd.setVisible(true);
+        
+    }//GEN-LAST:event_opctionAddContainerActionPerformed
 
     /**
      * @param args the command line arguments

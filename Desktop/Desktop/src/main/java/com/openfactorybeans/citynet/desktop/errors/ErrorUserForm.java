@@ -5,12 +5,12 @@ package com.openfactorybeans.citynet.desktop.errors;
  * 
  * @author Jose
  */
-public class ErrorForm {
+public class ErrorUserForm {
     
     //Declaració de variables
     private boolean required, notSame;
 
-    public ErrorForm() {
+    public ErrorUserForm() {
         
         required = false;
         notSame = false;

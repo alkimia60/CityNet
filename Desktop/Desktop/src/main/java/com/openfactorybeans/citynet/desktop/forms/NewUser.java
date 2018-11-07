@@ -1,8 +1,9 @@
 package com.openfactorybeans.citynet.desktop.forms;
 
-import com.openfactorybeans.citynet.desktop.errors.ErrorForm;
-import com.openfactorybeans.citynet.desktop.users.Add;
+import com.openfactorybeans.citynet.desktop.errors.ErrorUserForm;
+import com.openfactorybeans.citynet.desktop.users.AddUser;
 import com.openfactorybeans.citynet.desktop.users.User;
+import com.openfactorybeans.citynet.desktop.utils.JsonUtils;
 import java.awt.Color;
 
 /**
@@ -19,9 +20,10 @@ public class NewUser extends javax.swing.JFrame {
     //Inicialització missatges d'error
     final String REQUIRED = "Els camps són obligatoris o el format no és correcte";
     final String NOTSAME = "Les contrasenyes no són iguals";
+    //final String NOTREGISTERED = "User could not be registered";
     
     //Declaració dels errors
-    ErrorForm errorForm = new ErrorForm();
+    ErrorUserForm errorForm = new ErrorUserForm();
     
     //Declaració de variables dels camps del formulari
     String name, surname, address, postCode, city, email, password1, password2;
@@ -60,7 +62,7 @@ public class NewUser extends javax.swing.JFrame {
     * En cas contrari, mostrarà un missatge d'error.
     * @return errors Serà true si no hi ha errors i false si hi ha errors
     */
-        public ErrorForm checkForm() {
+        public ErrorUserForm checkForm() {
         
         //Posem els errors a false
         errorForm.setRequired(false);
@@ -527,6 +529,11 @@ public class NewUser extends javax.swing.JFrame {
 
     private void btnAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddActionPerformed
 
+        //Variables de comunicació del servidor
+        String serverResponse;
+        String serverMessageError = null;
+        String serverMessageOK = null;
+        
         //Verifiquem el contingut dels camps del formulari
         errorForm = checkForm();
 
@@ -540,15 +547,38 @@ public class NewUser extends javax.swing.JFrame {
             ////////////////////////////////////////////////////////////////////////////
             //Conectem amb el servidor per afegir un usuari
             ////////////////////////////////////////////////////////////////////////////
-            Add addUser = new Add();
+            AddUser addUser = new AddUser();
             User user = new User(email, name, surname, address, postCode, city, password1);
-            addUser.userRegister(user, PUBLIC_URL);
+            serverResponse = addUser.userRegister(user, PUBLIC_URL);
             
-            //Amaguem el formulari i tornem al login
-            Login login = new Login();
-            this.setVisible(false);
-            login.setVisible(true);
-
+            //System.out.println("OK abans: " + serverMessageOK);
+            //System.out.println("Error abans: " + serverMessageError);
+            
+            //Mirem el tipus de missatge que retorna el servidor
+            serverMessageOK = JsonUtils.findJsonValue(serverResponse, "OK");
+            serverMessageError = JsonUtils.findJsonValue(serverResponse, "error");
+            
+            //System.out.println("OK després: " + serverMessageOK);
+            //System.out.println("Error després: " + serverMessageError);
+            
+            //Hi ha messatge OK?
+            if (serverMessageOK != null) {
+                
+                //Usuari registrat. Tanquem el formulari i tornem al login
+                Login login = new Login();
+                this.setVisible(false);
+                login.setVisible(true);
+                
+            }
+            
+            //Hi ha messatge d'error?
+            if (serverMessageError != null) {
+                
+                //No registrat. Mostrem el messatge
+                lblMessagesError.setText(serverMessageError);
+                
+            }
+            
         } else if (errorForm.isRequired()) {
 
             //Falta algun cap obligatori

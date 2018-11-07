@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import com.google.gson.Gson;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -19,29 +18,29 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 
 /**
- * Codificació afegir un nou usuari a la base de dades del servidor
- * 
+ * Codificació eliminar un nou usuari de la base de dades del servidor
  * @author Jose
  */
-public class Add {
+public class DeleteUser {
     
     /**
-     * Fa una connexió al servidor per realitzar el registre d'un nou usuari
-     * @param user Usuari a registrar les seves dades
+     * Fa una connexió al servidor per eliminar el registre d'un usuari
      * @param url URL del servidor
+     * @param token Identificatiu de sessió iniciada
+     * @param userToDelete usuari a eliminar de la base de dades
      * @return 
      */
-    public String userRegister(User user, String url) {
-        
+    public String userDelete(String url, String token, String userToDelete) {
         try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
             HttpPost httpPost = new HttpPost(url);
 
-            Gson gson = new Gson();
             List<NameValuePair> nvps = new ArrayList<>();
-            nvps.add(new BasicNameValuePair("user", gson.toJson(user)));
-            nvps.add(new BasicNameValuePair("action", "UserRegister"));
+            nvps.add(new BasicNameValuePair("action", "UserDelete"));
+            nvps.add(new BasicNameValuePair("token", token));
+            nvps.add(new BasicNameValuePair("user", userToDelete));
 
             httpPost.setEntity(new UrlEncodedFormEntity(nvps));
+
 
             // Create a custom response handler
             ResponseHandler<String> responseHandler = new ResponseHandler<String>() {
@@ -59,15 +58,13 @@ public class Add {
                 }
 
             };
-            
             String responseBody = httpclient.execute(httpPost, responseHandler);
             //System.out.println("----------------------------------------");
             //System.out.println(responseBody);
             return responseBody;
 
         } catch (Exception ex) {
-            Logger.getLogger(Add.class
-                    .getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(DeleteUser.class.getName()).log(Level.SEVERE, null, ex);
         }
         return "Error userRegister";
     }
