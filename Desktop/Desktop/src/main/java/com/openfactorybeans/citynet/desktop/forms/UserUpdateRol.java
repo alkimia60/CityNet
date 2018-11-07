@@ -12,25 +12,34 @@ import javax.swing.JTable;
  */
 public class UserUpdateRol extends javax.swing.JInternalFrame {
 
-    //Posem les variables de null per una nova comunicació amb el server
+    //Declaració de les variables
     private String email, name, rol;
     private String serverResponse;
     private String serverMessageError;
     private String serverMessageOK;
+    private JTable jTableUsers;
+    private int selectedRow;
+    
+    //Variable per l'index de la columna rol
+    private final int ROL_COLUMN = 6;
     
     /**
      * Creates new form UserUpdateRol
      * 
-     * @param email
-     * @param name
-     * @param rol 
+     * @param email Email de l'usuari
+     * @param name Nom de l'usuari
+     * @param rol Rol actual de l'usuari
+     * @param jTableUsers Taula d'usuaris
+     * @param selectedRow  Index de la fila seleccionada
      */
-    public UserUpdateRol(String email, String name, String rol) {
+    public UserUpdateRol(String email, String name, String rol, JTable jTableUsers, int selectedRow) {
         initComponents();
         
         this.email = email;
         this.name = name;
         this.rol = rol;
+        this.jTableUsers = jTableUsers;
+        this.selectedRow = selectedRow;
         
         //Mostrem l'usuari i el seu rol actual
         lblTXTUserName.setText(this.name);
@@ -222,8 +231,13 @@ public class UserUpdateRol extends javax.swing.JInternalFrame {
             
             //Mostrem un missatge
             JOptionPane.showMessageDialog(null, serverMessageOK, "CityNet - Canviar rol", JOptionPane.INFORMATION_MESSAGE);
+            
+            jTableUsers.setValueAt(rol, selectedRow, ROL_COLUMN);
+            jTableUsers.repaint();
+           
             //Tanquem el formulari
             this.dispose();
+            
             
         }
 

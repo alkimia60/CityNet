@@ -111,6 +111,7 @@
             </Property>
           </Properties>
           <Events>
+            <EventHandler event="componentRemoved" listener="java.awt.event.ContainerListener" parameters="java.awt.event.ContainerEvent" handler="jTableUsersComponentRemoved"/>
             <EventHandler event="focusGained" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="jTableUsersFocusGained"/>
           </Events>
         </Component>

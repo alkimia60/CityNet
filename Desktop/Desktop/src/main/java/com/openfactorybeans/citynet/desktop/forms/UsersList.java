@@ -40,6 +40,10 @@ public class UsersList extends javax.swing.JInternalFrame {
     private String serverMessageError;
     private String listUsersJSon;
     
+    //Declaració dels components que obren finestres
+    UserDelete userDelete;
+    UserUpdateRol userUpdateRol;
+    
     //Variable que informa de la pàgina solicitada al servidor
     private int screen = 0;
     
@@ -207,6 +211,11 @@ public class UsersList extends javax.swing.JInternalFrame {
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
                 return canEdit [columnIndex];
+            }
+        });
+        jTableUsers.addContainerListener(new java.awt.event.ContainerAdapter() {
+            public void componentRemoved(java.awt.event.ContainerEvent evt) {
+                jTableUsersComponentRemoved(evt);
             }
         });
         jTableUsers.addFocusListener(new java.awt.event.FocusAdapter() {
@@ -510,7 +519,7 @@ public class UsersList extends javax.swing.JInternalFrame {
             jPanelDetail.repaint();
 
             //Instanciem el InternalFrame
-            UserDelete userDelete = new UserDelete(email, name, surname, address, postalCode, city);
+            userDelete = new UserDelete(email, name, surname, address, postalCode, city);
             
             //Afegim el formulari al panel d'eliminar
             jPanelDetail.add(userDelete);
@@ -553,7 +562,7 @@ public class UsersList extends javax.swing.JInternalFrame {
             jPanelDetail.repaint();
 
             //Instanciem el InternalFrame
-            UserUpdateRol userUpdateRol = new UserUpdateRol(email, nameSurname, rol);
+            userUpdateRol = new UserUpdateRol(email, nameSurname, rol, jTableUsers, selectedRow);
             
             //Afegim el formulari al panel d'eliminar
             jPanelDetail.add(userUpdateRol);
@@ -652,6 +661,9 @@ public class UsersList extends javax.swing.JInternalFrame {
         }
 
     }//GEN-LAST:event_cbxFilterActionPerformed
+
+    private void jTableUsersComponentRemoved(java.awt.event.ContainerEvent evt) {//GEN-FIRST:event_jTableUsersComponentRemoved
+    }//GEN-LAST:event_jTableUsersComponentRemoved
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
