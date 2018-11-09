@@ -44,15 +44,19 @@ public class ContainerRequests {
         //List all Containers with filter
         //contRqsts.listAllContainers(URL, sessionToken, 0, "type", "trash");
         //Find Container open Incident by container id
-        contRqsts.containerIncident(URL, sessionToken, "CCC999");
-        
+        //contRqsts.containerIncident(URL, sessionToken, "CCC999");
+        //Delete container
+        //contRqsts.containerDelete(URL, sessionToken, "23ESDE");
+        //List containers between a latitude-longitude range
+        contRqsts.listContainersBetween(URL, sessionToken, 0, 41.326662, 41.496071, 1.969244, 2.344756);
+
     }
 
- 
     /**
      * Function to request the registration of a container
+     *
      * @param url Servlet location
-     * @param sessionToken 
+     * @param sessionToken
      * @param container Container object to register
      * @return json String with elements "ok" or "error"
      */
@@ -112,8 +116,10 @@ public class ContainerRequests {
      * @param url servlet location
      * @param sessionToken session token
      * @param screen current application screen number, starting with 0
-     * @param filterField field that want to be filtered. If it is not valid, it shows everything
-     * @param filterValue value of the field for which it is to be filtered. If it is not valid, it shows everything
+     * @param filterField field that want to be filtered. If it is not valid, it
+     * shows everything
+     * @param filterValue value of the field for which it is to be filtered. If
+     * it is not valid, it shows everything
      * @return json String with elements startOfTable, endOfTable and the
      * filtered containers objects
      */
@@ -145,7 +151,7 @@ public class ContainerRequests {
         return "Error listAllContainers";
     }
 
-       /**
+    /**
      * Function to request the open incident of a container
      *
      * @param url Servlet location
@@ -179,4 +185,83 @@ public class ContainerRequests {
         }
         return "Error containerIncident";
     }
+
+    /**
+     * Function to request the removal of a container
+     *
+     * @param url servlet location
+     * @param token session token
+     * @param containerId id of de container to delete
+     * @return json String with elements "ok" or "error"
+     */
+    private String containerDelete(String url, String token, String containerId) {
+        try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
+            HttpPost httpPost = new HttpPost(url);
+            //List of paràmeters to send
+            List<NameValuePair> nvps = new ArrayList<>();
+            nvps.add(new BasicNameValuePair("action", "ContainerDelete"));
+            nvps.add(new BasicNameValuePair("token", token));
+            nvps.add(new BasicNameValuePair("containerId", containerId));
+
+            httpPost.setEntity(new UrlEncodedFormEntity(nvps));
+
+            System.out.println("Executing request " + httpPost.getRequestLine());
+
+            // Create a custom response handler
+            String responseBody = httpclient.execute(httpPost, customResponseHandler());
+            System.out.println("----------------------------------------");
+            System.out.println(responseBody); //Server response
+            return responseBody;
+
+        } catch (Exception ex) {
+            Logger.getLogger(ClientRequests.class
+                    .getName()).log(Level.SEVERE, null, ex);
+        }
+        return "Error containerDelete";
+    }
+
+    /**
+     * Function to request 10 rows of all containers ordered by id filter for a
+     * range of latitude longitude
+     *
+     * @param url servlet location
+     * @param sessionToken session token
+     * @param screen current application screen number, starting with 0
+     * @param latStart double with the start of range of latitude
+     * @param latEnd double with the end of range of latitude
+     * @param lngStart double with the start of range of longitude
+     * @param lngEnd double with the end of range of longitude
+     * @return json String with elements startOfTable, endOfTable and the
+     * filtered containers objects
+     */
+    private String listContainersBetween(String url, String sessionToken, int screen, double latStart, double latEnd, double lngStart, double lngEnd) {
+        try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
+            HttpPost httpPost = new HttpPost(url);
+            //List of paràmeters to send
+            List<NameValuePair> nvps = new ArrayList<>();
+            nvps.add(new BasicNameValuePair("action", "ListContainersBetween"));
+            nvps.add(new BasicNameValuePair("token", sessionToken));
+            nvps.add(new BasicNameValuePair("screen", String.valueOf(screen)));
+            nvps.add(new BasicNameValuePair("latStart", String.valueOf(latStart)));
+            nvps.add(new BasicNameValuePair("latEnd", String.valueOf(latEnd)));
+            nvps.add(new BasicNameValuePair("lngStart", String.valueOf(lngStart)));
+            nvps.add(new BasicNameValuePair("lngEnd", String.valueOf(lngEnd)));
+
+            httpPost.setEntity(new UrlEncodedFormEntity(nvps));
+
+            System.out.println("Executing request " + httpPost.getRequestLine());
+
+            // Create a custom response handler
+            String responseBody = httpclient.execute(httpPost, customResponseHandler());
+            System.out.println("----------------------------------------");
+            System.out.println(responseBody);//Server response
+            return responseBody;
+
+        } catch (Exception ex) {
+            Logger.getLogger(ClientRequests.class
+                    .getName()).log(Level.SEVERE, null, ex);
+        }
+        return "Error listContainersBetween";
+    }
+
 }

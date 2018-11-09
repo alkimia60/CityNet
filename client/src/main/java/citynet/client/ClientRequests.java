@@ -54,10 +54,10 @@ class ClientRequests {
         //Ask user profile
         //cr.askUserProfile(URL, token);
         //Update user profile
-        cr.updateUserProfile(URL, token, userUpdate);
+        //cr.updateUserProfile(URL, token, userUpdate);
         //List All Users filter admin, editor or user
         //If it is not one of the three values, all users return
-        //cr.listAllUsersFilter(URL, token, 0, "");
+        cr.listAllUsersFilter(URL, token, 0, "");
         //Update user rol
         //cr.updateUserRol(URL, token, "diazgx9@diba.cat", User.UL_EDITOR);
 
