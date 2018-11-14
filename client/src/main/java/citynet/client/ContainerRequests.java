@@ -8,7 +8,9 @@ import citynet.client.model.Container;
 import com.google.gson.Gson;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.http.HttpEntity;
@@ -42,13 +44,15 @@ public class ContainerRequests {
         //Register container
         //contRqsts.containerRegister(URL, sessionToken, container);
         //List all Containers with filter
-        //contRqsts.listAllContainers(URL, sessionToken, 0, "type", "trash");
+        contRqsts.listAllContainers(URL, sessionToken, 0, "type", "trash");
+        //List all Containers with filter and number of rows
+        contRqsts.listAllContainers(URL, sessionToken, 0, null, null, 0);
         //Find Container open Incident by container id
-        //contRqsts.containerIncident(URL, sessionToken, "CCC999");
+        //contRqsts.containerIncident(URL, sessionToken, "D9GK5J");
         //Delete container
-        //contRqsts.containerDelete(URL, sessionToken, "23ESDE");
+        //contRqsts.containerDelete(URL, sessionToken, "D9GK5J");
         //List containers between a latitude-longitude range
-        contRqsts.listContainersBetween(URL, sessionToken, 0, 41.326662, 41.496071, 1.969244, 2.344756);
+        //contRqsts.listContainersBetween(URL, sessionToken, 0, 41.326662, 41.496071, 1.969244, 2.344756);
 
     }
 
@@ -133,6 +137,59 @@ public class ContainerRequests {
             nvps.add(new BasicNameValuePair("screen", String.valueOf(screen)));
             nvps.add(new BasicNameValuePair("filterField", filterField));
             nvps.add(new BasicNameValuePair("filterValue", filterValue));
+
+            httpPost.setEntity(new UrlEncodedFormEntity(nvps));
+
+            System.out.println("Executing request " + httpPost.getRequestLine());
+
+            // Create a custom response handler
+            String responseBody = httpclient.execute(httpPost, customResponseHandler());
+            System.out.println("----------------------------------------");
+            System.out.println(responseBody);//Server response
+            return responseBody;
+
+        } catch (Exception ex) {
+            Logger.getLogger(ClientRequests.class
+                    .getName()).log(Level.SEVERE, null, ex);
+        }
+        return "Error listAllContainers";
+    }
+
+    /**
+     * Function to request 10 rows of all containers ordered by id
+     *
+     * @param url servlet location
+     * @param sessionToken session token
+     * @param screen current application screen number, starting with 0
+     * @param filterField field that want to be filtered. If it is not valid, it
+     * shows everything
+     * @param filterValue value of the field for which it is to be filtered. If
+     * it is not valid, it shows everything
+     * @param step int number of records displayed
+     * @return json String with elements startOfTable, endOfTable and the
+     * filtered containers objects
+     */
+    /**
+     *
+     * @param url
+     * @param sessionToken
+     * @param screen
+     * @param filterField
+     * @param filterValue
+     * @param step
+     * @return
+     */
+    private String listAllContainers(String url, String sessionToken, int screen, String filterField, String filterValue, int step) {
+        try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
+            HttpPost httpPost = new HttpPost(url);
+            //List of paràmeters to send
+            List<NameValuePair> nvps = new ArrayList<>();
+            nvps.add(new BasicNameValuePair("action", "ListAllContainers"));
+            nvps.add(new BasicNameValuePair("token", sessionToken));
+            nvps.add(new BasicNameValuePair("screen", String.valueOf(screen)));
+            nvps.add(new BasicNameValuePair("filterField", filterField));
+            nvps.add(new BasicNameValuePair("filterValue", filterValue));
+            nvps.add(new BasicNameValuePair("step", String.valueOf(step)));
 
             httpPost.setEntity(new UrlEncodedFormEntity(nvps));
 
