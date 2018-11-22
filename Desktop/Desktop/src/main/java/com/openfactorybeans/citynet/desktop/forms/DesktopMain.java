@@ -1,6 +1,6 @@
 package com.openfactorybeans.citynet.desktop.forms;
 
-import com.openfactorybeans.citynet.desktop.users.User;
+import com.openfactorybeans.citynet.desktop.model.User;
 import com.openfactorybeans.citynet.desktop.utils.FormsUtils;
 import java.beans.PropertyVetoException;
 import java.util.logging.Level;
@@ -117,6 +117,11 @@ public class DesktopMain extends javax.swing.JFrame {
         jMenuContainers.add(separatorContainers);
 
         optionListContainers.setText("Llistar contenidors");
+        optionListContainers.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                optionListContainersActionPerformed(evt);
+            }
+        });
         jMenuContainers.add(optionListContainers);
 
         jMenuBar1.add(jMenuContainers);
@@ -178,7 +183,7 @@ public class DesktopMain extends javax.swing.JFrame {
         //Afegim el formulari de llistat a l'escrptori
         jDesktop.add(userList);
         
-        //Maximitzem el JFrameInternal
+        //Maximitzem el JInternalFrame
         try {
             userList.setMaximum(true);
         } catch (PropertyVetoException ex) {
@@ -281,6 +286,30 @@ public class DesktopMain extends javax.swing.JFrame {
         containerAdd.setVisible(true);
         
     }//GEN-LAST:event_opctionAddContainerActionPerformed
+
+    private void optionListContainersActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_optionListContainersActionPerformed
+        
+        //Netejem qualsevol finestra oberta anteriorment en l'escrptori
+        jDesktop.removeAll();
+        jDesktop.repaint();
+        
+        //Instanciem el JFrame Llistat
+        ContainersList containerList = new ContainersList();
+        
+        //Afegim el formulari de llistat a l'escrptori
+        jDesktop.add(containerList);
+        
+        //Maximitzem el JInternalFrame
+        try {
+            containerList.setMaximum(true);
+        } catch (PropertyVetoException ex) {
+            Logger.getLogger(DesktopMain.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        //El fem visible
+        containerList.setVisible(true);
+        
+    }//GEN-LAST:event_optionListContainersActionPerformed
 
     /**
      * @param args the command line arguments

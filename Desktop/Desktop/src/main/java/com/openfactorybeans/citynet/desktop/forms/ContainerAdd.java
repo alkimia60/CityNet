@@ -1,12 +1,7 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.openfactorybeans.citynet.desktop.forms;
 
-import com.openfactorybeans.citynet.desktop.containers.AddContainer;
-import com.openfactorybeans.citynet.desktop.containers.Container;
+import com.openfactorybeans.citynet.desktop.management.ContainersManagement;
+import com.openfactorybeans.citynet.desktop.model.Container;
 import com.openfactorybeans.citynet.desktop.utils.JsonUtils;
 import java.awt.Color;
 import javax.swing.JOptionPane;
@@ -19,9 +14,9 @@ import javax.swing.JOptionPane;
 public class ContainerAdd extends javax.swing.JInternalFrame {
     
     //Declaració de les variables del formulari
+    private String containerId;
     private int typeId;
-    private String type;
-    private Double longitude, latitude;
+    private Double latitude, longitude;
     private Container container = new Container();
     
     //Declaració de la variable error
@@ -35,6 +30,13 @@ public class ContainerAdd extends javax.swing.JInternalFrame {
         
         //Posem l'estat inicial del formulari
         initialStateForm();
+        
+        //Afegim els items del combo
+        cbxContainerType.addItem(Container.TYPES_TABLE[0]); //Paper i cartró
+        cbxContainerType.addItem(Container.TYPES_TABLE[1]); //Vidre
+        cbxContainerType.addItem(Container.TYPES_TABLE[2]); //Envasos lleugers
+        cbxContainerType.addItem(Container.TYPES_TABLE[3]); //Matèria orgànica
+        cbxContainerType.addItem(Container.TYPES_TABLE[4]); //Rebuig
     }
     
     /**
@@ -43,6 +45,7 @@ public class ContainerAdd extends javax.swing.JInternalFrame {
      */
     public void initialStateForm() {
         
+        txtContainerId.setText("");
         cbxContainerType.setSelectedIndex(0);
         txtLatitude.setText("");
         txtLongitude.setText("");
@@ -59,16 +62,20 @@ public class ContainerAdd extends javax.swing.JInternalFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jPanelContainerID = new javax.swing.JPanel();
+        lblContainerId = new javax.swing.JLabel();
+        txtContainerId = new javax.swing.JTextField();
+        jSeparator2 = new javax.swing.JSeparator();
         jPanelContainerType = new javax.swing.JPanel();
         lblContainerType = new javax.swing.JLabel();
         cbxContainerType = new javax.swing.JComboBox<>();
         jSeparator1 = new javax.swing.JSeparator();
         jPanelContainerLocation = new javax.swing.JPanel();
         lblLocation = new javax.swing.JLabel();
-        lblLongitude = new javax.swing.JLabel();
-        txtLongitude = new javax.swing.JTextField();
         lblLatitude = new javax.swing.JLabel();
         txtLatitude = new javax.swing.JTextField();
+        lblLongitude = new javax.swing.JLabel();
+        txtLongitude = new javax.swing.JTextField();
         jPanelButtons = new javax.swing.JPanel();
         btnAdd = new javax.swing.JButton();
         btnClear = new javax.swing.JButton();
@@ -77,11 +84,38 @@ public class ContainerAdd extends javax.swing.JInternalFrame {
 
         setTitle("Afegir contenidor");
 
+        lblContainerId.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        lblContainerId.setText("Identificació:");
+
+        txtContainerId.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
+        txtContainerId.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+
+        javax.swing.GroupLayout jPanelContainerIDLayout = new javax.swing.GroupLayout(jPanelContainerID);
+        jPanelContainerID.setLayout(jPanelContainerIDLayout);
+        jPanelContainerIDLayout.setHorizontalGroup(
+            jPanelContainerIDLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanelContainerIDLayout.createSequentialGroup()
+                .addGap(90, 90, 90)
+                .addComponent(lblContainerId)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(txtContainerId, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        jPanelContainerIDLayout.setVerticalGroup(
+            jPanelContainerIDLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanelContainerIDLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanelContainerIDLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblContainerId)
+                    .addComponent(txtContainerId, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
         lblContainerType.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
         lblContainerType.setText("Tipus de contenidor:");
 
         cbxContainerType.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
-        cbxContainerType.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Selecciona tipus", "Paper i cartró (blau)", "Vidre (verd)", "Envasos lleugers (groc)", "Matèria orgànica (marró)", "Rebuig (gris)" }));
+        cbxContainerType.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Selecciona tipus" }));
 
         javax.swing.GroupLayout jPanelContainerTypeLayout = new javax.swing.GroupLayout(jPanelContainerType);
         jPanelContainerType.setLayout(jPanelContainerTypeLayout);
@@ -91,27 +125,21 @@ public class ContainerAdd extends javax.swing.JInternalFrame {
                 .addContainerGap()
                 .addComponent(lblContainerType)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(cbxContainerType, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(cbxContainerType, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
         );
         jPanelContainerTypeLayout.setVerticalGroup(
             jPanelContainerTypeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanelContainerTypeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                .addComponent(lblContainerType)
-                .addComponent(cbxContainerType, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+            .addGroup(jPanelContainerTypeLayout.createSequentialGroup()
+                .addGroup(jPanelContainerTypeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblContainerType)
+                    .addComponent(cbxContainerType, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         lblLocation.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
         lblLocation.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         lblLocation.setText("Ubicació");
-
-        lblLongitude.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
-        lblLongitude.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        lblLongitude.setText("Longitud");
-
-        txtLongitude.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
-        txtLongitude.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        txtLongitude.setToolTipText("Del tius 0.0000");
 
         lblLatitude.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
         lblLatitude.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -120,6 +148,14 @@ public class ContainerAdd extends javax.swing.JInternalFrame {
         txtLatitude.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
         txtLatitude.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         txtLatitude.setToolTipText("Del tius 0.0000");
+
+        lblLongitude.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        lblLongitude.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        lblLongitude.setText("Longitud");
+
+        txtLongitude.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
+        txtLongitude.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        txtLongitude.setToolTipText("Del tius 0.0000");
 
         btnAdd.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
         btnAdd.setText("Afegir");
@@ -152,7 +188,7 @@ public class ContainerAdd extends javax.swing.JInternalFrame {
         jPanelButtonsLayout.setHorizontalGroup(
             jPanelButtonsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanelButtonsLayout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap(43, Short.MAX_VALUE)
                 .addComponent(btnAdd, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(btnClear, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -180,13 +216,13 @@ public class ContainerAdd extends javax.swing.JInternalFrame {
                 .addGroup(jPanelContainerLocationLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(lblLocation, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(jPanelContainerLocationLayout.createSequentialGroup()
-                        .addGroup(jPanelContainerLocationLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(txtLongitude, javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(lblLongitude, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 174, Short.MAX_VALUE))
+                        .addGroup(jPanelContainerLocationLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(lblLatitude, javax.swing.GroupLayout.DEFAULT_SIZE, 186, Short.MAX_VALUE)
+                            .addComponent(txtLatitude))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanelContainerLocationLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(lblLatitude, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(txtLatitude))))
+                        .addGroup(jPanelContainerLocationLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(lblLongitude, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(txtLongitude, javax.swing.GroupLayout.PREFERRED_SIZE, 184, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addContainerGap())
             .addComponent(jPanelButtons, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
@@ -196,13 +232,13 @@ public class ContainerAdd extends javax.swing.JInternalFrame {
                 .addComponent(lblLocation, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanelContainerLocationLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lblLongitude)
-                    .addComponent(lblLatitude))
+                    .addComponent(lblLatitude)
+                    .addComponent(lblLongitude))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanelContainerLocationLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(txtLongitude, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtLatitude, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addComponent(txtLatitude, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtLongitude, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jPanelButtons, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -219,15 +255,18 @@ public class ContainerAdd extends javax.swing.JInternalFrame {
             .addComponent(jPanelContainerType, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(jPanelContainerLocation, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(jSeparator1, javax.swing.GroupLayout.Alignment.TRAILING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(lblMessagesError, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
+            .addComponent(jPanelContainerID, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(jSeparator2)
+            .addComponent(lblMessagesError, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
+                .addComponent(jPanelContainerID, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanelContainerType, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -235,7 +274,7 @@ public class ContainerAdd extends javax.swing.JInternalFrame {
                 .addComponent(jPanelContainerLocation, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(lblMessagesError, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(14, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
@@ -266,14 +305,34 @@ public class ContainerAdd extends javax.swing.JInternalFrame {
         lblMessagesError.setText("");
         
         //Posem les etiquete del color per defecte
+        lblContainerId.setForeground(Color.BLACK);
         lblContainerType.setForeground(Color.BLACK);
-        lblLongitude.setForeground(Color.BLACK);
         lblLatitude.setForeground(Color.BLACK);
+        lblLongitude.setForeground(Color.BLACK);
         
         //Posem el sensor d'errors a true (no hi ha errors per defecte
         noError = true;
         
+        //////////////////////////////////////////////////////////
         //Recollim els valors del formulari i verifiquem les dades
+        //////////////////////////////////////////////////////////
+        
+        //Camp ID. El passem a majúscules
+        containerId = txtContainerId.getText().toUpperCase();
+        //Ha de ser de 6 caràcters
+        if (containerId.length() != 6) {
+            
+            //Mostrem l'etiqueta del camp en un altre color
+            lblContainerId.setForeground(Color.RED);
+            
+            noError = false;
+            
+        } else {
+            
+            //Passem l'atribut al container
+            container.setId(containerId);
+            
+        }
         
         //Camp tipus
         typeId = cbxContainerType.getSelectedIndex();
@@ -287,56 +346,38 @@ public class ContainerAdd extends javax.swing.JInternalFrame {
         } else {
             
             //Passem l'atribut al container
-            switch (cbxContainerType.getSelectedIndex()) {
+            int typeID = cbxContainerType.getSelectedIndex();
+            
+            switch (typeID) {
                 
                 case 1:
-                    container.setType(Container.PAPER);
+                    container.setType(Container.TYPES_SERVER[typeID - 1]); //paper
                     break;
                     
                 case 2:
-                    container.setType(Container.GLASS);
+                    container.setType(Container.TYPES_SERVER[typeID - 1]); //glass
                     break;
                     
                 case 3:
-                    container.setType(Container.PACKAGING);
+                    container.setType(Container.TYPES_SERVER[typeID - 1]); //packaging
                     break;
                     
                 case 4:
-                    container.setType(Container.ORGANIC);
+                    container.setType(Container.TYPES_SERVER[typeID - 1]); //organic
                     break;
                     
                 case 5:
-                    container.setType(Container.TRASH);
+                    container.setType(Container.TYPES_SERVER[typeID - 1]); //trash
                     break;
                 
             }
             
         }
         
-        //Camp longitud
-        try {
-            
-            longitude = Double.parseDouble(txtLongitude.getText());
-            
-            //Passem l'atribut al container
-            container.setLongitude(longitude);
-            
-        } catch (NumberFormatException nfe) {
-            
-            //Mostrem l'etiqueta del camp en un altre color
-            lblLongitude.setForeground(Color.RED);
-            
-            //Mostrem un missatge
-            lblMessagesError.setText("Incorrect data");
-            
-            noError = false;
-            
-        }
-        
         //Camp latitud
         try {
             
-            latitude = Double.parseDouble(txtLatitude.getText());
+            latitude = Double.parseDouble(txtLongitude.getText());
             
             //Passem l'atribut al container
             container.setLatitude(latitude);
@@ -344,10 +385,24 @@ public class ContainerAdd extends javax.swing.JInternalFrame {
         } catch (NumberFormatException nfe) {
             
             //Mostrem l'etiqueta del camp en un altre color
-            lblLatitude.setForeground(Color.RED);
+            lblLongitude.setForeground(Color.RED);
             
-            //Mostrem un missatge
-            lblMessagesError.setText("Incorrect data");
+            noError = false;
+            
+        }
+     
+        //Camp longitud
+        try {
+            
+            longitude = Double.parseDouble(txtLatitude.getText());
+            
+            //Passem l'atribut al container
+            container.setLongitude(longitude);
+            
+        } catch (NumberFormatException nfe) {
+            
+            //Mostrem l'etiqueta del camp en un altre color
+            lblLatitude.setForeground(Color.RED);
             
             noError = false;
             
@@ -355,18 +410,18 @@ public class ContainerAdd extends javax.swing.JInternalFrame {
         
         //Si no hi ha errors
         if (noError) {
-            container.setId("HI4K7U");
+
             //Passar les dades al server
             System.out.println("ID contenidor: " + container.getId());
             System.out.println("Tipus de contenior: " + container.getType());
-            System.out.println("Longitud: " + container.getLongitude());
             System.out.println("Latitud: " + container.getLatitude());
+            System.out.println("Longitud: " + container.getLongitude());
             
             ////////////////////////////////////////////////////////////////////////////
             //Conectem amb el servidor per afegir un container
             ////////////////////////////////////////////////////////////////////////////
-            AddContainer addContainer = new AddContainer();
-            serverResponse = addContainer.containerRegister(Login.PUBLIC_URL_CONTAINERS, Login.token, container);
+            ContainersManagement containerToAdd = new ContainersManagement();
+            serverResponse = containerToAdd.containerRegister(Login.PUBLIC_URL_CONTAINER, Login.token, container);
             
             //Mirem el tipus de missatge que retorna el servidor
             serverMessageOK = JsonUtils.findJsonValue(serverResponse, "OK");
@@ -390,6 +445,11 @@ public class ContainerAdd extends javax.swing.JInternalFrame {
                 
             }
             
+        } else {
+            
+            //Mostrem un missatge
+            lblMessagesError.setText("Incorrect data");
+            
         }
         
     }//GEN-LAST:event_btnAddActionPerformed
@@ -401,14 +461,18 @@ public class ContainerAdd extends javax.swing.JInternalFrame {
     private javax.swing.JButton btnClear;
     private javax.swing.JComboBox<String> cbxContainerType;
     private javax.swing.JPanel jPanelButtons;
+    private javax.swing.JPanel jPanelContainerID;
     private javax.swing.JPanel jPanelContainerLocation;
     private javax.swing.JPanel jPanelContainerType;
     private javax.swing.JSeparator jSeparator1;
+    private javax.swing.JSeparator jSeparator2;
+    private javax.swing.JLabel lblContainerId;
     private javax.swing.JLabel lblContainerType;
     private javax.swing.JLabel lblLatitude;
     private javax.swing.JLabel lblLocation;
     private javax.swing.JLabel lblLongitude;
     private javax.swing.JLabel lblMessagesError;
+    private javax.swing.JTextField txtContainerId;
     private javax.swing.JTextField txtLatitude;
     private javax.swing.JTextField txtLongitude;
     // End of variables declaration//GEN-END:variables

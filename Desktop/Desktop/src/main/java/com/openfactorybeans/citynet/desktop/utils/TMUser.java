@@ -1,5 +1,6 @@
-package com.openfactorybeans.citynet.desktop.users;
+package com.openfactorybeans.citynet.desktop.utils;
 
+import com.openfactorybeans.citynet.desktop.model.User;
 import java.util.List;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
@@ -84,7 +85,7 @@ public class TMUser implements TableModel {
 
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
-        //Localitzem la fila del objecte que es vol el valor
+        //Localitzem la fila del objecte que volem obtenir el valor
         User u = users.get(rowIndex);
         
         //A través d'un switch, localitzem la columna

@@ -1,6 +1,6 @@
 package com.openfactorybeans.citynet.desktop.forms;
 
-import com.openfactorybeans.citynet.desktop.users.DeleteUser;
+import com.openfactorybeans.citynet.desktop.management.UsersManagement;
 import com.openfactorybeans.citynet.desktop.utils.JsonUtils;
 import javax.swing.JOptionPane;
 
@@ -233,8 +233,9 @@ public class UserDelete extends javax.swing.JInternalFrame {
         ////////////////////////////////////////////////////////////////////////////
         //Conectem amb el servidor per eliminar un usuari
         ////////////////////////////////////////////////////////////////////////////
-        DeleteUser deleteUser = new DeleteUser();
-        serverResponse = deleteUser.userDelete(Login.PUBLIC_URL_USERS, Login.token, email);
+        
+        UsersManagement user = new UsersManagement();
+        serverResponse = user.userDelete(Login.PUBLIC_URL_USER, Login.token, email);
         
         System.out.println("Resposta server al eliminar usuari: " + serverResponse);
         

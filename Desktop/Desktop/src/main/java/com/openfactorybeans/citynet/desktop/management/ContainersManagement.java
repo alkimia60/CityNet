@@ -1,11 +1,12 @@
-package com.openfactorybeans.citynet.desktop.users;
+package com.openfactorybeans.citynet.desktop.management;
 
+import com.google.gson.Gson;
+import com.openfactorybeans.citynet.desktop.model.Container;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import com.google.gson.Gson;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -19,70 +20,91 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 
 /**
- *
+ * Classe per realitzar la gestió de contenidors amb el servidor
  * @author Jose
  */
-public class UpdateUserProfile {
+public class ContainersManagement {
     
     /**
-     * Demanem al servidor les dades de l'usuari autenticat
+     * Fa una connexió al servidor per realitzar el registre d'un nou contenidor
      * @param url URL del servidor
      * @param token Identificatiu de sessió iniciada
-     * @return Ok o error
-     */
-    public String askUserProfile(String url, String token) {
+     * @param container Contenidor a registrar les seves dades
+     * @return 
+     */    
+    public String containerRegister(String url, String token, Container container) {
         try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
             HttpPost httpPost = new HttpPost(url);
-
-            List<NameValuePair> nvps = new ArrayList<>();
-            nvps.add(new BasicNameValuePair("action", "AskUserProfile"));
-            nvps.add(new BasicNameValuePair("token", token));
-
-            httpPost.setEntity(new UrlEncodedFormEntity(nvps));
-
-            System.out.println("Executing request " + httpPost.getRequestLine());
-
-            // Create a custom response handler
-            String responseBody = httpclient.execute(httpPost, customResponseHandler());
-            System.out.println("----------------------------------------");
-            System.out.println(responseBody);
-            return responseBody;
-
-        } catch (Exception ex) {
-            Logger.getLogger(UpdateUserProfile.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return "Error askUserProfile";
-    }
-    
-    public String updateUserProfile(String url, String token, User userToUpdate) {
-        try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
-            HttpPost httpPost = new HttpPost(url);
-
+            
+            //Gson object to convert Container Object into String
             Gson gson = new Gson();
+            
+            //List of paràmeters to send
             List<NameValuePair> nvps = new ArrayList<>();
-            nvps.add(new BasicNameValuePair("action", "UpdateUserProfile"));
+            nvps.add(new BasicNameValuePair("action", "ContainerRegister"));
             nvps.add(new BasicNameValuePair("token", token));
-            nvps.add(new BasicNameValuePair("user", gson.toJson(userToUpdate)));
+            nvps.add(new BasicNameValuePair("container", gson.toJson(container)));
 
             httpPost.setEntity(new UrlEncodedFormEntity(nvps));
 
-            System.out.println("Executing request " + httpPost.getRequestLine());
+            //System.out.println("Executing request " + httpPost.getRequestLine());
 
             // Create a custom response handler
             String responseBody = httpclient.execute(httpPost, customResponseHandler());
-            System.out.println("----------------------------------------");
-            System.out.println(responseBody);
+            //System.out.println("----------------------------------------");
+            //System.out.println(responseBody);
+            return responseBody; //Server response
+
+        } catch (Exception ex) {
+            Logger.getLogger(ContainersManagement.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return "Error containerRegister";
+    }
+    
+    /**
+     * Mètode per obtenir un llistat de contenidors
+     * 
+     * @param url URL del servidor
+     * @param token Identificatiu de sessió iniciada
+     * @param screen Número de pàgina sol·licitada al servidor. 0 és la primera
+     * @param filterField Camp pel qual es vol filtrar
+     * @param filterValue Valor del filtre
+     * @return 
+     */
+    public String listAllContainers(String url, String token, int screen, String filterField, String filterValue) {
+        try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
+            HttpPost httpPost = new HttpPost(url);
+            //List of paràmeters to send
+            List<NameValuePair> nvps = new ArrayList<>();
+            nvps.add(new BasicNameValuePair("action", "ListAllContainers"));
+            nvps.add(new BasicNameValuePair("token", token));
+            nvps.add(new BasicNameValuePair("screen", String.valueOf(screen)));
+            nvps.add(new BasicNameValuePair("filterField", filterField));
+            nvps.add(new BasicNameValuePair("filterValue", filterValue));
+
+            httpPost.setEntity(new UrlEncodedFormEntity(nvps));
+
+            //System.out.println("Executing request " + httpPost.getRequestLine());
+
+            // Create a custom response handler
+            String responseBody = httpclient.execute(httpPost, customResponseHandler());
+            //System.out.println("----------------------------------------");
+            //System.out.println(responseBody);//Server response
             return responseBody;
 
         } catch (Exception ex) {
-            Logger.getLogger(UpdateUserProfile.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ContainersManagement.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return "Error updateUserProfile";
+        return "Error listAllUsersFilter";
     }
     
+    /**
+     * Mètode per crear un controlador de resposta personalitzat per a les sol·licituds
+     * 
+     * @return Controlador de resposta personalitzat
+     */
     private ResponseHandler<String> customResponseHandler() {
         ResponseHandler<String> responseHandler = new ResponseHandler<String>() {
-
             @Override
             public String handleResponse(
                     final HttpResponse response) throws ClientProtocolException, IOException {
@@ -97,5 +119,4 @@ public class UpdateUserProfile {
         };
         return responseHandler;
     }
-    
 }

@@ -1,8 +1,8 @@
 package com.openfactorybeans.citynet.desktop.forms;
 
 import com.openfactorybeans.citynet.desktop.errors.ErrorUserForm;
-import com.openfactorybeans.citynet.desktop.users.AddUser;
-import com.openfactorybeans.citynet.desktop.users.User;
+import com.openfactorybeans.citynet.desktop.management.UsersManagement;
+import com.openfactorybeans.citynet.desktop.model.User;
 import com.openfactorybeans.citynet.desktop.utils.JsonUtils;
 import java.awt.Color;
 
@@ -13,9 +13,6 @@ import java.awt.Color;
  * @author Jose
  */
 public class NewUser extends javax.swing.JFrame {
-    
-    //URL
-    private static final String PUBLIC_URL = "http://ec2-35-180-7-53.eu-west-3.compute.amazonaws.com:8080/citynet/UserManager";
     
     //Inicialització missatges d'error
     final String REQUIRED = "Els camps són obligatoris o el format no és correcte";
@@ -547,20 +544,15 @@ public class NewUser extends javax.swing.JFrame {
             ////////////////////////////////////////////////////////////////////////////
             //Conectem amb el servidor per afegir un usuari
             ////////////////////////////////////////////////////////////////////////////
-            AddUser addUser = new AddUser();
             User user = new User(email, name, surname, address, postCode, city, password1);
-            serverResponse = addUser.userRegister(user, PUBLIC_URL);
-            
-            //System.out.println("OK abans: " + serverMessageOK);
-            //System.out.println("Error abans: " + serverMessageError);
+            UsersManagement userToAdd = new UsersManagement();
+            serverResponse = userToAdd.userRegister(user, Login.PUBLIC_URL_USER);
             
             //Mirem el tipus de missatge que retorna el servidor
             serverMessageOK = JsonUtils.findJsonValue(serverResponse, "OK");
             serverMessageError = JsonUtils.findJsonValue(serverResponse, "error");
             
-            //System.out.println("OK després: " + serverMessageOK);
-            //System.out.println("Error després: " + serverMessageError);
-            
+
             //Hi ha messatge OK?
             if (serverMessageOK != null) {
                 

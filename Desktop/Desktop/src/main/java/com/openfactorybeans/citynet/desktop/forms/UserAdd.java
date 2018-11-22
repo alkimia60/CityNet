@@ -1,8 +1,8 @@
 package com.openfactorybeans.citynet.desktop.forms;
 
 import com.openfactorybeans.citynet.desktop.errors.ErrorUserForm;
-import com.openfactorybeans.citynet.desktop.users.AddUser;
-import com.openfactorybeans.citynet.desktop.users.User;
+import com.openfactorybeans.citynet.desktop.management.UsersManagement;
+import com.openfactorybeans.citynet.desktop.model.User;
 import com.openfactorybeans.citynet.desktop.utils.JsonUtils;
 import java.awt.Color;
 
@@ -560,9 +560,9 @@ public class UserAdd extends javax.swing.JInternalFrame {
             ////////////////////////////////////////////////////////////////////////////
             //Conectem amb el servidor per afegir un usuari
             ////////////////////////////////////////////////////////////////////////////
-            AddUser addUser = new AddUser();
             User user = new User(email, name, surname, address, postCode, city, password1);
-            serverResponse = addUser.userRegister(user, Login.PUBLIC_URL_USERS);
+            UsersManagement userToAdd = new UsersManagement();
+            serverResponse = userToAdd.userRegister(user, Login.PUBLIC_URL_USER);
             
             //Mirem el tipus de missatge que retorna el servidor
             serverMessageOK = JsonUtils.findJsonValue(serverResponse, "OK");

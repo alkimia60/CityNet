@@ -1,7 +1,7 @@
-package com.openfactorybeans.citynet.desktop.users;
+package com.openfactorybeans.citynet.desktop.model;
 
 /**
- * Model de la classe usuari
+ * Model de la classe User
  * @author Jose
  */
 public class User {

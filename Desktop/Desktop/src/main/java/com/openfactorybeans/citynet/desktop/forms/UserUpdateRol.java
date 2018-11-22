@@ -1,6 +1,6 @@
 package com.openfactorybeans.citynet.desktop.forms;
 
-import com.openfactorybeans.citynet.desktop.users.UpdateUserRol;
+import com.openfactorybeans.citynet.desktop.management.UsersManagement;
 import com.openfactorybeans.citynet.desktop.utils.JsonUtils;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
@@ -203,8 +203,8 @@ public class UserUpdateRol extends javax.swing.JInternalFrame {
         ////////////////////////////////////////////////////////////////////////////
         //Conectem amb el servidor per canviar el rol d'un usuari
         ////////////////////////////////////////////////////////////////////////////
-        UpdateUserRol updateUserRol = new UpdateUserRol();
-        serverResponse = updateUserRol.updateUserRol(Login.PUBLIC_URL_USERS, Login.token, email, rol);
+        UsersManagement userToUpdateRol = new UsersManagement();
+        serverResponse = userToUpdateRol.userUpdateRol(Login.PUBLIC_URL_USER, Login.token, email, rol);
         
         //Mirem el tipus de missatge que retorna el servidor
         serverMessageOK = JsonUtils.findJsonValue(serverResponse, "OK");

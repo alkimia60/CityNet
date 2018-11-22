@@ -1,4 +1,4 @@
-package com.openfactorybeans.citynet.desktop.users;
+package com.openfactorybeans.citynet.desktop.management;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -18,22 +18,30 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 
 /**
- * Codificació canviar el rol d'un usuari a la base de dades del servidor
+ * Classe per realitzar la gestió de incidències amb el servidor
  * @author Jose
  */
-public class UpdateUserRol {
+public class IncidentsManagement {
     
-    public String updateUserRol(String url, String token, String user, String newRol) {
+    /**
+     * Demanem al servidor les dades de la inciència seleccionada
+     * @param url URL del servidor
+     * @param token Identificatiu de sessió iniciada
+     * @param containerId Identificatiu del container
+     * @return Ok o error
+     */
+    public String askIncident(String url, String token, String containerId) {
         try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
             HttpPost httpPost = new HttpPost(url);
 
             List<NameValuePair> nvps = new ArrayList<>();
-            nvps.add(new BasicNameValuePair("action", "UpdateUserRol"));
+            nvps.add(new BasicNameValuePair("action", "ContainerIncident"));
             nvps.add(new BasicNameValuePair("token", token));
-            nvps.add(new BasicNameValuePair("user", user));
-            nvps.add(new BasicNameValuePair("rol", newRol));
+            nvps.add(new BasicNameValuePair("containerId", containerId));
 
             httpPost.setEntity(new UrlEncodedFormEntity(nvps));
+
+            //System.out.println("Executing request " + httpPost.getRequestLine());
 
             // Create a custom response handler
             String responseBody = httpclient.execute(httpPost, customResponseHandler());
@@ -42,14 +50,18 @@ public class UpdateUserRol {
             return responseBody;
 
         } catch (Exception ex) {
-            Logger.getLogger(UpdateUserRol.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(UsersManagement.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return "Error updateUserRol";
+        return "Error askContainerIncident";
     }
     
+    /**
+     * Mètode per crear un controlador de resposta personalitzat per a les sol·licituds
+     * 
+     * @return Controlador de resposta personalitzat
+     */
     private ResponseHandler<String> customResponseHandler() {
         ResponseHandler<String> responseHandler = new ResponseHandler<String>() {
-
             @Override
             public String handleResponse(
                     final HttpResponse response) throws ClientProtocolException, IOException {

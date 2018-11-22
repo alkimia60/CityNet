@@ -1,6 +1,6 @@
 package com.openfactorybeans.citynet.desktop.forms;
 
-import com.openfactorybeans.citynet.desktop.users.ChangePassword;
+import com.openfactorybeans.citynet.desktop.management.UsersManagement;
 import com.openfactorybeans.citynet.desktop.utils.JsonUtils;
 import javax.swing.JOptionPane;
 
@@ -184,8 +184,8 @@ public class UserChangePassword extends javax.swing.JInternalFrame {
         ////////////////////////////////////////////////////////////////////////////
         //Conectem amb el servidor per canviar la contrasenya d'un usuari
         ////////////////////////////////////////////////////////////////////////////
-        ChangePassword changePassUser = new ChangePassword();
-        serverResponse = changePassUser.changePassword(Login.PUBLIC_URL_USERS, Login.token, oldPass, newPass1);
+        UsersManagement userChangePassword = new UsersManagement();
+        serverResponse = userChangePassword.userChangePassword(Login.PUBLIC_URL_USER, Login.token, oldPass, newPass1);
         
         //Mirem el tipus de missatge que retorna el servidor
         serverMessageOK = JsonUtils.findJsonValue(serverResponse, "OK");
