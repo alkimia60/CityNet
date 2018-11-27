@@ -37,12 +37,12 @@ public class IncidentRequests {
         sessionToken = ClientRequests.token;
 
         //Incident to notify
-        Incident incident = new Incident("D9GK5J", Incident.IT_FULL);
+        Incident incident = new Incident("123AAA", Incident.IT_FULL);
         IncidentRequests incRqsts = new IncidentRequests();
         //Incident notification
         incRqsts.incidentNotification(URL, sessionToken, incident);
         //Incident finalization
-        //incRqsts.incidentFinalize(URL, sessionToken, 4);
+        //incRqsts.incidentFinalize(URL, sessionToken,12);
 
     }
 
