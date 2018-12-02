@@ -470,18 +470,15 @@ public class ContainerAdd extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_btnAddActionPerformed
 
     private void txtContainerIdFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtContainerIdFocusGained
-        txtContainerId.setSelectionStart(0);
-        txtContainerId.setSelectionEnd(txtContainerId.getText().length());
+        txtContainerId.selectAll();
     }//GEN-LAST:event_txtContainerIdFocusGained
 
     private void txtLatitudeFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtLatitudeFocusGained
-        txtLatitude.setSelectionStart(0);
-        txtLatitude.setSelectionEnd(txtLatitude.getText().length());
+        txtLatitude.selectAll();
     }//GEN-LAST:event_txtLatitudeFocusGained
 
     private void txtLongitudeFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtLongitudeFocusGained
-        txtLongitude.setSelectionStart(0);
-        txtLongitude.setSelectionEnd(txtLongitude.getText().length());
+        txtLongitude.selectAll();
     }//GEN-LAST:event_txtLongitudeFocusGained
 
 

@@ -111,6 +111,11 @@ public class UserUpdateProfile extends javax.swing.JInternalFrame {
         });
 
         txtSurname.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
+        txtSurname.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                txtSurnameFocusGained(evt);
+            }
+        });
 
         lblSurname.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
         lblSurname.setText("Cognoms:");
@@ -119,16 +124,31 @@ public class UserUpdateProfile extends javax.swing.JInternalFrame {
         lblAddress.setText("Adreça:");
 
         txtAddress.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
+        txtAddress.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                txtAddressFocusGained(evt);
+            }
+        });
 
         lblPostalCode.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
         lblPostalCode.setText("CP:");
 
         txtPostalCode.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
+        txtPostalCode.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                txtPostalCodeFocusGained(evt);
+            }
+        });
 
         lblCity.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
         lblCity.setText("Població:");
 
         txtCity.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
+        txtCity.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                txtCityFocusGained(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanelUserProfileLayout = new javax.swing.GroupLayout(jPanelUserProfile);
         jPanelUserProfile.setLayout(jPanelUserProfileLayout);
@@ -307,9 +327,24 @@ public class UserUpdateProfile extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_btnCancelActionPerformed
 
     private void txtNameFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtNameFocusGained
-        txtName.setSelectionStart(0);
-        txtName.setSelectionEnd(txtName.getText().length());
+        txtName.selectAll();
     }//GEN-LAST:event_txtNameFocusGained
+
+    private void txtSurnameFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtSurnameFocusGained
+        txtSurname.selectAll();
+    }//GEN-LAST:event_txtSurnameFocusGained
+
+    private void txtAddressFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtAddressFocusGained
+        txtAddress.selectAll();
+    }//GEN-LAST:event_txtAddressFocusGained
+
+    private void txtPostalCodeFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtPostalCodeFocusGained
+        txtPostalCode.selectAll();
+    }//GEN-LAST:event_txtPostalCodeFocusGained
+
+    private void txtCityFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtCityFocusGained
+        txtCity.selectAll();
+    }//GEN-LAST:event_txtCityFocusGained
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

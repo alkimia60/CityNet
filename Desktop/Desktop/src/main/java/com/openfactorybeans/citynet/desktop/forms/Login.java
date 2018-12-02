@@ -251,13 +251,11 @@ public class Login extends javax.swing.JFrame {
     }//GEN-LAST:event_btnNewUserActionPerformed
 
     private void txtUserFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtUserFocusGained
-        txtUser.setSelectionStart(0);
-        txtUser.setSelectionEnd(txtUser.getText().length());
+        txtUser.selectAll();
     }//GEN-LAST:event_txtUserFocusGained
 
     private void pswPasswordFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_pswPasswordFocusGained
-        pswPassword.setSelectionStart(0);
-        pswPassword.setSelectionEnd(pswPassword.getPassword().length);
+        pswPassword.selectAll();
     }//GEN-LAST:event_pswPasswordFocusGained
 
     /**

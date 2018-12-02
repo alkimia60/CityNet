@@ -58,16 +58,31 @@ public class UserChangePassword extends javax.swing.JInternalFrame {
         lblOldPass.setText("Contrasenya antiga:");
 
         jPassOldPass.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
+        jPassOldPass.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                jPassOldPassFocusGained(evt);
+            }
+        });
 
         lblNewPass1.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
         lblNewPass1.setText("Contrasenya nova:");
 
         jPassNewPass1.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
+        jPassNewPass1.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                jPassNewPass1FocusGained(evt);
+            }
+        });
 
         lblNewPass2.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
         lblNewPass2.setText("Repetir contrasenya nova:");
 
         jPassNewPass2.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
+        jPassNewPass2.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                jPassNewPass2FocusGained(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanelDetailLayout = new javax.swing.GroupLayout(jPanelDetail);
         jPanelDetail.setLayout(jPanelDetailLayout);
@@ -226,6 +241,18 @@ public class UserChangePassword extends javax.swing.JInternalFrame {
         this.dispose();
 
     }//GEN-LAST:event_btnCancelActionPerformed
+
+    private void jPassOldPassFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jPassOldPassFocusGained
+        jPassOldPass.selectAll();
+    }//GEN-LAST:event_jPassOldPassFocusGained
+
+    private void jPassNewPass1FocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jPassNewPass1FocusGained
+        jPassNewPass1.selectAll();
+    }//GEN-LAST:event_jPassNewPass1FocusGained
+
+    private void jPassNewPass2FocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jPassNewPass2FocusGained
+        jPassNewPass2.selectAll();
+    }//GEN-LAST:event_jPassNewPass2FocusGained
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

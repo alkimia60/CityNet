@@ -271,32 +271,52 @@ public class UserAdd extends javax.swing.JInternalFrame {
         lblName.setText("Nom:");
 
         txtName.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
-        txtName.setText("Name");
         txtName.setPreferredSize(new java.awt.Dimension(85, 27));
+        txtName.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                txtNameFocusGained(evt);
+            }
+        });
 
         lblSurname.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
         lblSurname.setText("Cognoms:");
 
         txtSurname.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
-        txtSurname.setText("Surnames");
+        txtSurname.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                txtSurnameFocusGained(evt);
+            }
+        });
 
         lblAddress.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
         lblAddress.setText("Adreça:");
 
         txtAddress.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
-        txtAddress.setText("Address");
+        txtAddress.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                txtAddressFocusGained(evt);
+            }
+        });
 
         lblPostCode.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
         lblPostCode.setText("CP:");
 
         txtPostCode.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
-        txtPostCode.setText("Postal C");
+        txtPostCode.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                txtPostCodeFocusGained(evt);
+            }
+        });
 
         lblCity.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
         lblCity.setText("Població:");
 
         txtCity.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
-        txtCity.setText("City");
+        txtCity.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                txtCityFocusGained(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanelPersonalInfoLayout = new javax.swing.GroupLayout(jPanelPersonalInfo);
         jPanelPersonalInfo.setLayout(jPanelPersonalInfoLayout);
@@ -364,19 +384,31 @@ public class UserAdd extends javax.swing.JInternalFrame {
         lblEmail.setText("Email:");
 
         txtEmail.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
-        txtEmail.setText("Email");
+        txtEmail.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                txtEmailFocusGained(evt);
+            }
+        });
 
         lblPass1.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
         lblPass1.setText("Contrasenya:");
 
         pswPass1.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
-        pswPass1.setText("pass");
+        pswPass1.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                pswPass1FocusGained(evt);
+            }
+        });
 
         lblPass2.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
         lblPass2.setText("Repetir contrasenya:");
 
         pswPass2.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
-        pswPass2.setText("pass");
+        pswPass2.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                pswPass2FocusGained(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanelLoginLayout = new javax.swing.GroupLayout(jPanelLogin);
         jPanelLogin.setLayout(jPanelLoginLayout);
@@ -600,6 +632,38 @@ public class UserAdd extends javax.swing.JInternalFrame {
         }
  
     }//GEN-LAST:event_btnAddActionPerformed
+
+    private void txtNameFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtNameFocusGained
+        txtName.selectAll();
+    }//GEN-LAST:event_txtNameFocusGained
+
+    private void txtSurnameFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtSurnameFocusGained
+        txtSurname.selectAll();
+    }//GEN-LAST:event_txtSurnameFocusGained
+
+    private void txtAddressFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtAddressFocusGained
+        txtAddress.selectAll();
+    }//GEN-LAST:event_txtAddressFocusGained
+
+    private void txtPostCodeFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtPostCodeFocusGained
+        txtPostCode.selectAll();
+    }//GEN-LAST:event_txtPostCodeFocusGained
+
+    private void txtCityFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtCityFocusGained
+        txtCity.selectAll();
+    }//GEN-LAST:event_txtCityFocusGained
+
+    private void txtEmailFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtEmailFocusGained
+        txtEmail.selectAll();
+    }//GEN-LAST:event_txtEmailFocusGained
+
+    private void pswPass1FocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_pswPass1FocusGained
+        pswPass1.selectAll();
+    }//GEN-LAST:event_pswPass1FocusGained
+
+    private void pswPass2FocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_pswPass2FocusGained
+        pswPass2.selectAll();
+    }//GEN-LAST:event_pswPass2FocusGained
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
