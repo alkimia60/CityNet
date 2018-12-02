@@ -139,6 +139,9 @@
               <Dimension value="[85, 27]"/>
             </Property>
           </Properties>
+          <Events>
+            <EventHandler event="focusGained" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="txtNameFocusGained"/>
+          </Events>
         </Component>
         <Component class="javax.swing.JTextField" name="txtSurname">
           <Properties>

@@ -89,6 +89,11 @@ public class Login extends javax.swing.JFrame {
         txtUser.setForeground(new java.awt.Color(0, 0, 0));
         txtUser.setToolTipText("Email");
         txtUser.setNextFocusableComponent(pswPassword);
+        txtUser.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                txtUserFocusGained(evt);
+            }
+        });
 
         lblPassword.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
         lblPassword.setForeground(new java.awt.Color(255, 255, 255));
@@ -97,6 +102,11 @@ public class Login extends javax.swing.JFrame {
         pswPassword.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
         pswPassword.setForeground(new java.awt.Color(0, 0, 0));
         pswPassword.setNextFocusableComponent(btnLogin);
+        pswPassword.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                pswPasswordFocusGained(evt);
+            }
+        });
 
         lblMessages.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
         lblMessages.setForeground(new java.awt.Color(102, 0, 0));
@@ -239,6 +249,16 @@ public class Login extends javax.swing.JFrame {
         this.setVisible(false);
         
     }//GEN-LAST:event_btnNewUserActionPerformed
+
+    private void txtUserFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtUserFocusGained
+        txtUser.setSelectionStart(0);
+        txtUser.setSelectionEnd(txtUser.getText().length());
+    }//GEN-LAST:event_txtUserFocusGained
+
+    private void pswPasswordFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_pswPasswordFocusGained
+        pswPassword.setSelectionStart(0);
+        pswPassword.setSelectionEnd(pswPassword.getPassword().length);
+    }//GEN-LAST:event_pswPasswordFocusGained
 
     /**
      * @param args the command line arguments

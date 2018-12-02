@@ -89,6 +89,11 @@ public class ContainerAdd extends javax.swing.JInternalFrame {
 
         txtContainerId.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
         txtContainerId.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        txtContainerId.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                txtContainerIdFocusGained(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanelContainerIDLayout = new javax.swing.GroupLayout(jPanelContainerID);
         jPanelContainerID.setLayout(jPanelContainerIDLayout);
@@ -148,6 +153,11 @@ public class ContainerAdd extends javax.swing.JInternalFrame {
         txtLatitude.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
         txtLatitude.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         txtLatitude.setToolTipText("Del tius 0.0000");
+        txtLatitude.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                txtLatitudeFocusGained(evt);
+            }
+        });
 
         lblLongitude.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
         lblLongitude.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -156,6 +166,11 @@ public class ContainerAdd extends javax.swing.JInternalFrame {
         txtLongitude.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
         txtLongitude.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         txtLongitude.setToolTipText("Del tius 0.0000");
+        txtLongitude.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                txtLongitudeFocusGained(evt);
+            }
+        });
 
         btnAdd.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
         btnAdd.setText("Afegir");
@@ -453,6 +468,21 @@ public class ContainerAdd extends javax.swing.JInternalFrame {
         }
         
     }//GEN-LAST:event_btnAddActionPerformed
+
+    private void txtContainerIdFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtContainerIdFocusGained
+        txtContainerId.setSelectionStart(0);
+        txtContainerId.setSelectionEnd(txtContainerId.getText().length());
+    }//GEN-LAST:event_txtContainerIdFocusGained
+
+    private void txtLatitudeFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtLatitudeFocusGained
+        txtLatitude.setSelectionStart(0);
+        txtLatitude.setSelectionEnd(txtLatitude.getText().length());
+    }//GEN-LAST:event_txtLatitudeFocusGained
+
+    private void txtLongitudeFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtLongitudeFocusGained
+        txtLongitude.setSelectionStart(0);
+        txtLongitude.setSelectionEnd(txtLongitude.getText().length());
+    }//GEN-LAST:event_txtLongitudeFocusGained
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

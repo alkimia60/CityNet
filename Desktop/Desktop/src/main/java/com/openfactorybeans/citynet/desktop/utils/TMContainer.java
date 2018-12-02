@@ -1,7 +1,9 @@
 package com.openfactorybeans.citynet.desktop.utils;
 
 import com.openfactorybeans.citynet.desktop.model.Container;
+import java.util.LinkedList;
 import java.util.List;
+import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
 
@@ -16,7 +18,10 @@ public class TMContainer implements TableModel{
     /*private Class[] typesClass = new Class[] {
       java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class
     };*/
-
+    
+    //Subscriptors
+    private LinkedList subscribers  = new LinkedList();
+    
     public TMContainer(List<Container> containers) {
         
         this.containers = containers;
@@ -165,10 +170,29 @@ public class TMContainer implements TableModel{
     @Override
     public void addTableModelListener(TableModelListener l) {
         
+        subscribers.add(l);
+        
     }
 
     @Override
     public void removeTableModelListener(TableModelListener l) {
+        
+        subscribers.remove(l);
+        
+    }
+    
+    public void removeRow(int rowIndex) {
+        
+        //Eliminem la fila
+        containers.remove(rowIndex);
+        
+        //Creem un TableModelEvent
+        TableModelEvent TMEvent = new TableModelEvent(this, rowIndex, rowIndex, TableModelEvent.ALL_COLUMNS, TableModelEvent.DELETE);
+        
+        //I passem l'event als subscriptors
+        for (int i = 0; i < subscribers.size(); i++) {
+            ((TableModelListener) subscribers.get(i)).tableChanged(TMEvent);
+        }
         
     }
 

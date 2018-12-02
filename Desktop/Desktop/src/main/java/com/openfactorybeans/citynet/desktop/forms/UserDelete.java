@@ -2,10 +2,11 @@ package com.openfactorybeans.citynet.desktop.forms;
 
 import com.openfactorybeans.citynet.desktop.management.UsersManagement;
 import com.openfactorybeans.citynet.desktop.utils.JsonUtils;
+import com.openfactorybeans.citynet.desktop.utils.TMUser;
 import javax.swing.JOptionPane;
 
 /**
- * Formulario per eliminar un usuari
+ * Formulari per eliminar un usuari
  * 
  * @author Jose
  */
@@ -16,22 +17,29 @@ public class UserDelete extends javax.swing.JInternalFrame {
     private String serverResponse;
     private String serverMessageError;
     private String serverMessageOK;
+    private TMUser modelTable;
+    private int selectedRow;
 
     /**
      * Creates new form UserDelete
-     * @param email
-     * @param name
-     * @param surname
-     * @param address
-     * @param postalCode
-     * @param city 
+     * 
+     * @param email Email de l'usuari a eliminar
+     * @param name Nom de l'usuari a eliminar
+     * @param surname Cognoms de l'usuari a eliminar
+     * @param address Adreça de l'usuari a eliminar
+     * @param postalCode Codi postal de l'usuari a eliminar
+     * @param city Ciutat de l'usuari a eliminar
+     * @param modelTable Model de la taula d'usuaris
+     * @param selectedRow Index de la fila seleccionada
      */
-    public UserDelete(String email, String name, String surname, String address, String postalCode, String city) {
+    public UserDelete(String email, String name, String surname, String address, String postalCode, String city, TMUser modelTable, int selectedRow) {
         initComponents();
         
         btnCancel.requestFocus();
         
         this.email = email;
+        this.modelTable = modelTable;
+        this.selectedRow = selectedRow;
 
         //Passem el valor de la fila al formulari
         lblUserName.setText(name);
@@ -226,7 +234,7 @@ public class UserDelete extends javax.swing.JInternalFrame {
 
     private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
         
-        //Posem les variables de null per una nova comunicació amb el server
+        //Posem les variables a null per una nova comunicació amb el server
         serverMessageError = null;
         serverMessageOK = null;
         
@@ -243,11 +251,11 @@ public class UserDelete extends javax.swing.JInternalFrame {
         serverMessageOK = JsonUtils.findJsonValue(serverResponse, "OK");
         serverMessageError = JsonUtils.findJsonValue(serverResponse, "error");
         
-        //Hi ha messatge d'error?
+        //Hi ha missatge d'error?
         if (serverMessageError != null) {
             
             //Mostrem un missatge
-            JOptionPane.showMessageDialog(null, serverMessageError, "CityNet - Esborrar usuari", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, serverMessageError, "CityNet - Eliminar usuari", JOptionPane.ERROR_MESSAGE);
             
             //Si l'error és de sessió finalitzada...
             if (serverMessageError.equals("Not a valid token")) {
@@ -259,11 +267,14 @@ public class UserDelete extends javax.swing.JInternalFrame {
             
         }
         
-        //Si s'ha canviat...
+        //Si s'ha eliminat...
         if (serverMessageOK != null) {
             
             //Mostrem un missatge
-            JOptionPane.showMessageDialog(null, serverMessageOK, "CityNet - Esborrar usuari", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(null, serverMessageOK, "CityNet - Eliminar usuari", JOptionPane.INFORMATION_MESSAGE);
+            
+            modelTable.removeRow(selectedRow);
+            
             //Tanquem el formulari
             this.dispose();
             

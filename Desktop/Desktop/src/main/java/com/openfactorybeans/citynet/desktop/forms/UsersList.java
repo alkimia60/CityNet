@@ -444,7 +444,7 @@ public class UsersList extends javax.swing.JInternalFrame {
             jPanelDetail.repaint();
 
             //Instanciem el InternalFrame
-            userDelete = new UserDelete(email, name, surname, address, postalCode, city);
+            userDelete = new UserDelete(email, name, surname, address, postalCode, city, modelTable, selectedRow);
             
             //Afegim el formulari al panel d'eliminar
             jPanelDetail.add(userDelete);

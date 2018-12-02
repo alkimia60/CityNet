@@ -570,11 +570,8 @@ public class UserAdd extends javax.swing.JInternalFrame {
             
             //Hi ha messatge OK?
             if (serverMessageOK != null) {
-                
-                //Usuari registrat. Tanquem el formulari i tornem al login
-                Login login = new Login();
-                this.setVisible(false);
-                login.setVisible(true);
+
+                this.dispose();
                 
             }
             

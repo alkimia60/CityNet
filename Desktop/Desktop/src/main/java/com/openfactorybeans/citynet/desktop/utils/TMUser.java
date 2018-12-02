@@ -1,7 +1,9 @@
 package com.openfactorybeans.citynet.desktop.utils;
 
 import com.openfactorybeans.citynet.desktop.model.User;
+import java.util.LinkedList;
 import java.util.List;
+import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
 
@@ -14,9 +16,12 @@ public class TMUser implements TableModel {
     
     private List<User> users;
     
-    public TMUser(List<User> list) {
+    //Subscriptors
+    private LinkedList subscribers  = new LinkedList();
+    
+    public TMUser(List<User> users) {
         
-        users = list;
+        this.users = users;
         
     }
 
@@ -166,10 +171,30 @@ public class TMUser implements TableModel {
     @Override
     public void addTableModelListener(TableModelListener l) {
         
+        subscribers.add(l);
+        
     }
 
     @Override
     public void removeTableModelListener(TableModelListener l) {
+        
+        subscribers.add(l);
+        subscribers.remove(1);
+        
+    }
+    
+    public void removeRow(int rowIndex) {
+        
+        //Eliminem la fila
+        users.remove(rowIndex);
+        
+        //Creem un TableModelEvent
+        TableModelEvent TMEvent = new TableModelEvent(this, rowIndex, rowIndex, TableModelEvent.ALL_COLUMNS, TableModelEvent.DELETE);
+        
+        //I passem l'event als subscriptors
+        for (int i = 0; i < subscribers.size(); i++) {
+            ((TableModelListener) subscribers.get(i)).tableChanged(TMEvent);
+        }
         
     }
     

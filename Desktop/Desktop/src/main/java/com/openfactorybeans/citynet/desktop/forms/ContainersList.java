@@ -17,15 +17,17 @@ public class ContainersList extends javax.swing.JInternalFrame {
 
     //Variables finals dels noms de les columnes de la taula
     private final int ID = 0;
-    private final int TIPUS = 1;
-    private final int LATITUD = 2;
-    private final int LONGITUD = 3;
+    private final int TYPE = 1;
+    private final int LATITUDE = 2;
+    private final int LONGITUDE = 3;
     private final int OPERATIVE = 4;
     
     //Variables finals del tipus de filtre per passar al servidor
     private final String ALL = "all";
     private final String TYPE_FIELD = "type";
     private final String OPERATIVE_FIELD = "operative";
+    private String type = "ALL"; //Per defecte tots
+    private int operative = -1; //Per defecte tots
     
     //Declaració de variables pel llistat
     private ContainersManagement listContainers;
@@ -37,7 +39,7 @@ public class ContainersList extends javax.swing.JInternalFrame {
     
     //Declaració dels components que obren finestres
     private IncidentDetail incidentDetail;
-    //UserDelete userDelete;
+    ContainerDelete containerDelete;
     //UserUpdateRol userUpdateRol;
     
     //Variable que informa de la pàgina solicitada al servidor
@@ -78,7 +80,8 @@ public class ContainersList extends javax.swing.JInternalFrame {
         //Conectem amb el servidor per obtenir la pàgina dels contenidors.
         ////////////////////////////////////////////////////////////////////////////
         listContainers = new ContainersManagement();
-        serverResponse = listContainers.listAllContainers(Login.PUBLIC_URL_CONTAINER, Login.token, screen, filterField, filterValue);
+        //serverResponse = listContainers.listAllContainers(Login.PUBLIC_URL_CONTAINER, Login.token, screen, filterField, filterValue);
+        serverResponse = listContainers.listFilteredContainers(Login.PUBLIC_URL_CONTAINER, Login.token, screen, type, operative);
         
         //Mirem el tipus de missatge que retorna el servidor
         serverMessageOK = JsonUtils.findJsonValue(serverResponse, "users");
@@ -92,6 +95,8 @@ public class ContainersList extends javax.swing.JInternalFrame {
         System.out.println("Missatge ERROR: " + serverMessageError);
         System.out.println("Camp de filtrat: " + filterField);
         System.out.println("Valor de filtrat: " + filterValue);
+        System.out.println("Valor de type: " + type);
+        System.out.println("Valor de operative: " + operative);
         System.out.println("");
         
         //Hi ha messatge OK?
@@ -257,6 +262,11 @@ public class ContainersList extends javax.swing.JInternalFrame {
         btnDelete.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
         btnDelete.setText("Eliminar");
         btnDelete.setPreferredSize(new java.awt.Dimension(96, 35));
+        btnDelete.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnDeleteActionPerformed(evt);
+            }
+        });
 
         btnModify.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
         btnModify.setText("Modificar");
@@ -412,8 +422,8 @@ public class ContainersList extends javax.swing.JInternalFrame {
         //Posem la primera pàgina
         screen = 0;
         
-        //El tipus a passar al servidor es type
-        filterField = TYPE_FIELD;
+        //El tipus a passar al servidor és type
+        //filterField = TYPE_FIELD;
         
         //Obtenim el valor de l'element seleccionat
         int filterId = cbxContainerType.getSelectedIndex();
@@ -422,27 +432,27 @@ public class ContainersList extends javax.swing.JInternalFrame {
         switch (filterId) {
             
             case 0:
-                filterValue = ALL;
+                type = ALL;
                 break;
                 
             case 1:
-                filterValue = Container.TYPES_SERVER[filterId - 1]; //paper
+                type = Container.TYPES_SERVER[filterId - 1]; //paper
                 break;
                 
             case 2:
-                filterValue = Container.TYPES_SERVER[filterId - 1]; //glass
+                type = Container.TYPES_SERVER[filterId - 1]; //glass
                 break;
                 
             case 3:
-                filterValue = Container.TYPES_SERVER[filterId - 1]; //packaging
+                type = Container.TYPES_SERVER[filterId - 1]; //packaging
                 break;
                 
             case 4:
-                filterValue = Container.TYPES_SERVER[filterId - 1]; //organic
+                type = Container.TYPES_SERVER[filterId - 1]; //organic
                 break;
                 
             case 5:
-                filterValue = Container.TYPES_SERVER[filterId - 1]; //trash
+                type = Container.TYPES_SERVER[filterId - 1]; //trash
                 break;
 
         }
@@ -456,8 +466,8 @@ public class ContainersList extends javax.swing.JInternalFrame {
         //Posem la primera pàgina
         screen = 0;
         
-        //El tipus a passar al servidor es type
-        filterField = OPERATIVE_FIELD;
+        //El tipus a passar al servidor és operative
+        //filterField = OPERATIVE_FIELD;
         
         //Obtenim el valor de l'element seleccionat
         int filterId = cbxContainerOperative.getSelectedIndex();
@@ -466,16 +476,19 @@ public class ContainersList extends javax.swing.JInternalFrame {
         switch (filterId) {
             
             case 0:
-                filterField = ALL;
-                filterValue = ALL;
+                //filterField = ALL;
+                //filterValue = ALL;
+                operative = -1;
                 break;
                 
             case 1:
-                filterValue = Container.OPERATIVE_SERVER[filterId - 1]; //no o false
+                //filterValue = Container.OPERATIVE_SERVER[filterId - 1]; //no o false
+                operative = 0;
                 break;
                 
             case 2:
-                filterValue = Container.OPERATIVE_SERVER[filterId - 1]; //si o true
+                //filterValue = Container.OPERATIVE_SERVER[filterId - 1]; //si o true
+                operative = 1;
                 break;
 
         }
@@ -538,6 +551,39 @@ public class ContainersList extends javax.swing.JInternalFrame {
             
         }
     }//GEN-LAST:event_btnIncidenceDetailActionPerformed
+
+    private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
+        
+        //Obtenir la fila del contenidor
+        int selectedRow = jTableContainers.getSelectedRow();
+        
+        if (selectedRow != -1) {
+            
+            //Obtenim el valor dels camps de la fila
+            String id = modelTable.getValueAt(selectedRow, ID).toString();
+            String type = modelTable.getValueAt(selectedRow, TYPE).toString();
+            String latitude = modelTable.getValueAt(selectedRow, LATITUDE).toString();
+            String longitude = modelTable.getValueAt(selectedRow, LONGITUDE).toString();
+            
+            //Netejem qualsevol finestra oberta anteriorment en l'escriptori
+            jPanelDetail.removeAll();
+            jPanelDetail.repaint();
+            
+            //Instanciem el InternalFrame
+            containerDelete = new ContainerDelete(id, type, latitude, longitude, modelTable, selectedRow);
+            
+            //Afegim el formulari al panel d'eliminar
+            jPanelDetail.add(containerDelete);
+            
+            //Centrem la finestra
+            FormsUtils.centerJInternalFrame(jPanelDetail, containerDelete);
+            
+            //El fem visible
+            containerDelete.setVisible(true);
+
+        }
+        
+    }//GEN-LAST:event_btnDeleteActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

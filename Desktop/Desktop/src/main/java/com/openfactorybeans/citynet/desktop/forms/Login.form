@@ -151,6 +151,9 @@
               <ComponentRef name="pswPassword"/>
             </Property>
           </Properties>
+          <Events>
+            <EventHandler event="focusGained" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="txtUserFocusGained"/>
+          </Events>
         </Component>
         <Component class="javax.swing.JLabel" name="lblPassword">
           <Properties>
@@ -175,6 +178,9 @@
               <ComponentRef name="btnLogin"/>
             </Property>
           </Properties>
+          <Events>
+            <EventHandler event="focusGained" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="pswPasswordFocusGained"/>
+          </Events>
         </Component>
         <Component class="javax.swing.JLabel" name="lblMessages">
           <Properties>

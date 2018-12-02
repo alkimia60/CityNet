@@ -69,7 +69,7 @@ public class ContainersManagement {
      * @param screen Número de pàgina sol·licitada al servidor. 0 és la primera
      * @param filterField Camp pel qual es vol filtrar
      * @param filterValue Valor del filtre
-     * @return 
+     * @return La resposta del servidor
      */
     public String listAllContainers(String url, String token, int screen, String filterField, String filterValue) {
         try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
@@ -96,6 +96,76 @@ public class ContainersManagement {
             Logger.getLogger(ContainersManagement.class.getName()).log(Level.SEVERE, null, ex);
         }
         return "Error listAllUsersFilter";
+    }
+    
+    /**
+     * Mètode per obtenir un llistat de contenidors amb filtres
+     * 
+     * @param url URL del servidor
+     * @param token Identificatiu de sessió iniciada
+     * @param screen Número de pàgina sol·licitada al servidor. 0 és la primera
+     * @param type Tipus de contenidor o tots els tipus
+     * @param operative Valor 1 per mostrat els operatius, 0 per veure els no operatius o tots
+     * @return La resposta del servidor
+     */
+    public String listFilteredContainers(String url, String token, int screen, String type, int operative) {
+        try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
+            HttpPost httpPost = new HttpPost(url);
+            //List of paràmeters to send
+            List<NameValuePair> nvps = new ArrayList<>();
+            nvps.add(new BasicNameValuePair("action", "ListFilteredContainers"));
+            nvps.add(new BasicNameValuePair("token", token));
+            nvps.add(new BasicNameValuePair("screen", String.valueOf(screen)));
+            nvps.add(new BasicNameValuePair("type", type));
+            nvps.add(new BasicNameValuePair("operative", String.valueOf(operative)));
+
+            httpPost.setEntity(new UrlEncodedFormEntity(nvps));
+
+            System.out.println("Executing request " + httpPost.getRequestLine());
+
+            // Create a custom response handler
+            String responseBody = httpclient.execute(httpPost, customResponseHandler());
+            System.out.println("----------------------------------------");
+            System.out.println(responseBody);//Server response
+            return responseBody;
+
+        } catch (Exception ex) {
+            Logger.getLogger(ContainersManagement.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return "Error listfilteredContainers";
+    }
+    
+    /**
+     * Mètode per esborrar un contenidor
+     * 
+     * @param url URL del servidor
+     * @param token Identificatiu de sessió iniciada
+     * @param containerId Id del contenidor a esborrar
+     * @return 
+     */
+    public String containerDelete(String url, String token, String containerId) {
+        try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
+            HttpPost httpPost = new HttpPost(url);
+            //List of paràmeters to send
+            List<NameValuePair> nvps = new ArrayList<>();
+            nvps.add(new BasicNameValuePair("action", "ContainerDelete"));
+            nvps.add(new BasicNameValuePair("token", token));
+            nvps.add(new BasicNameValuePair("containerId", containerId));
+
+            httpPost.setEntity(new UrlEncodedFormEntity(nvps));
+
+            System.out.println("Executing request " + httpPost.getRequestLine());
+
+            // Create a custom response handler
+            String responseBody = httpclient.execute(httpPost, customResponseHandler());
+            System.out.println("----------------------------------------");
+            System.out.println(responseBody); //Server response
+            return responseBody;
+
+        } catch (Exception ex) {
+            Logger.getLogger(ContainersManagement.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return "Error containerDelete";
     }
     
     /**

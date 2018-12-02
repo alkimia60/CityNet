@@ -104,6 +104,11 @@ public class UserUpdateProfile extends javax.swing.JInternalFrame {
 
         txtName.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
         txtName.setPreferredSize(new java.awt.Dimension(85, 27));
+        txtName.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                txtNameFocusGained(evt);
+            }
+        });
 
         txtSurname.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
 
@@ -300,6 +305,11 @@ public class UserUpdateProfile extends javax.swing.JInternalFrame {
         this.dispose();
         
     }//GEN-LAST:event_btnCancelActionPerformed
+
+    private void txtNameFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtNameFocusGained
+        txtName.setSelectionStart(0);
+        txtName.setSelectionEnd(txtName.getText().length());
+    }//GEN-LAST:event_txtNameFocusGained
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

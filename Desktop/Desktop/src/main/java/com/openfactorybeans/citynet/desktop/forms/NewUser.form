@@ -166,6 +166,9 @@
                   <Dimension value="[85, 27]"/>
                 </Property>
               </Properties>
+              <Events>
+                <EventHandler event="focusGained" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="txtNameFocusGained"/>
+              </Events>
             </Component>
             <Component class="javax.swing.JLabel" name="lblSurname">
               <Properties>
@@ -182,6 +185,9 @@
                 </Property>
                 <Property name="text" type="java.lang.String" value="Surnames"/>
               </Properties>
+              <Events>
+                <EventHandler event="focusGained" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="txtSurnameFocusGained"/>
+              </Events>
             </Component>
             <Component class="javax.swing.JLabel" name="lblAddress">
               <Properties>
@@ -198,6 +204,9 @@
                 </Property>
                 <Property name="text" type="java.lang.String" value="Address"/>
               </Properties>
+              <Events>
+                <EventHandler event="focusGained" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="txtAddressFocusGained"/>
+              </Events>
             </Component>
             <Component class="javax.swing.JLabel" name="lblPostCode">
               <Properties>
@@ -214,6 +223,9 @@
                 </Property>
                 <Property name="text" type="java.lang.String" value="Postal C"/>
               </Properties>
+              <Events>
+                <EventHandler event="focusGained" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="txtPostCodeFocusGained"/>
+              </Events>
             </Component>
             <Component class="javax.swing.JLabel" name="lblCity">
               <Properties>
@@ -230,6 +242,9 @@
                 </Property>
                 <Property name="text" type="java.lang.String" value="City"/>
               </Properties>
+              <Events>
+                <EventHandler event="focusGained" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="txtCityFocusGained"/>
+              </Events>
             </Component>
           </SubComponents>
         </Container>
@@ -316,6 +331,9 @@
                 </Property>
                 <Property name="text" type="java.lang.String" value="Email"/>
               </Properties>
+              <Events>
+                <EventHandler event="focusGained" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="txtEmailFocusGained"/>
+              </Events>
             </Component>
             <Component class="javax.swing.JLabel" name="lblPass1">
               <Properties>
@@ -332,6 +350,9 @@
                 </Property>
                 <Property name="text" type="java.lang.String" value="pass"/>
               </Properties>
+              <Events>
+                <EventHandler event="focusGained" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="pswPass1FocusGained"/>
+              </Events>
             </Component>
             <Component class="javax.swing.JLabel" name="lblPass2">
               <Properties>
@@ -348,6 +369,9 @@
                 </Property>
                 <Property name="text" type="java.lang.String" value="pass"/>
               </Properties>
+              <Events>
+                <EventHandler event="focusGained" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="pswPass2FocusGained"/>
+              </Events>
             </Component>
           </SubComponents>
         </Container>
