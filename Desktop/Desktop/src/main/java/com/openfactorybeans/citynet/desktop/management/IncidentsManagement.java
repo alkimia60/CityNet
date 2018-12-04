@@ -1,5 +1,6 @@
 package com.openfactorybeans.citynet.desktop.management;
 
+import com.google.gson.Gson;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +26,7 @@ public class IncidentsManagement {
     
     /**
      * Demanem al servidor les dades de la inciència seleccionada
+     * 
      * @param url URL del servidor
      * @param token Identificatiu de sessió iniciada
      * @param containerId Identificatiu del container
@@ -50,9 +52,44 @@ public class IncidentsManagement {
             return responseBody;
 
         } catch (Exception ex) {
-            Logger.getLogger(UsersManagement.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(IncidentsManagement.class.getName()).log(Level.SEVERE, null, ex);
         }
         return "Error askContainerIncident";
+    }
+    
+    /**
+     * Notifiquem al servidor la incidència que s'ha tancat
+     * 
+     * @param url URL del servidor
+     * @param token Identificatiu de sessió iniciada
+     * @param incidentID Identificatiu de la incidència
+     * @return Ok o error
+     */
+    public String incidentFinalize(String url, String token, int incidentID) {
+        try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
+            HttpPost httpPost = new HttpPost(url);
+            //Gson object to convert Container Object into String
+            //Gson gson = new Gson();
+            //List of paràmeters to send
+            List<NameValuePair> nvps = new ArrayList<>();
+            nvps.add(new BasicNameValuePair("action", "IncidentFinalize"));
+            nvps.add(new BasicNameValuePair("token", token));
+            nvps.add(new BasicNameValuePair("incidentId", String.valueOf(incidentID)));
+
+            httpPost.setEntity(new UrlEncodedFormEntity(nvps));
+
+            System.out.println("Executing request " + httpPost.getRequestLine());
+
+            // Create a custom response handler
+            String responseBody = httpclient.execute(httpPost, customResponseHandler());
+            System.out.println("----------------------------------------");
+            System.out.println(responseBody);
+            return responseBody; //Server response
+
+        } catch (Exception ex) {
+            Logger.getLogger(IncidentsManagement.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return "Error incidentFinalize";
     }
     
     /**

@@ -6,8 +6,14 @@
 package com.openfactorybeans.citynet.desktop.forms;
 
 import com.openfactorybeans.citynet.desktop.management.IncidentsManagement;
+import com.openfactorybeans.citynet.desktop.model.Container;
 import com.openfactorybeans.citynet.desktop.model.Incident;
+import com.openfactorybeans.citynet.desktop.utils.ContainerMap;
 import com.openfactorybeans.citynet.desktop.utils.JsonUtils;
+import com.openfactorybeans.citynet.desktop.utils.TMContainer;
+import java.awt.Image;
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 
 /**
@@ -22,7 +28,12 @@ public class IncidentDetail extends javax.swing.JInternalFrame {
     private final String BROKEN_TXT = "Trencat";
     private final String FULL_TXT = "Ple";
     
-    //Variables per la connexxió amb el servidor
+    //Variables de la taula
+    private Container container;
+    private TMContainer modelTable;
+    private int selectedRow;
+    
+    //Variables per la connexió amb el servidor
     private String serverResponse;
     private String serverMessageOK;
     private String serverMessageError;
@@ -30,18 +41,22 @@ public class IncidentDetail extends javax.swing.JInternalFrame {
     //Variables per la incidència
     private IncidentsManagement incidentManagement;
     private Incident incident;
-
+    
     /**
      * Creates new form IncidentDetail
      */
-    public IncidentDetail(String containerID) {
+    public IncidentDetail(Container container, TMContainer modelTable, int selectedRow) {
         initComponents();
+        
+        this.container = container;
+        this.modelTable = modelTable;
+        this.selectedRow = selectedRow;
         
         ////////////////////////////////////////////////////////////////////////////
         //Conectem amb el servidor per obtenidr les dades de la incidència
         ////////////////////////////////////////////////////////////////////////////
         incidentManagement = new IncidentsManagement();
-        serverResponse = incidentManagement.askIncident(Login.PUBLIC_URL_CONTAINER, Login.token, containerID);
+        serverResponse = incidentManagement.askIncident(Login.PUBLIC_URL_CONTAINER, Login.token, this.container.getId());
 
         //Mirem el tipus de missatge que retorna el servidor
         serverMessageOK = JsonUtils.findJsonValue(serverResponse, "OK");
@@ -70,7 +85,7 @@ public class IncidentDetail extends javax.swing.JInternalFrame {
             //Passem la incidència al formulari
             lblTxtIncidentId.setText(String.valueOf(incident.getId()));
             String[] dateOnly =incident.getDate().split(" "); //Separem la data i l'hora
-            lblTxtDateOpen.setText(dateOnly[0]); //Agafem no més la data
+            lblTxtDateOpen.setText(dateOnly[0]); //Agafem només la data
             lblTxtContainerId.setText(incident.getContainer());
             if (incident.getType().equals(BROKEN)) lblTxtIncidentType.setText(BROKEN_TXT);
             if (incident.getType().equals(FULL)) lblTxtIncidentType.setText(FULL_TXT);
@@ -101,31 +116,40 @@ public class IncidentDetail extends javax.swing.JInternalFrame {
         lblTxtUser = new javax.swing.JLabel();
         lblTitle = new javax.swing.JLabel();
         btnOK = new javax.swing.JButton();
+        btnCloseIncidence = new javax.swing.JButton();
+        btnMap = new javax.swing.JButton();
+        jPanelMap = new javax.swing.JPanel();
+        lblMap = new javax.swing.JLabel();
 
         lblIncidentId.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
         lblIncidentId.setText("Incidència n°:");
 
         lblTxtIncidentId.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        lblTxtIncidentId.setForeground(new java.awt.Color(102, 0, 0));
 
         lblDateOpen.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
         lblDateOpen.setText("Data obertura:");
 
         lblTxtDateOpen.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        lblTxtDateOpen.setForeground(new java.awt.Color(102, 0, 0));
 
         lblContainerId.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
         lblContainerId.setText("Contenidor:");
 
         lblTxtContainerId.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        lblTxtContainerId.setForeground(new java.awt.Color(102, 0, 0));
 
         lblIncidentType.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
         lblIncidentType.setText("Tipus:");
 
         lblTxtIncidentType.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        lblTxtIncidentType.setForeground(new java.awt.Color(102, 0, 0));
 
         lblUser.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
         lblUser.setText("Usuari:");
 
         lblTxtUser.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        lblTxtUser.setForeground(new java.awt.Color(102, 0, 0));
 
         javax.swing.GroupLayout jPanelDetailIncidentLayout = new javax.swing.GroupLayout(jPanelDetailIncident);
         jPanelDetailIncident.setLayout(jPanelDetailIncidentLayout);
@@ -139,10 +163,6 @@ public class IncidentDetail extends javax.swing.JInternalFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(lblTxtUser, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(jPanelDetailIncidentLayout.createSequentialGroup()
-                        .addComponent(lblIncidentId)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(lblTxtIncidentId, javax.swing.GroupLayout.PREFERRED_SIZE, 53, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
                         .addComponent(lblIncidentType)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(lblTxtIncidentType, javax.swing.GroupLayout.PREFERRED_SIZE, 86, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -151,10 +171,13 @@ public class IncidentDetail extends javax.swing.JInternalFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(lblTxtDateOpen, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanelDetailIncidentLayout.createSequentialGroup()
-                        .addGap(176, 176, 176)
                         .addComponent(lblContainerId)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(lblTxtContainerId, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(lblTxtContainerId, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(lblIncidentId)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(lblTxtIncidentId, javax.swing.GroupLayout.PREFERRED_SIZE, 53, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanelDetailIncidentLayout.setVerticalGroup(
@@ -163,16 +186,14 @@ public class IncidentDetail extends javax.swing.JInternalFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(jPanelDetailIncidentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(lblContainerId, javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(lblTxtContainerId, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 19, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(lblTxtContainerId, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 19, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanelDetailIncidentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addComponent(lblIncidentId, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(lblTxtIncidentId, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 19, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(18, 18, 18)
                 .addGroup(jPanelDetailIncidentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanelDetailIncidentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanelDetailIncidentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(lblIncidentId, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(lblTxtIncidentId, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanelDetailIncidentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(lblIncidentType)
-                            .addComponent(lblTxtIncidentType, javax.swing.GroupLayout.PREFERRED_SIZE, 19, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(lblIncidentType)
+                    .addComponent(lblTxtIncidentType, javax.swing.GroupLayout.PREFERRED_SIZE, 19, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(jPanelDetailIncidentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                         .addComponent(lblDateOpen, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(lblTxtDateOpen, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 19, javax.swing.GroupLayout.PREFERRED_SIZE)))
@@ -195,6 +216,35 @@ public class IncidentDetail extends javax.swing.JInternalFrame {
             }
         });
 
+        btnCloseIncidence.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        btnCloseIncidence.setText("Tancar incidència");
+        btnCloseIncidence.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCloseIncidenceActionPerformed(evt);
+            }
+        });
+
+        btnMap.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        btnMap.setText("Mapa");
+        btnMap.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnMapActionPerformed(evt);
+            }
+        });
+
+        jPanelMap.setPreferredSize(new java.awt.Dimension(500, 275));
+
+        javax.swing.GroupLayout jPanelMapLayout = new javax.swing.GroupLayout(jPanelMap);
+        jPanelMap.setLayout(jPanelMapLayout);
+        jPanelMapLayout.setHorizontalGroup(
+            jPanelMapLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(lblMap, javax.swing.GroupLayout.DEFAULT_SIZE, 500, Short.MAX_VALUE)
+        );
+        jPanelMapLayout.setVerticalGroup(
+            jPanelMapLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(lblMap, javax.swing.GroupLayout.DEFAULT_SIZE, 275, Short.MAX_VALUE)
+        );
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -202,12 +252,17 @@ public class IncidentDetail extends javax.swing.JInternalFrame {
             .addComponent(lblTitle, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jPanelDetailIncident, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
-            .addGroup(layout.createSequentialGroup()
-                .addGap(220, 220, 220)
-                .addComponent(btnOK)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jPanelDetailIncident, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(btnOK)
+                        .addGap(18, 18, 18)
+                        .addComponent(btnCloseIncidence)
+                        .addGap(18, 18, 18)
+                        .addComponent(btnMap)))
+                .addGap(18, 18, 18)
+                .addComponent(jPanelMap, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(15, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -215,10 +270,16 @@ public class IncidentDetail extends javax.swing.JInternalFrame {
                 .addContainerGap()
                 .addComponent(lblTitle)
                 .addGap(18, 18, 18)
-                .addComponent(jPanelDetailIncident, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(btnOK)
-                .addContainerGap(42, Short.MAX_VALUE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jPanelDetailIncident, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(btnOK)
+                            .addComponent(btnCloseIncidence)
+                            .addComponent(btnMap)))
+                    .addComponent(jPanelMap, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(25, Short.MAX_VALUE))
         );
 
         pack();
@@ -231,14 +292,85 @@ public class IncidentDetail extends javax.swing.JInternalFrame {
         
     }//GEN-LAST:event_btnOKActionPerformed
 
+    private void btnCloseIncidenceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCloseIncidenceActionPerformed
+        
+        //Posem les variables a null per una nova comunicació amb el server
+        serverMessageError = null;
+        serverMessageOK = null;
+        
+        //Agafem el id de la incidència
+        int incidentId = incident.getId();
+        
+        ////////////////////////////////////////////////////////////////////////////
+        //Conectem amb el servidor per eliminar un contenidor
+        ////////////////////////////////////////////////////////////////////////////
+        
+        IncidentsManagement incident = new IncidentsManagement();
+        serverResponse = incident.incidentFinalize(Login.PUBLIC_URL_INCIDENT, Login.token, incidentId);
+        
+        System.out.println("Resposta server al tancar una incidència: " + serverResponse);
+        
+        //Mirem el tipus de missatge que retorna el servidor
+        serverMessageOK = JsonUtils.findJsonValue(serverResponse, "OK");
+        serverMessageError = JsonUtils.findJsonValue(serverResponse, "error");
+        
+        //Hi ha missatge d'error?
+        if (serverMessageError != null) {
+            
+            //Mostrem un missatge
+            JOptionPane.showMessageDialog(null, serverMessageError, "City}Net - Tancar incidència", JOptionPane.ERROR_MESSAGE);
+            
+            //Si l'error és de sessió finalitzada...
+            if (serverResponse.equals("Not a valid token")) {
+                
+                //Tanquem l'aplicació
+                System.exit(0);
+                
+            }
+            
+        }
+        
+        //Si s'ha tancat la incidència
+        if (serverMessageOK != null) {
+            
+            //Mostrem un missatge
+            JOptionPane.showMessageDialog(null, serverMessageOK, "CityNet - Tancar incidçencia", JOptionPane.INFORMATION_MESSAGE);
+            
+            //Actualitzem la taula
+            modelTable.operativeChanged(selectedRow);
+            
+            //Tanquem el formulari
+            this.dispose();
+            
+        }
+
+    }//GEN-LAST:event_btnCloseIncidenceActionPerformed
+
+    private void btnMapActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnMapActionPerformed
+        
+        //Instanciem el mapa
+        ContainerMap containerMap = new ContainerMap(container);
+        
+        //Obtenim la imatge
+        Image imageMap = containerMap.downloadMap();
+        
+        //Passem la imatge a l'etiqueta
+        lblMap.setIcon(new ImageIcon(imageMap));
+        
+    }//GEN-LAST:event_btnMapActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnCloseIncidence;
+    private javax.swing.JButton btnMap;
     private javax.swing.JButton btnOK;
     private javax.swing.JPanel jPanelDetailIncident;
+    private javax.swing.JPanel jPanelMap;
     private javax.swing.JLabel lblContainerId;
     private javax.swing.JLabel lblDateOpen;
     private javax.swing.JLabel lblIncidentId;
     private javax.swing.JLabel lblIncidentType;
+    private javax.swing.JLabel lblMap;
     private javax.swing.JLabel lblTitle;
     private javax.swing.JLabel lblTxtContainerId;
     private javax.swing.JLabel lblTxtDateOpen;

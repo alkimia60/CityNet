@@ -14,11 +14,14 @@ public class UserUpdateRol extends javax.swing.JInternalFrame {
 
     //Declaració de les variables
     private String email, name, rol;
+    private JTable jTableUsers;
+    private int selectedRow;
+    
+    //Variables de connexió amb el servidor
     private String serverResponse;
     private String serverMessageError;
     private String serverMessageOK;
-    private JTable jTableUsers;
-    private int selectedRow;
+    
     
     //Variable per l'index de la columna rol
     private final int ROL_COLUMN = 6;

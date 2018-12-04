@@ -19,7 +19,7 @@ public class Login extends javax.swing.JFrame {
     public static String rol;
     
     //Comptador d'intents
-    int attempts = 0;
+    private int attempts = 0;
 
     /**
      * Creates new form Login

@@ -14,11 +14,14 @@ public class ContainerDelete extends javax.swing.JInternalFrame {
     
     //Declaració de les variables
     private String id;
+    private TMContainer modelTable;
+    private int selectedRow;
+    
+    //Variables per la connexió amb el servidor
     private String serverResponse;
     private String serverMessageError;
     private String serverMessageOK;
-    private TMContainer modelTable;
-    private int selectedRow;
+    
 
     /**
      * Creates new form ContainerDelete
@@ -295,6 +298,7 @@ public class ContainerDelete extends javax.swing.JInternalFrame {
             //Mostrem un missatge
             JOptionPane.showMessageDialog(null, serverMessageOK, "CityNet - Eliminar contenidor", JOptionPane.INFORMATION_MESSAGE);
             
+            //Actualitzem la taula
             modelTable.removeRow(selectedRow);
             
             //Tanquem el formulari

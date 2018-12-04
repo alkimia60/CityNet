@@ -40,7 +40,6 @@ public class ContainersList extends javax.swing.JInternalFrame {
     //Declaració dels components que obren finestres
     private IncidentDetail incidentDetail;
     ContainerDelete containerDelete;
-    //UserUpdateRol userUpdateRol;
     
     //Variable que informa de la pàgina solicitada al servidor
     private int screen = 0;
@@ -100,7 +99,7 @@ public class ContainersList extends javax.swing.JInternalFrame {
         System.out.println("");
         
         //Hi ha messatge OK?
-        if (serverResponse != null) {
+        if (serverMessageOK != null) {
             
             //Passem el json a ArrayList
             containers = new ArrayList<>();
@@ -122,10 +121,13 @@ public class ContainersList extends javax.swing.JInternalFrame {
             //No estem identificats
             JOptionPane.showMessageDialog(null, serverMessageError, "CityNet - Gestió de contenidors", JOptionPane.ERROR_MESSAGE);
             
-            Login login = new Login();
-            this.setVisible(false);
-            this.dispose();
-            login.setVisible(true);
+            //Tanquem formulari
+            //this.dispose();
+            
+            //Login login = new Login();
+            //this.setVisible(false);
+            //this.dispose();
+            //login.setVisible(true);
             
         }
         
@@ -534,11 +536,21 @@ public class ContainersList extends javax.swing.JInternalFrame {
             jPanelDetail.removeAll();
             jPanelDetail.repaint();
             
-            //Obtenim el valor del camp identificador
+            //Obtenim el valors per un contenidor
             String containerID = modelTable.getValueAt(selectedRow, ID).toString();
+            String containerType = modelTable.getValueAt(selectedRow, TYPE).toString();
+            String latitude = modelTable.getValueAt(selectedRow, LATITUDE).toString();
+            String longitude = modelTable.getValueAt(selectedRow, LONGITUDE).toString();
+            
+            //Instanciem un contenidor
+            Container container = new Container();
+            container.setId(containerID);
+            container.setType(containerType);
+            container.setLatitude(Double.parseDouble(latitude));
+            container.setLongitude(Double.parseDouble(longitude));
             
             //Instanciem el InternalFrame de incidències
-            incidentDetail = new IncidentDetail(containerID);
+            incidentDetail = new IncidentDetail(container, modelTable, selectedRow);
             
             //Afegim el formulari al panel de detall de la incidència
             jPanelDetail.add(incidentDetail);

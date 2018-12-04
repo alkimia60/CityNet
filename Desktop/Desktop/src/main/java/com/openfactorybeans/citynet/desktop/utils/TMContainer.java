@@ -195,5 +195,23 @@ public class TMContainer implements TableModel{
         }
         
     }
+    
+    public void operativeChanged(int rowIndex) {
+        
+        //Localitzem la fila del objecte que volem obtenir el valor
+        Container c = containers.get(rowIndex);
+        
+        //Modificaquem el valor
+        c.setOperative(Boolean.TRUE);
+        containers.set(rowIndex, c);
+        
+        TableModelEvent TMEvent = new TableModelEvent(this, rowIndex, rowIndex, TableModelEvent.ALL_COLUMNS, TableModelEvent.UPDATE);
+        
+        //I passem l'event als subscriptors
+        for (int i = 0; i < subscribers.size(); i++) {
+            ((TableModelListener) subscribers.get(i)).tableChanged(TMEvent);
+        }
+        
+    }
 
 }
