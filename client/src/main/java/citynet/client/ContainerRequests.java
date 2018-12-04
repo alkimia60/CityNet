@@ -8,11 +8,10 @@ import citynet.client.model.Container;
 import com.google.gson.Gson;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.TimeZone;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.net.ssl.SSLContext;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -20,16 +19,20 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.ssl.SSLContextBuilder;
+
 import org.apache.http.util.EntityUtils;
 
 public class ContainerRequests {
 
+    //private static final String LOCAL_URL = "https://localhost:8443/citynet/ContainerManager";
     private static final String LOCAL_URL = "http://localhost:8084/citynet/ContainerManager";
     private static final String PUBLIC_URL = "http://ec2-35-180-7-53.eu-west-3.compute.amazonaws.com:8080/citynet/ContainerManager";
-    private static final String URL = PUBLIC_URL;
+    private static final String URL = LOCAL_URL;
     private static String sessionToken; //Session token
 
     public final static void main(String[] args) {
@@ -39,7 +42,7 @@ public class ContainerRequests {
         sessionToken = ClientRequests.token;
 
         //Container to register
-        Container container = new Container("123AAA", Container.CONTAINER_TYPES[1], 41.454545, 2.4545454);
+        Container container = new Container("000AAA", Container.CONTAINER_TYPES[1], 41.454545, 2.4545454);
         ContainerRequests contRqsts = new ContainerRequests();
         //Register container
         //contRqsts.containerRegister(URL, sessionToken, container);
@@ -54,7 +57,9 @@ public class ContainerRequests {
         //List containers between a latitude-longitude range
         //contRqsts.listContainersBetween(URL, sessionToken, 0, 41.326662, 41.496071, 1.969244, 2.344756);
         //List containers filtered by type and operative
-        contRqsts.listFilteredContainers(URL, sessionToken,0, "glass",-1);
+        //contRqsts.listFilteredContainers(URL, sessionToken, 0, "packaging", 0);
+        //Modify container location
+        contRqsts.containerLocationModification(URL, sessionToken, "000AAA", 2.4545454, 41.454545);
 
     }
 
@@ -157,9 +162,9 @@ public class ContainerRequests {
         return "Error listAllContainers";
     }
 
-
     /**
      * Function to request n rows of all containers ordered by id
+     *
      * @param url servlet location
      * @param sessionToken session token
      * @param screen current application screen number, starting with 0
@@ -201,7 +206,9 @@ public class ContainerRequests {
     }
 
     /**
-     * Function to request 10 rows of containers ordered by id filtered by type and operative fields
+     * Function to request 10 rows of containers ordered by id filtered by type
+     * and operative fields
+     *
      * @param url servlet location
      * @param sessionToken session token
      * @param screen current application screen number, starting with 0
@@ -211,7 +218,15 @@ public class ContainerRequests {
      * filtered containers objects
      */
     private String listFilteredContainers(String url, String sessionToken, int screen, String type, int operative) {
-        try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
+        //try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
+        try {
+            SSLContext sslContext = new SSLContextBuilder()
+                    .loadTrustMaterial(null, (certificate, authType) -> true).build();
+            CloseableHttpClient httpclient = HttpClients.custom().setSSLContext(sslContext)
+                    .setSSLHostnameVerifier(new NoopHostnameVerifier())
+                    //.setRedirectStrategy(new LaxRedirectStrategy()) //Redirecció automàtica
+                    .build();
+
             HttpPost httpPost = new HttpPost(url);
             //List of paràmeters to send
             List<NameValuePair> nvps = new ArrayList<>();
@@ -227,6 +242,7 @@ public class ContainerRequests {
 
             // Create a custom response handler
             String responseBody = httpclient.execute(httpPost, customResponseHandler());
+
             System.out.println("----------------------------------------");
             System.out.println(responseBody);//Server response
             return responseBody;
@@ -237,8 +253,7 @@ public class ContainerRequests {
         }
         return "Error listfilteredContainers";
     }
-    
-    
+
     /**
      * Function to request the open incident of a container
      *
@@ -352,4 +367,44 @@ public class ContainerRequests {
         return "Error listContainersBetween";
     }
 
+     /**
+     * Function to modify container location
+     * @param url Servlet location
+     * @param sessionToken
+     * @param container String container id
+     * @param latitude double new container latitude
+     * @param longitude double new container longitude
+     * @return 
+     */
+    private String containerLocationModification(String url, String sessionToken, String containerId, double latitude, double longitude) {
+        try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
+            HttpPost httpPost = new HttpPost(url);
+            //Gson object to convert Container Object into String
+            Gson gson = new Gson();
+            //List of paràmeters to send
+            List<NameValuePair> nvps = new ArrayList<>();
+            nvps.add(new BasicNameValuePair("action", "LocationModification"));
+            nvps.add(new BasicNameValuePair("token", sessionToken));
+            nvps.add(new BasicNameValuePair("container", containerId));
+            nvps.add(new BasicNameValuePair("latitude",Double.toString(latitude)));
+            nvps.add(new BasicNameValuePair("longitude", Double.toString(longitude)));
+
+            httpPost.setEntity(new UrlEncodedFormEntity(nvps));
+
+            System.out.println("Executing request " + httpPost.getRequestLine());
+
+            // Create a custom response handler
+            String responseBody = httpclient.execute(httpPost, customResponseHandler());
+            System.out.println("----------------------------------------");
+            System.out.println(responseBody);
+            return responseBody; //Server response
+
+        } catch (Exception ex) {
+            Logger.getLogger(ClientRequests.class
+                    .getName()).log(Level.SEVERE, null, ex);
+        }
+        return "Error containerLocationModification";
+    }
+
+    
 }
