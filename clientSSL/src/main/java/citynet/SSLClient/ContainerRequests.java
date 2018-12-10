@@ -61,10 +61,10 @@ public class ContainerRequests {
 
             httpPost.setURI(new URI(URI));//ContainerManager URI
             //Container to register
-            Container container = new Container("123AAA", Container.CONTAINER_TYPES[1], 41.454545, 2.4545454);
+            Container container = new Container("000AAA", Container.CONTAINER_TYPES[1], 41.454545, 2.4545454);
             ContainerRequests contRqsts = new ContainerRequests();
             //Register container
-            //contRqsts.containerRegister(httpclient, httpPost, sessionToken, container);
+            contRqsts.containerRegister(httpclient, httpPost, sessionToken, container);
             //List all Containers with filter
             //contRqsts.listAllContainers(httpclient, httpPost, sessionToken, 0, "type", Container.CONTAINER_TYPES[1] );
             //List all Containers with filter and number of rows
@@ -76,7 +76,9 @@ public class ContainerRequests {
             //List containers between a latitude-longitude range
             //contRqsts.listContainersBetween(httpclient, httpPost, sessionToken, 0, 41.326662, 41.496071, 1.969244, 2.344756);
             //List containers filtered by type and operative
-            contRqsts.listFilteredContainers(httpclient, httpPost, sessionToken, 0, null, 0);
+            //contRqsts.listFilteredContainers(httpclient, httpPost, sessionToken, 0, null, 0);
+            //Modify container location
+            contRqsts.containerLocationModification(httpclient, httpPost, sessionToken, "000AAA", 3.4545454, 42.454545);
 
         } catch (NoSuchAlgorithmException ex) {
             Logger.getLogger(ContainerRequests.class.getName()).log(Level.SEVERE, null, ex);
@@ -375,6 +377,45 @@ public class ContainerRequests {
                     .getName()).log(Level.SEVERE, null, ex);
         }
         return "Error listContainersBetween";
+    }
+
+    /**
+     * Function to modify container location
+     *
+     * @param url Servlet location
+     * @param sessionToken
+     * @param container String container id
+     * @param latitude double new container latitude
+     * @param longitude double new container longitude
+     * @return
+     */
+    private String containerLocationModification(CloseableHttpClient httpclient, HttpPost httpPost, String sessionToken, String containerId, double latitude, double longitude) {
+        try {
+            //List of paràmeters to send
+            List<NameValuePair> nvps = new ArrayList<>();
+            nvps.add(new BasicNameValuePair("action", "LocationModification"));
+            nvps.add(new BasicNameValuePair("token", sessionToken));
+            nvps.add(new BasicNameValuePair("container", containerId));
+            nvps.add(new BasicNameValuePair("latitude", Double.toString(latitude)));
+            nvps.add(new BasicNameValuePair("longitude", Double.toString(longitude)));
+
+            httpPost.setEntity(new UrlEncodedFormEntity(nvps));
+
+            System.out.println("Executing request " + httpPost.getRequestLine());
+
+            // Create a custom response handler
+            String responseBody = httpclient.execute(httpPost, customResponseHandler());
+            //Checks if response is a redirection and then re-execute request            
+            responseBody = reExecuteIfRedirected(responseBody, httpPost, httpclient);
+            System.out.println("----------------------------------------");
+            System.out.println(responseBody);
+            return responseBody; //Server response
+
+        } catch (Exception ex) {
+            Logger.getLogger(ClientRequests.class
+                    .getName()).log(Level.SEVERE, null, ex);
+        }
+        return "Error containerLocationModification";
     }
 
     /**

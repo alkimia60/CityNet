@@ -37,8 +37,8 @@ public class IncidentRequests {
     private static final String LOCAL_URL = "http://localhost:8084";
     private static final String PUBLIC_SSL_URL = "https://ec2-35-180-7-53.eu-west-3.compute.amazonaws.com:8443";
     private static final String PUBLIC_URL = "http://ec2-35-180-7-53.eu-west-3.compute.amazonaws.com:8080";
-    private static final String URL = LOCAL_URL;
-    private static final String URI = URL + "/citynet/IncidentManager";
+    private static final String URL = PUBLIC_URL;
+    private static final String URI = URL + "/citynetSSL/IncidentManager";
     private static String sessionToken; //Session token
 
     public final static void main(String[] args) {
@@ -59,7 +59,7 @@ public class IncidentRequests {
 
             httpPost.setURI(new URI(URI));//ContainerManager URI
             //Incident to notify
-            Incident incident = new Incident("23ESDE", Incident.IT_FULL);
+            Incident incident = new Incident("HFN67H", Incident.IT_BROKEN);
             IncidentRequests incRqsts = new IncidentRequests();
             //Incident notification
             incRqsts.incidentNotification(httpclient, httpPost, sessionToken, incident);

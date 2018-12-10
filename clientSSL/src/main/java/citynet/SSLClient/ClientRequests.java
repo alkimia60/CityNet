@@ -37,8 +37,8 @@ class ClientRequests {
     private static final String LOCAL_URL = "http://localhost:8084";
     private static final String PUBLIC_SSL_URL = "https://ec2-35-180-7-53.eu-west-3.compute.amazonaws.com:8443";
     private static final String PUBLIC_URL = "http://ec2-35-180-7-53.eu-west-3.compute.amazonaws.com:8080";
-    private static final String URL = LOCAL_URL;
-    private static final String URI = URL + "/citynet/UserManager";
+    private static final String URL = PUBLIC_URL;
+    private static final String URI = URL + "/citynetSSL/UserManager";
 
     public static String token; //Session token
     public static String rol;  //User role
@@ -55,16 +55,16 @@ class ClientRequests {
 
             ClientRequests cr = new ClientRequests();
             // User object to use in requests
-            User user = new User("diazgx9@diba.cat", "pass", "Javier",
+            User user = new User("diazgx9@diba", "P4$$w0rd", "Javier",
                     "Diaz", "Carrer Florida 30", "08016", "Barcelona ");
             // User object to use in profile update requests
             User userUpdate = new User("diazgx9@diba.cat", null, "Pepito",
                     "Diaz Garzon", "Av. Torras i Bages", " 08016", " Sta. Coloma de Gramenet ");
             //All functions tests:
             //Register a user as a user object
-            //cr.userRegister(httpclient, httpPost, user);
+            cr.userRegister(httpclient, httpPost, user);
             //User login
-            cr.userLogin(httpclient, httpPost, "diazgx@diba.cat", "xavixavi");
+            cr.userLogin(httpclient, httpPost, "diazgx@diba.cat", "X4vix@vi");
             //Unsubscribe a user by email
             //cr.userDelete(httpclient, httpPost, token, "diazgx9@diba.cat");
             //Change Password
