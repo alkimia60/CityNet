@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/Menu"
+        android:title="@string/Menu"/>
+    <item android:id="@+id/changePwd"
+        android:title="@string/cambiar_pwd"/>
+    <item android:id="@+id/Ajuda"
+        android:icon="@android:drawable/ic_menu_help"
+        android:title="@string/sortir" />
+</menu>

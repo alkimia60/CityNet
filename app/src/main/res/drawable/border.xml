@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <solid android:color="#FFFFFF" />
+    <stroke android:width="4dp" android:color="#000000" />
+    <padding android:left="4dp" android:top="4dp" android:right="4dp" android:bottom="4dp" />
+</shape>
+<!--
+    <selector xmlns:android="http://schemas.android.com/apk/res/android">
+        <item android:state_focused="true" android:state_pressed="true" android:drawable="@drawable/containersover"/>
+        <item android:state_focused="false" android:state_pressed="true" android:drawable="@drawable/containersover"/>
+        <item android:state_focused="true" android:drawable="@drawable/containersover"/>
+        <item android:state_focused="false" android:state_pressed="false" android:drawable="@drawable/containers"/>
+    </selector>-->
