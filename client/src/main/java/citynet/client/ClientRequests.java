@@ -36,7 +36,7 @@ class ClientRequests {
 
         ClientRequests cr = new ClientRequests();
         // User object to use in requests
-        User user = new User("diazgx9@diba.cat", "pass", "Javier",
+        User user = new User("rojanosm@diba.org", "Pa$sw0rd", "Javier",
                 "Diaz", "Carrer Florida 30", "08016", "Barcelona ");
         // User object to use in profile update requests
         User userUpdate = new User("diazgx9@diba.cat", null, "Pepito",
@@ -44,20 +44,20 @@ class ClientRequests {
 
         //All functions tests:
         //Register a user as a user object
-        //cr.userRegister(URL, user);
+        cr.userRegister(URL, user);
         //User login
-        cr.userLogin(URL, "diazgx@diba.cat", "xavixavi");
+        cr.userLogin(URL, "diazgx@diba.cat", "X4vix@vi");
         //Unsubscribe a user by email
         //cr.userDelete(URL, token, "diazgx9@diba.cat");
         //Change Password
-        //cr.changePassword(URL, token, "pass", "nou");
+        cr.changePassword(URL, token, "X4vix@vi", "xavixavi");
         //Ask user profile
         //cr.askUserProfile(URL, token);
         //Update user profile
         //cr.updateUserProfile(URL, token, userUpdate);
         //List All Users filter admin, editor or user
         //If it is not one of the three values, all users return
-        cr.listAllUsersFilter(URL, token, 0, "");
+        //cr.listAllUsersFilter(URL, token, 0, "");
         //Update user rol
         //cr.updateUserRol(URL, token, "diazgx9@diba.cat", User.UL_EDITOR);
 

@@ -32,7 +32,7 @@ public class ContainerRequests {
     //private static final String LOCAL_URL = "https://localhost:8443/citynet/ContainerManager";
     private static final String LOCAL_URL = "http://localhost:8084/citynet/ContainerManager";
     private static final String PUBLIC_URL = "http://ec2-35-180-7-53.eu-west-3.compute.amazonaws.com:8080/citynet/ContainerManager";
-    private static final String URL = LOCAL_URL;
+    private static final String URL = PUBLIC_URL;
     private static String sessionToken; //Session token
 
     public final static void main(String[] args) {
@@ -53,13 +53,13 @@ public class ContainerRequests {
         //Find Container open Incident by container id
         //contRqsts.containerIncident(URL, sessionToken, "123AAA");
         //Delete container
-        //contRqsts.containerDelete(URL, sessionToken, "23ESDE");
+        contRqsts.containerDelete(URL, sessionToken, "000AAA");
         //List containers between a latitude-longitude range
         //contRqsts.listContainersBetween(URL, sessionToken, 0, 41.326662, 41.496071, 1.969244, 2.344756);
         //List containers filtered by type and operative
         //contRqsts.listFilteredContainers(URL, sessionToken, 0, "packaging", 0);
         //Modify container location
-        contRqsts.containerLocationModification(URL, sessionToken, "000AAA", 2.4545454, 41.454545);
+        //contRqsts.containerLocationModification(URL, sessionToken, "000AAA", 3.4545454, 42.454545);
 
     }
 
@@ -379,8 +379,7 @@ public class ContainerRequests {
     private String containerLocationModification(String url, String sessionToken, String containerId, double latitude, double longitude) {
         try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
             HttpPost httpPost = new HttpPost(url);
-            //Gson object to convert Container Object into String
-            Gson gson = new Gson();
+
             //List of paràmeters to send
             List<NameValuePair> nvps = new ArrayList<>();
             nvps.add(new BasicNameValuePair("action", "LocationModification"));

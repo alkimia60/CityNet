@@ -33,16 +33,19 @@ public class IncidentRequests {
     public final static void main(String[] args) {
         //User login and session token
         ClientRequests cliRqsts = new ClientRequests();
-        cliRqsts.userLogin("http://ec2-35-180-7-53.eu-west-3.compute.amazonaws.com:8080/citynet/UserManager", "diazgx@diba.cat", "xavixavi");
+        cliRqsts.userLogin("http://ec2-35-180-7-53.eu-west-3.compute.amazonaws.com:8080/citynet/UserManager", "diazgx@diba.cat", "X4vix@vi");
         sessionToken = ClientRequests.token;
 
         //Incident to notify
-        Incident incident = new Incident("123AAA", Incident.IT_FULL);
+        Incident incident = new Incident("BBB666", Incident.IT_FULL);
         IncidentRequests incRqsts = new IncidentRequests();
         //Incident notification
-        incRqsts.incidentNotification(URL, sessionToken, incident);
+        //incRqsts.incidentNotification(URL, sessionToken, incident);
         //Incident finalization
         //incRqsts.incidentFinalize(URL, sessionToken,12);
+        //List incidents filtered by type and resolution_date state
+        incRqsts.listFilteredIncidents(URL, sessionToken, 0, "", -1);
+        
 
     }
 
@@ -117,6 +120,47 @@ public class IncidentRequests {
         }
         return "Error incidentFinalize";
     }
+    
+    /**
+     * Function to list incidents by type and resolution state
+     * @param url Servlet location
+     * @param sessionToken
+     * @param screen current application screen number, starting with 0
+     * @param type sting of type of container or all types
+     * @param finalized int 1 if container is operative or 0 if not or any for all
+     * @return json String with elements startOfTable, endOfTable and the
+     * filtered incident objects
+     */
+    private String listFilteredIncidents (String url, String sessionToken, int screen, String type, int finalized) {
+        try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
+            HttpPost httpPost = new HttpPost(url);
+            //Gson object to convert Container Object into String
+            Gson gson = new Gson();
+            //List of paràmeters to send
+            List<NameValuePair> nvps = new ArrayList<>();
+            nvps.add(new BasicNameValuePair("action", "ListFilteredIncidents"));
+            nvps.add(new BasicNameValuePair("token", sessionToken));
+            nvps.add(new BasicNameValuePair("screen", String.valueOf(screen)));
+            nvps.add(new BasicNameValuePair("type", type));
+            nvps.add(new BasicNameValuePair("finalized", String.valueOf(finalized)));
+
+            httpPost.setEntity(new UrlEncodedFormEntity(nvps));
+
+            System.out.println("Executing request " + httpPost.getRequestLine());
+
+            // Create a custom response handler
+            String responseBody = httpclient.execute(httpPost, customResponseHandler());
+            System.out.println("----------------------------------------");
+            System.out.println(responseBody);
+            return responseBody; //Server response
+
+        } catch (Exception ex) {
+            Logger.getLogger(ClientRequests.class
+                    .getName()).log(Level.SEVERE, null, ex);
+        }
+        return "Error listFilteredIncidents";
+    }    
+    
 
     /**
      * Function to create a custom response handler for the requests
