@@ -5,10 +5,13 @@ import com.openfactorybeans.citynet.desktop.forms.Login;
 import com.openfactorybeans.citynet.desktop.model.User;
 import com.openfactorybeans.citynet.desktop.utils.JsonUtils;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.net.ssl.SSLContext;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -16,9 +19,11 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.ssl.SSLContextBuilder;
 import org.apache.http.util.EntityUtils;
 
 /**
@@ -64,6 +69,51 @@ public class UsersManagement {
             };
             String responseBody = httpclient.execute(httpPost, responseHandler);
             //System.out.println(responseBody);
+            String serverMessage = JsonUtils.findJsonValue(responseBody, "error");
+            
+            //System.out.println("Login - Server message: " + serverMessage);
+
+            if ((serverMessage == null)
+                    & (JsonUtils.findJsonValue(responseBody, "token") != "No json data")) {
+                Login.token = JsonUtils.findJsonValue(responseBody, "token");
+                Login.rol = JsonUtils.findJsonValue(responseBody, "rol");
+                return true;
+
+            } else {
+                Login.token = null;
+                Login.token = null;
+                return false;
+            }
+
+        } catch (Exception ex) {
+            Logger.getLogger(UsersManagement.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
+    }
+    
+    public boolean userLoginSSL(String url, String user, String password) {
+        try {
+            SSLContext sslContext = new SSLContextBuilder()
+                    .loadTrustMaterial(null, (certificate, authType) -> true).build();
+            CloseableHttpClient httpclient = HttpClients.custom().setSSLContext(sslContext)
+                    .setSSLHostnameVerifier(new NoopHostnameVerifier())
+                    .build();
+            HttpPost httpPost = new HttpPost(url);
+
+            List<NameValuePair> nvps = new ArrayList<>();
+            nvps.add(new BasicNameValuePair("action", "UserLogin"));
+            nvps.add(new BasicNameValuePair("user", String.valueOf(user)));
+            nvps.add(new BasicNameValuePair("password", password)); 
+            
+            httpPost.setEntity(new UrlEncodedFormEntity(nvps));
+
+
+            // Create a custom response handler
+            String responseBody = httpclient.execute(httpPost, customResponseHandler());
+            //Check if response is a redirection and the re-execute request
+            responseBody = reExecuteIfRedirected(responseBody, httpPost, httpclient);
+            
+            System.out.println(responseBody);
             String serverMessage = JsonUtils.findJsonValue(responseBody, "error");
             
             //System.out.println("Login - Server message: " + serverMessage);
@@ -340,5 +390,26 @@ public class UsersManagement {
             }
         };
         return responseHandler;
+    }
+    
+    /**
+     * Re-execute request when status of response is 302 (redirected)
+     *
+     * @param responseBody response with status code and new URL
+     * @param httpPost
+     * @param httpclient
+     * @return redirected resposeBody
+     * @throws URISyntaxException
+     * @throws IOException
+     */
+    private String reExecuteIfRedirected(String responseBody, HttpPost httpPost, CloseableHttpClient httpclient) throws URISyntaxException, IOException {
+        //If there is a redirection, re-execute request with new URI
+        if ("Status 302:".equals(responseBody.substring(0, 11))) {
+            String newURL = responseBody.substring(11);
+            httpPost.setURI(new URI(newURL));
+            System.out.println("Executing request " + httpPost.getRequestLine());
+            responseBody = httpclient.execute(httpPost, customResponseHandler());
+        }
+        return responseBody;
     }
 }

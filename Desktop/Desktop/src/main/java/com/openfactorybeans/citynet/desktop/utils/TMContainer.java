@@ -198,11 +198,11 @@ public class TMContainer implements TableModel{
     
     public void operativeChanged(int rowIndex) {
         
-        //Localitzem la fila del objecte que volem obtenir el valor
+        //Localitzem la fila del contenidor que volem obtenir el valor
         Container c = containers.get(rowIndex);
         
         //Modificaquem el valor
-        c.setOperative(Boolean.TRUE);
+        c.setOperative(true);
         containers.set(rowIndex, c);
         
         TableModelEvent TMEvent = new TableModelEvent(this, rowIndex, rowIndex, TableModelEvent.ALL_COLUMNS, TableModelEvent.UPDATE);
@@ -211,6 +211,43 @@ public class TMContainer implements TableModel{
         for (int i = 0; i < subscribers.size(); i++) {
             ((TableModelListener) subscribers.get(i)).tableChanged(TMEvent);
         }
+        
+    }
+    
+    public void reportIncidence(int rowIndex) {
+        
+        //Localitzem la fila del contenidor que volem obtenir el valor
+        Container c = containers.get(rowIndex);
+        
+        //Modifiquem el valor
+        c.setOperative(false);
+        containers.set(rowIndex, c);
+        
+        TableModelEvent TMEvent = new TableModelEvent(this, rowIndex, rowIndex, TableModelEvent.ALL_COLUMNS, TableModelEvent.UPDATE);
+        
+        //I passem l'event als subscriptors
+        for (int i = 0; i < subscribers.size(); i++) {
+            ((TableModelListener) subscribers.get(i)).tableChanged(TMEvent);
+        }
+        
+    }
+    
+    public void locationModify(int rowIndex, Double latitude, Double longitude) {
+        
+        //Localitzem la fila del contenidor que volem obtenir el valor
+        Container c = containers.get(rowIndex);
+        
+        //Modifiquel els valors
+        c.setLatitude(latitude);
+        c.setLongitude(longitude);
+        containers.set(rowIndex, c);
+        
+        TableModelEvent TMEvent = new TableModelEvent(this, rowIndex, rowIndex, TableModelEvent.ALL_COLUMNS, TableModelEvent.UPDATE);
+        
+        //I passem l'event als subscriptors
+        for (int i = 0; i < subscribers.size(); i++) {
+            ((TableModelListener) subscribers.get(i)).tableChanged(TMEvent);
+        } 
         
     }
 

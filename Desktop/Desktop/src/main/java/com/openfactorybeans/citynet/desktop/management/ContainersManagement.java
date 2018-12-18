@@ -141,7 +141,7 @@ public class ContainersManagement {
      * @param url URL del servidor
      * @param token Identificatiu de sessió iniciada
      * @param containerId Id del contenidor a esborrar
-     * @return 
+     * @return La resposta del servidor
      */
     public String containerDelete(String url, String token, String containerId) {
         try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
@@ -166,6 +166,44 @@ public class ContainersManagement {
             Logger.getLogger(ContainersManagement.class.getName()).log(Level.SEVERE, null, ex);
         }
         return "Error containerDelete";
+    }
+    
+    /**
+     * 
+     * @param url URL del servidor
+     * @param token Identificatiu de sessió iniciada
+     * @param containerId Id del contenidor a esborrar
+     * @param latitude Nova latitud del contenidor
+     * @param longitude Nova longitud del contenidor
+     * @return La resposta del servidor
+     */
+    public String containerLocationModification(String url, String token, String containerId, double latitude, double longitude) {
+        try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
+            HttpPost httpPost = new HttpPost(url);
+            //Gson object to convert Container Object into String
+            Gson gson = new Gson();
+            //List of paràmeters to send
+            List<NameValuePair> nvps = new ArrayList<>();
+            nvps.add(new BasicNameValuePair("action", "LocationModification"));
+            nvps.add(new BasicNameValuePair("token", token));
+            nvps.add(new BasicNameValuePair("container", containerId));
+            nvps.add(new BasicNameValuePair("latitude",Double.toString(latitude)));
+            nvps.add(new BasicNameValuePair("longitude", Double.toString(longitude)));
+
+            httpPost.setEntity(new UrlEncodedFormEntity(nvps));
+
+            System.out.println("Executing request " + httpPost.getRequestLine());
+
+            // Create a custom response handler
+            String responseBody = httpclient.execute(httpPost, customResponseHandler());
+            System.out.println("----------------------------------------");
+            System.out.println(responseBody);
+            return responseBody; //Server response
+
+        } catch (Exception ex) {
+            Logger.getLogger(ContainersManagement.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return "Error containerLocationModification";
     }
     
     /**

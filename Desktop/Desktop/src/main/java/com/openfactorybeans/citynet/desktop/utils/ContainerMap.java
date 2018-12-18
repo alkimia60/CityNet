@@ -22,9 +22,9 @@ public class ContainerMap {
     private Image image;
     
     //Variables finals
-    private final String ZOOM = "18";
+    //private final String ZOOM = "18";
     private final String SIZE = "500x275";
-    private final String MAP_TYPE = "roadmap";
+    //private final String MAP_TYPE = "roadmap";
     private final String API_KEY = "AIzaSyDsA2t8Igjq6fR3iPAN70Ug3rW-UaRqNeI";
     
     //Variables finals de tipus de contenidor
@@ -43,7 +43,7 @@ public class ContainerMap {
      * 
      * @param container Contenidor per mostrar al mapa
      */
-    public ContainerMap(Container container) {
+    public ContainerMap(Container container, String zoom, String mapType) {
         
         //Obtenim les dades necessaries del contenidor
         latitude = container.getLatitude().toString();
@@ -80,9 +80,9 @@ public class ContainerMap {
         //Construïm la URL per descarregar la imatge de google maps
         imageURL = "https://maps.googleapis.com/maps/api/staticmap" +
                 "?center=" + latitude + "," + longitude +
-                "&zoom=" + ZOOM +
+                "&zoom=" + zoom +
                 "&size=" + SIZE +
-                "&maptype=" + MAP_TYPE +
+                "&maptype=" + mapType +
                 "&markers=color:" + color + "|label:" + label + "|" + latitude + "," + longitude +
                 "&key=" + API_KEY;
         

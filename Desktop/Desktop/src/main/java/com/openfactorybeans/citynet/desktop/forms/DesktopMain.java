@@ -22,6 +22,9 @@ public class DesktopMain extends javax.swing.JFrame {
         //Verifique el rol de l'usuari que ha iniciat la sessió
         checkOptionsRol();
         
+        //Posem l'usuari al title de la finestra
+        this.setTitle("CityNet - " + Login.user);
+        
     }
     
     /**

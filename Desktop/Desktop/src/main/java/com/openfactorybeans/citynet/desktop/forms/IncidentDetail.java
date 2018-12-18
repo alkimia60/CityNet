@@ -13,7 +13,6 @@ import com.openfactorybeans.citynet.desktop.utils.JsonUtils;
 import com.openfactorybeans.citynet.desktop.utils.TMContainer;
 import java.awt.Image;
 import javax.swing.ImageIcon;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 
 /**
@@ -21,12 +20,6 @@ import javax.swing.JOptionPane;
  * @author Jose
  */
 public class IncidentDetail extends javax.swing.JInternalFrame {
-    
-    //Variables de tipus de incidència
-    private final String BROKEN = "broken";
-    private final String FULL = "full";
-    private final String BROKEN_TXT = "Trencat";
-    private final String FULL_TXT = "Ple";
     
     //Variables de la taula
     private Container container;
@@ -42,6 +35,9 @@ public class IncidentDetail extends javax.swing.JInternalFrame {
     private IncidentsManagement incidentManagement;
     private Incident incident;
     
+    //Variables per definir el mapa
+    private String zoom, mapType;
+    
     /**
      * Creates new form IncidentDetail
      */
@@ -51,6 +47,13 @@ public class IncidentDetail extends javax.swing.JInternalFrame {
         this.container = container;
         this.modelTable = modelTable;
         this.selectedRow = selectedRow;
+        
+        //Amaguem el panel dels modificadors del mapa. Només es veuran quan es cliqui el mapa
+        jPanelMapButtons.setVisible(false);
+        
+        //Posem les variables a null per una nova comunicació amb el server
+        serverMessageError = null;
+        serverMessageOK = null;
         
         ////////////////////////////////////////////////////////////////////////////
         //Conectem amb el servidor per obtenidr les dades de la incidència
@@ -87,8 +90,8 @@ public class IncidentDetail extends javax.swing.JInternalFrame {
             String[] dateOnly =incident.getDate().split(" "); //Separem la data i l'hora
             lblTxtDateOpen.setText(dateOnly[0]); //Agafem només la data
             lblTxtContainerId.setText(incident.getContainer());
-            if (incident.getType().equals(BROKEN)) lblTxtIncidentType.setText(BROKEN_TXT);
-            if (incident.getType().equals(FULL)) lblTxtIncidentType.setText(FULL_TXT);
+            if (incident.getType().equals(Incident.BROKEN)) lblTxtIncidentType.setText(Incident.BROKEN_TXT);
+            if (incident.getType().equals(Incident.FULL)) lblTxtIncidentType.setText(Incident.FULL_TXT);
             lblTxtUser.setText(incident.getUserEmail());
 
         }
@@ -115,9 +118,14 @@ public class IncidentDetail extends javax.swing.JInternalFrame {
         lblUser = new javax.swing.JLabel();
         lblTxtUser = new javax.swing.JLabel();
         lblTitle = new javax.swing.JLabel();
+        jPanelButtons = new javax.swing.JPanel();
         btnOK = new javax.swing.JButton();
         btnCloseIncidence = new javax.swing.JButton();
         btnMap = new javax.swing.JButton();
+        jPanelMapButtons = new javax.swing.JPanel();
+        chboxSatelite = new javax.swing.JCheckBox();
+        btnZoomMore = new javax.swing.JButton();
+        btbZoomLess = new javax.swing.JButton();
         jPanelMap = new javax.swing.JPanel();
         lblMap = new javax.swing.JLabel();
 
@@ -232,17 +240,91 @@ public class IncidentDetail extends javax.swing.JInternalFrame {
             }
         });
 
+        javax.swing.GroupLayout jPanelButtonsLayout = new javax.swing.GroupLayout(jPanelButtons);
+        jPanelButtons.setLayout(jPanelButtonsLayout);
+        jPanelButtonsLayout.setHorizontalGroup(
+            jPanelButtonsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanelButtonsLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(btnOK)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(btnCloseIncidence)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(btnMap)
+                .addContainerGap())
+        );
+        jPanelButtonsLayout.setVerticalGroup(
+            jPanelButtonsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanelButtonsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addComponent(btnOK)
+                .addComponent(btnCloseIncidence)
+                .addComponent(btnMap))
+        );
+
+        chboxSatelite.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        chboxSatelite.setText("Satèl·lit");
+        chboxSatelite.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                chboxSateliteStateChanged(evt);
+            }
+        });
+
+        btnZoomMore.setText("+");
+        btnZoomMore.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnZoomMoreActionPerformed(evt);
+            }
+        });
+
+        btbZoomLess.setText("-");
+        btbZoomLess.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btbZoomLessActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanelMapButtonsLayout = new javax.swing.GroupLayout(jPanelMapButtons);
+        jPanelMapButtons.setLayout(jPanelMapButtonsLayout);
+        jPanelMapButtonsLayout.setHorizontalGroup(
+            jPanelMapButtonsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanelMapButtonsLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(chboxSatelite)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btnZoomMore)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btbZoomLess)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        jPanelMapButtonsLayout.setVerticalGroup(
+            jPanelMapButtonsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanelMapButtonsLayout.createSequentialGroup()
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addGroup(jPanelMapButtonsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(chboxSatelite)
+                    .addComponent(btnZoomMore)
+                    .addComponent(btbZoomLess)))
+        );
+
         jPanelMap.setPreferredSize(new java.awt.Dimension(500, 275));
+
+        lblMap.setPreferredSize(new java.awt.Dimension(500, 275));
 
         javax.swing.GroupLayout jPanelMapLayout = new javax.swing.GroupLayout(jPanelMap);
         jPanelMap.setLayout(jPanelMapLayout);
         jPanelMapLayout.setHorizontalGroup(
             jPanelMapLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(lblMap, javax.swing.GroupLayout.DEFAULT_SIZE, 500, Short.MAX_VALUE)
+            .addGroup(jPanelMapLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(lblMap, javax.swing.GroupLayout.DEFAULT_SIZE, 497, Short.MAX_VALUE)
+                .addContainerGap())
         );
         jPanelMapLayout.setVerticalGroup(
             jPanelMapLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(lblMap, javax.swing.GroupLayout.DEFAULT_SIZE, 275, Short.MAX_VALUE)
+            .addGroup(jPanelMapLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(lblMap, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -253,16 +335,18 @@ public class IncidentDetail extends javax.swing.JInternalFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanelDetailIncident, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(btnOK)
-                        .addGap(18, 18, 18)
-                        .addComponent(btnCloseIncidence)
-                        .addGap(18, 18, 18)
-                        .addComponent(btnMap)))
-                .addGap(18, 18, 18)
-                .addComponent(jPanelMap, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(15, Short.MAX_VALUE))
+                        .addComponent(jPanelDetailIncident, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(0, 0, Short.MAX_VALUE)
+                                .addComponent(jPanelMapButtons, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jPanelButtons, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGap(28, 28, 28)))
+                .addComponent(jPanelMap, javax.swing.GroupLayout.DEFAULT_SIZE, 509, Short.MAX_VALUE)
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -274,12 +358,11 @@ public class IncidentDetail extends javax.swing.JInternalFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jPanelDetailIncident, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(btnOK)
-                            .addComponent(btnCloseIncidence)
-                            .addComponent(btnMap)))
-                    .addComponent(jPanelMap, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(25, Short.MAX_VALUE))
+                        .addComponent(jPanelButtons, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(jPanelMapButtons, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jPanelMap, javax.swing.GroupLayout.PREFERRED_SIZE, 287, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(13, Short.MAX_VALUE))
         );
 
         pack();
@@ -348,8 +431,13 @@ public class IncidentDetail extends javax.swing.JInternalFrame {
 
     private void btnMapActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnMapActionPerformed
         
+        //Iniciem els valors per defecte del mapa
+        zoom = "18";
+        mapType = "roadmap";
+        chboxSatelite.setSelected(false);
+        
         //Instanciem el mapa
-        ContainerMap containerMap = new ContainerMap(container);
+        ContainerMap containerMap = new ContainerMap(container, zoom, mapType);
         
         //Obtenim la imatge
         Image imageMap = containerMap.downloadMap();
@@ -357,15 +445,89 @@ public class IncidentDetail extends javax.swing.JInternalFrame {
         //Passem la imatge a l'etiqueta
         lblMap.setIcon(new ImageIcon(imageMap));
         
+        //Mostrem el panel dels butons del mapa
+        jPanelMapButtons.setVisible(true);
+        
     }//GEN-LAST:event_btnMapActionPerformed
+
+    private void chboxSateliteStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_chboxSateliteStateChanged
+
+        //Obtenim el valor del checkbox
+        boolean chbox = chboxSatelite.isSelected();
+
+        //Verifiquem el valor
+        if (chbox) {
+            mapType = "satellite";
+        } else {
+            mapType = "roadmap";
+        }
+
+        //Instanciem el mapa
+        ContainerMap containerMap = new ContainerMap(container, zoom, mapType);
+
+        //Obtenim la imatge
+        Image imageMap = containerMap.downloadMap();
+
+        //Passem la imatge a l'etiqueta
+        lblMap.setIcon(new ImageIcon(imageMap));
+    }//GEN-LAST:event_chboxSateliteStateChanged
+
+    private void btnZoomMoreActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnZoomMoreActionPerformed
+
+        //Obtenim el zoom actual
+        int zoomTemp = Integer.parseInt(zoom);
+
+        //Incrementem en 1 el zoom i controlem que no passi del límit
+        zoomTemp ++;
+        if (zoomTemp >= 21) zoomTemp = 21;
+
+        //Passem el resultat a un String
+        zoom = String.valueOf(zoomTemp);
+
+        //Instanciem el mapa
+        ContainerMap containerMap = new ContainerMap(container, zoom, mapType);
+
+        //Obtenim la imatge
+        Image imageMap = containerMap.downloadMap();
+
+        //Passem la imatge a l'etiqueta
+        lblMap.setIcon(new ImageIcon(imageMap));
+    }//GEN-LAST:event_btnZoomMoreActionPerformed
+
+    private void btbZoomLessActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btbZoomLessActionPerformed
+
+        //Obtenim el zoom actual
+        int zoomTemp = Integer.parseInt(zoom);
+
+        //Decrementem en 1 el zoom i controlem que no passi del límit
+        zoomTemp --;
+        if (zoomTemp <= 16) zoomTemp = 16;
+
+        //Passem el resultat a un String
+        zoom = String.valueOf(zoomTemp);
+
+        //Instanciem el mapa
+        ContainerMap containerMap = new ContainerMap(container, zoom, mapType);
+
+        //Obtenim la imatge
+        Image imageMap = containerMap.downloadMap();
+
+        //Passem la imatge a l'etiqueta
+        lblMap.setIcon(new ImageIcon(imageMap));
+    }//GEN-LAST:event_btbZoomLessActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btbZoomLess;
     private javax.swing.JButton btnCloseIncidence;
     private javax.swing.JButton btnMap;
     private javax.swing.JButton btnOK;
+    private javax.swing.JButton btnZoomMore;
+    private javax.swing.JCheckBox chboxSatelite;
+    private javax.swing.JPanel jPanelButtons;
     private javax.swing.JPanel jPanelDetailIncident;
     private javax.swing.JPanel jPanelMap;
+    private javax.swing.JPanel jPanelMapButtons;
     private javax.swing.JLabel lblContainerId;
     private javax.swing.JLabel lblDateOpen;
     private javax.swing.JLabel lblIncidentId;

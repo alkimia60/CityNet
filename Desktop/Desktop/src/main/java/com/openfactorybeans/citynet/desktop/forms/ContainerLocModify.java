@@ -10,46 +10,43 @@ import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 
 /**
- * Formulari per eliminar un contenidor
- *
+ * Formulari per modificar la localització d'un contenidor
+ * 
  * @author Jose
  */
-public class ContainerDelete extends javax.swing.JInternalFrame {
-
+public class ContainerLocModify extends javax.swing.JInternalFrame {
+    
     //Variables de la taula
     private Container container;
     private TMContainer modelTable;
     private int selectedRow;
     
-    //Variables per la connexió amb el servidor
+    //Variable per la connexió amb el servidor
     private String serverResponse;
     private String serverMessageError;
     private String serverMessageOK;
     
     //Variables per definir el mapa
     private String zoom, mapType;
-    
+
     /**
-     * Creates new form containerDelete
+     * Creates new form ContainerLocModify
      * 
      * @param container Contenidor a eliminar
      * @param modelTable Model de la taula de contenidors
      * @param selectedRow Index de la fila seleccionada
      */
-    public ContainerDelete(Container container, TMContainer modelTable, int selectedRow) {
+    public ContainerLocModify(Container container, TMContainer modelTable, int selectedRow) {
         initComponents();
-        
-        btnCancel.requestFocus();
         
         this.container = container;
         this.modelTable = modelTable;
         this.selectedRow = selectedRow;
         
-        //Mostrem les dades del contenidor a les seves etiquetes
         lblContainerId.setText(container.getId());
         lblContainerType.setText(container.getType());
-        lblContainerLatitude.setText(container.getLatitude().toString());
-        lblContainerLongitude.setText(container.getLongitude().toString());
+        txtLatitude.setText(container.getLatitude().toString());
+        txtLongitude.setText(container.getLongitude().toString());
         
         //Amaguem el panel dels modificadors del mapa. Només es veuran quan es cliqui el mapa
         jPanelMapButtons.setVisible(false);
@@ -65,7 +62,7 @@ public class ContainerDelete extends javax.swing.JInternalFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        lblTitleContainerDelete = new javax.swing.JLabel();
+        lblTitleContainerLocModify = new javax.swing.JLabel();
         jPanelDetail = new javax.swing.JPanel();
         lblId = new javax.swing.JLabel();
         lblContainerId = new javax.swing.JLabel();
@@ -76,11 +73,11 @@ public class ContainerDelete extends javax.swing.JInternalFrame {
         jSeparator2 = new javax.swing.JSeparator();
         lblLocation = new javax.swing.JLabel();
         lblLatitude = new javax.swing.JLabel();
-        lblContainerLatitude = new javax.swing.JLabel();
+        txtLatitude = new javax.swing.JTextField();
         lblLongitude = new javax.swing.JLabel();
-        lblContainerLongitude = new javax.swing.JLabel();
+        txtLongitude = new javax.swing.JTextField();
         jPanelButtons = new javax.swing.JPanel();
-        btnDelete = new javax.swing.JButton();
+        btnModify = new javax.swing.JButton();
         btnCancel = new javax.swing.JButton();
         btnMap = new javax.swing.JButton();
         jPanelMapButtons = new javax.swing.JPanel();
@@ -90,10 +87,12 @@ public class ContainerDelete extends javax.swing.JInternalFrame {
         jPanelMap = new javax.swing.JPanel();
         lblMap = new javax.swing.JLabel();
 
-        lblTitleContainerDelete.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
-        lblTitleContainerDelete.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        lblTitleContainerDelete.setText("Eliminar la localització del contenidor");
-        lblTitleContainerDelete.setPreferredSize(new java.awt.Dimension(0, 24));
+        setPreferredSize(new java.awt.Dimension(913, 370));
+
+        lblTitleContainerLocModify.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
+        lblTitleContainerLocModify.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        lblTitleContainerLocModify.setText("Modificar la localització del contenidor");
+        lblTitleContainerLocModify.setPreferredSize(new java.awt.Dimension(0, 24));
 
         lblId.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
         lblId.setText("Identificador:");
@@ -135,24 +134,32 @@ public class ContainerDelete extends javax.swing.JInternalFrame {
         lblLatitude.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         lblLatitude.setText("Latitud");
 
-        lblContainerLatitude.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
-        lblContainerLatitude.setForeground(new java.awt.Color(102, 0, 0));
-        lblContainerLatitude.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        txtLatitude.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
+        txtLatitude.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        txtLatitude.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                txtLatitudeFocusGained(evt);
+            }
+        });
 
         lblLongitude.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
         lblLongitude.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         lblLongitude.setText("Longitud");
 
-        lblContainerLongitude.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
-        lblContainerLongitude.setForeground(new java.awt.Color(102, 0, 0));
-        lblContainerLongitude.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        txtLongitude.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
+        txtLongitude.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        txtLongitude.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                txtLongitudeFocusGained(evt);
+            }
+        });
 
-        btnDelete.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
-        btnDelete.setText("Eliminar");
-        btnDelete.setPreferredSize(new java.awt.Dimension(101, 35));
-        btnDelete.addActionListener(new java.awt.event.ActionListener() {
+        btnModify.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        btnModify.setText("Modificar");
+        btnModify.setPreferredSize(new java.awt.Dimension(101, 35));
+        btnModify.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnDeleteActionPerformed(evt);
+                btnModifyActionPerformed(evt);
             }
         });
 
@@ -178,7 +185,7 @@ public class ContainerDelete extends javax.swing.JInternalFrame {
             jPanelButtonsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanelButtonsLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(btnDelete, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(btnModify, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(48, 48, 48)
                 .addComponent(btnCancel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 48, Short.MAX_VALUE)
@@ -190,7 +197,7 @@ public class ContainerDelete extends javax.swing.JInternalFrame {
             .addGroup(jPanelButtonsLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanelButtonsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnDelete, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnModify, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnCancel)
                     .addComponent(btnMap))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -234,7 +241,7 @@ public class ContainerDelete extends javax.swing.JInternalFrame {
         jPanelMapButtonsLayout.setVerticalGroup(
             jPanelMapButtonsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanelMapButtonsLayout.createSequentialGroup()
-                .addGap(0, 4, Short.MAX_VALUE)
+                .addGap(0, 0, Short.MAX_VALUE)
                 .addGroup(jPanelMapButtonsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(chboxSatelite)
                     .addComponent(btnZoomMore)
@@ -253,11 +260,14 @@ public class ContainerDelete extends javax.swing.JInternalFrame {
                     .addComponent(lblLatitude, javax.swing.GroupLayout.PREFERRED_SIZE, 194, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(jPanelDetailLayout.createSequentialGroup()
                         .addContainerGap()
-                        .addComponent(lblContainerLatitude, javax.swing.GroupLayout.PREFERRED_SIZE, 182, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(txtLatitude, javax.swing.GroupLayout.PREFERRED_SIZE, 182, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanelDetailLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(lblLongitude, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(lblContainerLongitude, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                    .addGroup(jPanelDetailLayout.createSequentialGroup()
+                        .addGap(6, 6, 6)
+                        .addComponent(txtLongitude)
+                        .addContainerGap())))
             .addGroup(jPanelDetailLayout.createSequentialGroup()
                 .addGroup(jPanelDetailLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanelDetailLayout.createSequentialGroup()
@@ -295,10 +305,10 @@ public class ContainerDelete extends javax.swing.JInternalFrame {
                 .addGroup(jPanelDetailLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblLatitude)
                     .addComponent(lblLongitude))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanelDetailLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(lblContainerLatitude, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(lblContainerLongitude, javax.swing.GroupLayout.DEFAULT_SIZE, 28, Short.MAX_VALUE))
+                .addGap(7, 7, 7)
+                .addGroup(jPanelDetailLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(txtLatitude, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtLongitude, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanelButtons, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -320,18 +330,18 @@ public class ContainerDelete extends javax.swing.JInternalFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(lblTitleContainerDelete, javax.swing.GroupLayout.DEFAULT_SIZE, 911, Short.MAX_VALUE)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jPanelDetail, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanelMap, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
+                .addContainerGap(15, Short.MAX_VALUE))
+            .addComponent(lblTitleContainerLocModify, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(lblTitleContainerDelete, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(lblTitleContainerLocModify, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jPanelDetail, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -342,20 +352,25 @@ public class ContainerDelete extends javax.swing.JInternalFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
+    private void btnModifyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnModifyActionPerformed
 
         //Posem les variables a null per una nova comunicació amb el server
         serverMessageError = null;
         serverMessageOK = null;
+        
+        //Obtenim el valor necessatir per passar al servidor
+        String containerId = lblContainerId.getText();
+        Double latitude = Double.parseDouble(txtLatitude.getText());
+        Double longitude = Double.parseDouble(txtLongitude.getText());
 
         ////////////////////////////////////////////////////////////////////////////
         //Conectem amb el servidor per eliminar un contenidor
         ////////////////////////////////////////////////////////////////////////////
 
-        ContainersManagement containerToDelete = new ContainersManagement();
-        serverResponse = containerToDelete.containerDelete(Login.PUBLIC_URL_CONTAINER, Login.token, container.getId());
+        ContainersManagement containerToLocModify = new ContainersManagement();
+        serverResponse = containerToLocModify.containerLocationModification(Login.PUBLIC_URL_CONTAINER, Login.token, containerId, latitude, longitude);
 
-        System.out.println("Resposta server al eliminar contanidor: " + serverResponse);
+        System.out.println("Resposta server al modificar la localització del contanidor: " + serverResponse);
 
         //Mirem el tipus de missatge que retorna el servidor
         serverMessageOK = JsonUtils.findJsonValue(serverResponse, "OK");
@@ -365,7 +380,7 @@ public class ContainerDelete extends javax.swing.JInternalFrame {
         if (serverMessageError != null) {
 
             //Mostrem un missatge
-            JOptionPane.showMessageDialog(null, serverMessageError, "CityNet - Eliminar contenidor", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, serverMessageError, "CityNet - Modificar localització", JOptionPane.ERROR_MESSAGE);
 
             //Si l'error és de sessió finalitzada...
             if (serverResponse.equals("Not a valid token")) {
@@ -381,21 +396,23 @@ public class ContainerDelete extends javax.swing.JInternalFrame {
         if (serverMessageOK != null) {
 
             //Mostrem un missatge
-            JOptionPane.showMessageDialog(null, serverMessageOK, "CityNet - Eliminar contenidor", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(null, serverMessageOK, "CityNet - Modificar localització", JOptionPane.INFORMATION_MESSAGE);
 
             //Actualitzem la taula
-            modelTable.removeRow(selectedRow);
+            modelTable.locationModify(selectedRow, latitude, longitude);
 
             //Tanquem el formulari
             this.dispose();
 
         }
-    }//GEN-LAST:event_btnDeleteActionPerformed
+
+    }//GEN-LAST:event_btnModifyActionPerformed
 
     private void btnCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelActionPerformed
 
         //Tanquem el formulari
         this.dispose();
+
     }//GEN-LAST:event_btnCancelActionPerformed
 
     private void btnMapActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnMapActionPerformed
@@ -404,7 +421,13 @@ public class ContainerDelete extends javax.swing.JInternalFrame {
         zoom = "18";
         mapType = "roadmap";
         chboxSatelite.setSelected(false);
-
+        
+        //Passem els valors dels camps Latitud i Longitud
+        Double latitude = Double.parseDouble(txtLatitude.getText());
+        Double longitude = Double.parseDouble(txtLongitude.getText());
+        container.setLatitude(latitude);
+        container.setLongitude(longitude);
+        
         //Instanciem el mapa
         ContainerMap containerMap = new ContainerMap(container, zoom, mapType);
 
@@ -413,23 +436,82 @@ public class ContainerDelete extends javax.swing.JInternalFrame {
 
         //Passem la imatge a l'etiqueta
         lblMap.setIcon(new ImageIcon(imageMap));
-
+        
         //Mostrem el panel dels butons del mapa
         jPanelMapButtons.setVisible(true);
+
     }//GEN-LAST:event_btnMapActionPerformed
 
-    private void chboxSateliteStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_chboxSateliteStateChanged
+    private void txtLatitudeFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtLatitudeFocusGained
+        
+        txtLatitude.selectAll();
+        
+    }//GEN-LAST:event_txtLatitudeFocusGained
 
+    private void txtLongitudeFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtLongitudeFocusGained
+        
+        txtLongitude.selectAll();
+        
+    }//GEN-LAST:event_txtLongitudeFocusGained
+
+    private void btnZoomMoreActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnZoomMoreActionPerformed
+        
+        //Obtenim el zoom actual
+        int zoomTemp = Integer.parseInt(zoom);
+        
+        //Incrementem en 1 el zoom i controlem que no passi del límit
+        zoomTemp ++;
+        if (zoomTemp >= 21) zoomTemp = 21;
+        
+        //Passem el resultat a un String
+        zoom = String.valueOf(zoomTemp);
+        
+        //Instanciem el mapa
+        ContainerMap containerMap = new ContainerMap(container, zoom, mapType);
+
+        //Obtenim la imatge
+        Image imageMap = containerMap.downloadMap();
+
+        //Passem la imatge a l'etiqueta
+        lblMap.setIcon(new ImageIcon(imageMap));
+        
+    }//GEN-LAST:event_btnZoomMoreActionPerformed
+
+    private void btbZoomLessActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btbZoomLessActionPerformed
+        
+        //Obtenim el zoom actual
+        int zoomTemp = Integer.parseInt(zoom);
+        
+        //Decrementem en 1 el zoom i controlem que no passi del límit
+        zoomTemp --;
+        if (zoomTemp <= 16) zoomTemp = 16;
+        
+        //Passem el resultat a un String
+        zoom = String.valueOf(zoomTemp);
+        
+        //Instanciem el mapa
+        ContainerMap containerMap = new ContainerMap(container, zoom, mapType);
+
+        //Obtenim la imatge
+        Image imageMap = containerMap.downloadMap();
+
+        //Passem la imatge a l'etiqueta
+        lblMap.setIcon(new ImageIcon(imageMap));
+        
+    }//GEN-LAST:event_btbZoomLessActionPerformed
+
+    private void chboxSateliteStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_chboxSateliteStateChanged
+        
         //Obtenim el valor del checkbox
         boolean chbox = chboxSatelite.isSelected();
-
+        
         //Verifiquem el valor
         if (chbox) {
             mapType = "satellite";
         } else {
             mapType = "roadmap";
         }
-
+        
         //Instanciem el mapa
         ContainerMap containerMap = new ContainerMap(container, zoom, mapType);
 
@@ -438,61 +520,15 @@ public class ContainerDelete extends javax.swing.JInternalFrame {
 
         //Passem la imatge a l'etiqueta
         lblMap.setIcon(new ImageIcon(imageMap));
-
+        
     }//GEN-LAST:event_chboxSateliteStateChanged
-
-    private void btnZoomMoreActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnZoomMoreActionPerformed
-
-        //Obtenim el zoom actual
-        int zoomTemp = Integer.parseInt(zoom);
-
-        //Incrementem en 1 el zoom i controlem que no passi del límit
-        zoomTemp ++;
-        if (zoomTemp >= 21) zoomTemp = 21;
-
-        //Passem el resultat a un String
-        zoom = String.valueOf(zoomTemp);
-
-        //Instanciem el mapa
-        ContainerMap containerMap = new ContainerMap(container, zoom, mapType);
-
-        //Obtenim la imatge
-        Image imageMap = containerMap.downloadMap();
-
-        //Passem la imatge a l'etiqueta
-        lblMap.setIcon(new ImageIcon(imageMap));
-
-    }//GEN-LAST:event_btnZoomMoreActionPerformed
-
-    private void btbZoomLessActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btbZoomLessActionPerformed
-
-        //Obtenim el zoom actual
-        int zoomTemp = Integer.parseInt(zoom);
-
-        //Decrementem en 1 el zoom i controlem que no passi del límit
-        zoomTemp --;
-        if (zoomTemp <= 16) zoomTemp = 16;
-
-        //Passem el resultat a un String
-        zoom = String.valueOf(zoomTemp);
-
-        //Instanciem el mapa
-        ContainerMap containerMap = new ContainerMap(container, zoom, mapType);
-
-        //Obtenim la imatge
-        Image imageMap = containerMap.downloadMap();
-
-        //Passem la imatge a l'etiqueta
-        lblMap.setIcon(new ImageIcon(imageMap));
-
-    }//GEN-LAST:event_btbZoomLessActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btbZoomLess;
     private javax.swing.JButton btnCancel;
-    private javax.swing.JButton btnDelete;
     private javax.swing.JButton btnMap;
+    private javax.swing.JButton btnModify;
     private javax.swing.JButton btnZoomMore;
     private javax.swing.JCheckBox chboxSatelite;
     private javax.swing.JPanel jPanelButtons;
@@ -503,15 +539,15 @@ public class ContainerDelete extends javax.swing.JInternalFrame {
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JLabel lblContainerId;
-    private javax.swing.JLabel lblContainerLatitude;
-    private javax.swing.JLabel lblContainerLongitude;
     private javax.swing.JLabel lblContainerType;
     private javax.swing.JLabel lblId;
     private javax.swing.JLabel lblLatitude;
     private javax.swing.JLabel lblLocation;
     private javax.swing.JLabel lblLongitude;
     private javax.swing.JLabel lblMap;
-    private javax.swing.JLabel lblTitleContainerDelete;
+    private javax.swing.JLabel lblTitleContainerLocModify;
     private javax.swing.JLabel lblType;
+    private javax.swing.JTextField txtLatitude;
+    private javax.swing.JTextField txtLongitude;
     // End of variables declaration//GEN-END:variables
 }

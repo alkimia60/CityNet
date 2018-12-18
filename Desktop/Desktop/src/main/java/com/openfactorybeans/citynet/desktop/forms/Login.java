@@ -13,10 +13,12 @@ public class Login extends javax.swing.JFrame {
     public static final String PUBLIC_URL_USER = "http://ec2-35-180-7-53.eu-west-3.compute.amazonaws.com:8080/citynet/UserManager";
     public static final String PUBLIC_URL_CONTAINER = "http://ec2-35-180-7-53.eu-west-3.compute.amazonaws.com:8080/citynet/ContainerManager";
     public static final String PUBLIC_URL_INCIDENT = "http://ec2-35-180-7-53.eu-west-3.compute.amazonaws.com:8080/citynet/IncidentManager";
+    public static final String PUBLIC_SSL_URL = "https://ec2-35-180-7-53.eu-west-3.compute.amazonaws.com:8443/citynetSSL/UserManager";
     
     //Variables de sessió
     public static String token;
     public static String rol;
+    public static String user;
     
     //Comptador d'intents
     private int attempts = 0;
@@ -207,7 +209,7 @@ public class Login extends javax.swing.JFrame {
     private void btnLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLoginActionPerformed
         
         //Obtenim les dades
-        String user = txtUser.getText();
+        user = txtUser.getText();
         char[] passChar = pswPassword.getPassword();
         
         //Passem a string la contrasenya
@@ -217,7 +219,12 @@ public class Login extends javax.swing.JFrame {
         //Conectem amb el servidor per iniciar sessió.
         ////////////////////////////////////////////////////////////////////////////
         UsersManagement userLogin = new UsersManagement();
-        boolean login = userLogin.userLogin(PUBLIC_URL_USER, user, pass);
+        
+        //Connexió normal
+        //boolean login = userLogin.userLogin(PUBLIC_URL_USER, user, pass);
+        
+        //Connexió segura
+        boolean login = userLogin.userLoginSSL(PUBLIC_SSL_URL, user, pass);
         
         if (login) {
             

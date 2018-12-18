@@ -8,6 +8,7 @@ import com.openfactorybeans.citynet.desktop.utils.JsonUtils;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JOptionPane;
+import javax.swing.table.TableColumn;
 
 /**
  *
@@ -39,7 +40,9 @@ public class ContainersList extends javax.swing.JInternalFrame {
     
     //Declaració dels components que obren finestres
     private IncidentDetail incidentDetail;
-    ContainerDelete containerDelete;
+    private ContainerDelete containerDelete;
+    private IncidentAdd incidentAdd;
+    private ContainerLocModify containerLocModify;
     
     //Variable que informa de la pàgina solicitada al servidor
     private int screen = 0;
@@ -57,9 +60,11 @@ public class ContainersList extends javax.swing.JInternalFrame {
     public ContainersList() {
         initComponents();
         
-        //Amaguem el botó de veure incidències. Només es mostra al seleccionar un contenidor no operatiu
+        //Amaguem el botons que només s'activen si es selecciona un contenidor de la taula
+        btnModify.setEnabled(false);
+        btnDelete.setEnabled(false);
+        btnIncidentAdd.setEnabled(false);
         btnIncidenceDetail.setEnabled(false);
-        btnModify.setVisible(false);
         
         // Cridem al servidor
         callToServer();
@@ -137,9 +142,13 @@ public class ContainersList extends javax.swing.JInternalFrame {
      * Mètode per omplir la taula amb els contenidors a partir d'un Array
      */
     public void fillTable() {
-        
+
         modelTable = new TMContainer(containers);
         jTableContainers.setModel(modelTable);
+        
+        //jTableContainers.getColumnModel().getColumn(0).setPreferredWidth(20);
+        //jTableContainers.getColumnModel().getColumn(4).setPreferredWidth(10);
+        
         
     }
     
@@ -189,18 +198,19 @@ public class ContainersList extends javax.swing.JInternalFrame {
         btnAvPag = new javax.swing.JButton();
         jSeparator2 = new javax.swing.JSeparator();
         btnDelete = new javax.swing.JButton();
-        btnModify = new javax.swing.JButton();
         jSeparator3 = new javax.swing.JSeparator();
         lblType = new javax.swing.JLabel();
         cbxContainerType = new javax.swing.JComboBox<>();
         jLabel1 = new javax.swing.JLabel();
         cbxContainerOperative = new javax.swing.JComboBox<>();
         jSeparator4 = new javax.swing.JSeparator();
+        btnIncidentAdd = new javax.swing.JButton();
         btnIncidenceDetail = new javax.swing.JButton();
+        btnModify = new javax.swing.JButton();
         jPanelDetail = new javax.swing.JPanel();
         jSeparator1 = new javax.swing.JSeparator();
 
-        setTitle("Llistat de containers");
+        setTitle("Llistat de contenidors");
 
         jTableContainers.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -270,9 +280,6 @@ public class ContainersList extends javax.swing.JInternalFrame {
             }
         });
 
-        btnModify.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
-        btnModify.setText("Modificar");
-
         jSeparator3.setOrientation(javax.swing.SwingConstants.VERTICAL);
 
         lblType.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
@@ -301,11 +308,27 @@ public class ContainersList extends javax.swing.JInternalFrame {
 
         jSeparator4.setOrientation(javax.swing.SwingConstants.VERTICAL);
 
+        btnIncidentAdd.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        btnIncidentAdd.setText("Nova incidència");
+        btnIncidentAdd.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnIncidentAddActionPerformed(evt);
+            }
+        });
+
         btnIncidenceDetail.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
         btnIncidenceDetail.setText("Veure incidència");
         btnIncidenceDetail.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnIncidenceDetailActionPerformed(evt);
+            }
+        });
+
+        btnModify.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        btnModify.setText("Modificar");
+        btnModify.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnModifyActionPerformed(evt);
             }
         });
 
@@ -321,9 +344,9 @@ public class ContainersList extends javax.swing.JInternalFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btnDelete, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btnModify)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btnDelete, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jSeparator3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -337,31 +360,43 @@ public class ContainersList extends javax.swing.JInternalFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jSeparator4, javax.swing.GroupLayout.PREFERRED_SIZE, 2, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btnIncidentAdd)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btnIncidenceDetail)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanelOptionsLayout.setVerticalGroup(
             jPanelOptionsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanelOptionsLayout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanelOptionsLayout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(cbxContainerType, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
+            .addGroup(jPanelOptionsLayout.createSequentialGroup()
+                .addContainerGap()
                 .addGroup(jPanelOptionsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanelOptionsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(btnIncidenceDetail, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnIncidentAdd, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanelOptionsLayout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
                         .addGroup(jPanelOptionsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanelOptionsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                .addComponent(btnRePag, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(btnAvPag, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGroup(jPanelOptionsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(jSeparator3, javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(btnDelete, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(btnModify, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addGroup(jPanelOptionsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(lblType)
-                            .addComponent(cbxContainerType, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel1)
-                            .addComponent(cbxContainerOperative, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addComponent(jSeparator4, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)))
-            .addComponent(btnIncidenceDetail, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanelOptionsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addGroup(jPanelOptionsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanelOptionsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(btnRePag, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(btnAvPag, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addGroup(jPanelOptionsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                    .addComponent(jSeparator3, javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(btnDelete, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addComponent(jSeparator4, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanelOptionsLayout.createSequentialGroup()
+                                .addGroup(jPanelOptionsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanelOptionsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(cbxContainerOperative, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addComponent(lblType, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addContainerGap())))
+                    .addComponent(btnModify, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
         );
 
         javax.swing.GroupLayout jPanelDetailLayout = new javax.swing.GroupLayout(jPanelDetail);
@@ -407,6 +442,12 @@ public class ContainersList extends javax.swing.JInternalFrame {
         //Cridem al servidor
         callToServer();
         
+        //Desactivem els botons
+        btnModify.setEnabled(false);
+        btnDelete.setEnabled(false);
+        btnIncidentAdd.setEnabled(false);
+        btnIncidenceDetail.setEnabled(false);
+        
     }//GEN-LAST:event_btnRePagActionPerformed
 
     private void btnAvPagActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAvPagActionPerformed
@@ -416,6 +457,12 @@ public class ContainersList extends javax.swing.JInternalFrame {
         
         //Cridem al servidor
         callToServer();
+        
+        //Desactivem els botons
+        btnModify.setEnabled(false);
+        btnDelete.setEnabled(false);
+        btnIncidentAdd.setEnabled(false);
+        btnIncidenceDetail.setEnabled(false);
         
     }//GEN-LAST:event_btnAvPagActionPerformed
 
@@ -512,13 +559,27 @@ public class ContainersList extends javax.swing.JInternalFrame {
             //Obtenim el valor del camp operatiu
             String operative = modelTable.getValueAt(selectedRow, OPERATIVE).toString();
             
-            //Activem o desactivem el botó per veure incidències i per esborrar
+            //Activem o desactivem el botons segons l'estat operatiu
             if (operative.equals(Container.OPERATIVE_TABLE[0])) { //No està operatiu
-                btnIncidenceDetail.setEnabled(true);
+                //Si no està operatiu --> Té incidència
+                //Modificar SI
+                //Eliminar NO
+                //Afegir NO
+                //Veure SI
+                btnModify.setEnabled(true);
                 btnDelete.setEnabled(false);
+                btnIncidentAdd.setEnabled(false);
+                btnIncidenceDetail.setEnabled(true);
             } else {
-                btnIncidenceDetail.setEnabled(false);
+                //Si està operatiu --> No té incidència
+                //Modificar SI
+                //Eliminar SI
+                //Afegir SI
+                //Veure NO
+                btnModify.setEnabled(true);
                 btnDelete.setEnabled(true);
+                btnIncidentAdd.setEnabled(true);
+                btnIncidenceDetail.setEnabled(false);
             }
             
         }
@@ -542,14 +603,14 @@ public class ContainersList extends javax.swing.JInternalFrame {
             String latitude = modelTable.getValueAt(selectedRow, LATITUDE).toString();
             String longitude = modelTable.getValueAt(selectedRow, LONGITUDE).toString();
             
-            //Instanciem un contenidor
+            //Instanciem el contenidor
             Container container = new Container();
             container.setId(containerID);
             container.setType(containerType);
             container.setLatitude(Double.parseDouble(latitude));
             container.setLongitude(Double.parseDouble(longitude));
             
-            //Instanciem el InternalFrame de incidències
+            //Instanciem el InternalFrame per mostrar incidències
             incidentDetail = new IncidentDetail(container, modelTable, selectedRow);
             
             //Afegim el formulari al panel de detall de la incidència
@@ -571,18 +632,25 @@ public class ContainersList extends javax.swing.JInternalFrame {
         
         if (selectedRow != -1) {
             
+            //Netejem qualsevol finestra oberta anteriorment en l'escriptori
+            jPanelDetail.removeAll();
+            jPanelDetail.repaint();
+            
             //Obtenim el valor dels camps de la fila
             String id = modelTable.getValueAt(selectedRow, ID).toString();
             String type = modelTable.getValueAt(selectedRow, TYPE).toString();
             String latitude = modelTable.getValueAt(selectedRow, LATITUDE).toString();
             String longitude = modelTable.getValueAt(selectedRow, LONGITUDE).toString();
             
-            //Netejem qualsevol finestra oberta anteriorment en l'escriptori
-            jPanelDetail.removeAll();
-            jPanelDetail.repaint();
+            //Instanciem el contenidor
+            Container container = new Container();
+            container.setId(id);
+            container.setType(type);
+            container.setLatitude(Double.parseDouble(latitude));
+            container.setLongitude(Double.parseDouble(longitude));
             
             //Instanciem el InternalFrame
-            containerDelete = new ContainerDelete(id, type, latitude, longitude, modelTable, selectedRow);
+            containerDelete = new ContainerDelete(container, modelTable, selectedRow);
             
             //Afegim el formulari al panel d'eliminar
             jPanelDetail.add(containerDelete);
@@ -593,15 +661,112 @@ public class ContainersList extends javax.swing.JInternalFrame {
             //El fem visible
             containerDelete.setVisible(true);
 
+        } else {
+            
+            //No hi ha cap fila seleccionada
+            JOptionPane.showMessageDialog(null, "Container not selected", "CityNet - Eliminar contenidor", JOptionPane.ERROR_MESSAGE);
+            
         }
         
     }//GEN-LAST:event_btnDeleteActionPerformed
+
+    private void btnIncidentAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnIncidentAddActionPerformed
+        
+        //Obtenim la fila seleccionada
+        int selectedRow = jTableContainers.getSelectedRow();
+        
+        if (selectedRow != -1) {
+            
+            //Netejem qualsevol finestra oberta anteriorment en l'escriptori
+            jPanelDetail.removeAll();
+            jPanelDetail.repaint();
+            
+            //Obtenim el valor dels camps de la fila
+            String id = modelTable.getValueAt(selectedRow, ID).toString();
+            String type = modelTable.getValueAt(selectedRow, TYPE).toString();
+            String latitude = modelTable.getValueAt(selectedRow, LATITUDE).toString();
+            String longitude = modelTable.getValueAt(selectedRow, LONGITUDE).toString();
+            
+            //Instanciem el contenidor
+            Container container = new Container();
+            container.setId(id);
+            container.setType(type);
+            container.setLatitude(Double.parseDouble(latitude));
+            container.setLongitude(Double.parseDouble(longitude));
+            
+            //Instanciem el InternaFrame per notificar una incidència
+            incidentAdd = new IncidentAdd(container, modelTable, selectedRow);
+            
+            //Afegim el formulari al panel de detall de la incidència
+            jPanelDetail.add(incidentAdd);
+            
+            //Centrem la finestra
+            FormsUtils.centerJInternalFrame(jPanelDetail, incidentAdd);
+            
+            //El fem visible
+            incidentAdd.setVisible(true);
+            
+        } else {
+            
+            //No hi ha cap fila seleccionada
+            JOptionPane.showMessageDialog(null, "Container not selected", "CityNet - Notificar incidència", JOptionPane.ERROR_MESSAGE);
+            
+        }
+        
+        
+    }//GEN-LAST:event_btnIncidentAddActionPerformed
+
+    private void btnModifyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnModifyActionPerformed
+        
+        //Obtenir la fila del contenidor
+        int selectedRow = jTableContainers.getSelectedRow();
+        
+        if (selectedRow != -1) {
+            
+            //Netejem qualsevol finestra oberta anteriorment en l'escriptori
+            jPanelDetail.removeAll();
+            jPanelDetail.repaint();
+            
+            //Obtenim el valor dels camps de la fila
+            String id = modelTable.getValueAt(selectedRow, ID).toString();
+            String type = modelTable.getValueAt(selectedRow, TYPE).toString();
+            String latitude = modelTable.getValueAt(selectedRow, LATITUDE).toString();
+            String longitude = modelTable.getValueAt(selectedRow, LONGITUDE).toString();
+            
+            //Instanciem el contenidor
+            Container container = new Container();
+            container.setId(id);
+            container.setType(type);
+            container.setLatitude(Double.parseDouble(latitude));
+            container.setLongitude(Double.parseDouble(longitude));
+            
+            //Instanciem el InternalFrame
+            containerLocModify = new ContainerLocModify(container, modelTable, selectedRow);
+            
+            //Afegim el formulari al panel de modificar
+            jPanelDetail.add(containerLocModify);
+            
+            //Centrem la finestra
+            FormsUtils.centerJInternalFrame(jPanelDetail, containerLocModify);
+            
+            //El fem visible
+            containerLocModify.setVisible(true);
+            
+        } else {
+            
+            //No hi ha cao fila seleccionada
+            JOptionPane.showMessageDialog(null, "Container not selected", "CityNet - Modificar localització", JOptionPane.ERROR_MESSAGE);
+            
+        }
+        
+    }//GEN-LAST:event_btnModifyActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAvPag;
     private javax.swing.JButton btnDelete;
     private javax.swing.JButton btnIncidenceDetail;
+    private javax.swing.JButton btnIncidentAdd;
     private javax.swing.JButton btnModify;
     private javax.swing.JButton btnRePag;
     private javax.swing.JComboBox<String> cbxContainerOperative;

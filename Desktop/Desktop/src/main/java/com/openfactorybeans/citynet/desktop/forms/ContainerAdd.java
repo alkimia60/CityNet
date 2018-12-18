@@ -392,7 +392,7 @@ public class ContainerAdd extends javax.swing.JInternalFrame {
         //Camp latitud
         try {
             
-            latitude = Double.parseDouble(txtLongitude.getText());
+            latitude = Double.parseDouble(txtLatitude.getText());
             
             //Passem l'atribut al container
             container.setLatitude(latitude);
@@ -409,7 +409,7 @@ public class ContainerAdd extends javax.swing.JInternalFrame {
         //Camp longitud
         try {
             
-            longitude = Double.parseDouble(txtLatitude.getText());
+            longitude = Double.parseDouble(txtLongitude.getText());
             
             //Passem l'atribut al container
             container.setLongitude(longitude);

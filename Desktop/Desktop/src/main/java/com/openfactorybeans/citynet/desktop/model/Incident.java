@@ -8,6 +8,12 @@ import java.util.Date;
  */
 public class Incident {
     
+    //Variables de tipus de incidència
+    public static final String BROKEN = "broken";
+    public static final String FULL = "full";
+    public static final String BROKEN_TXT = "Trencat";
+    public static final String FULL_TXT = "Ple";
+    
     private int id;
     private String container, userEmail, type, date, resolutionDate;
 

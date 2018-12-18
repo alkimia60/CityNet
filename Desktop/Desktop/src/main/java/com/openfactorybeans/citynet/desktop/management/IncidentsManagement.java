@@ -1,6 +1,7 @@
 package com.openfactorybeans.citynet.desktop.management;
 
 import com.google.gson.Gson;
+import com.openfactorybeans.citynet.desktop.model.Incident;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +24,41 @@ import org.apache.http.util.EntityUtils;
  * @author Jose
  */
 public class IncidentsManagement {
+    
+    /**
+     * Mètode per notificar una nova incidència
+     * 
+     * @param url URL del servidor
+     * @param token Identificatiu de sessió iniciada
+     * @param incident Incidència a registrar
+     * @return String json amb els elements "ok" o "error"
+     */
+    public String incidentNotification(String url, String token, Incident incident) {
+        try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
+            HttpPost httpPost = new HttpPost(url);
+            //Gson object to convert Container Object into String
+            Gson gson = new Gson();
+            //List of paràmeters to send
+            List<NameValuePair> nvps = new ArrayList<>();
+            nvps.add(new BasicNameValuePair("action", "IncidentNotification"));
+            nvps.add(new BasicNameValuePair("token", token));
+            nvps.add(new BasicNameValuePair("incident", gson.toJson(incident)));
+
+            httpPost.setEntity(new UrlEncodedFormEntity(nvps));
+
+            System.out.println("Executing request " + httpPost.getRequestLine());
+
+            // Create a custom response handler
+            String responseBody = httpclient.execute(httpPost, customResponseHandler());
+            System.out.println("----------------------------------------");
+            System.out.println(responseBody);
+            return responseBody; //Server response
+
+        } catch (Exception ex) {
+            Logger.getLogger(IncidentsManagement.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return "Error incidentNotification";
+    }
     
     /**
      * Demanem al servidor les dades de la inciència seleccionada
@@ -68,8 +104,7 @@ public class IncidentsManagement {
     public String incidentFinalize(String url, String token, int incidentID) {
         try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
             HttpPost httpPost = new HttpPost(url);
-            //Gson object to convert Container Object into String
-            //Gson gson = new Gson();
+            
             //List of paràmeters to send
             List<NameValuePair> nvps = new ArrayList<>();
             nvps.add(new BasicNameValuePair("action", "IncidentFinalize"));
