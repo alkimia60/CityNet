@@ -54,7 +54,7 @@ public class IncidentRequests {
 
             //User login for session token
             ClientRequests cliRqsts = new ClientRequests();
-            cliRqsts.userLogin(httpclient, httpPost, "diazgx@diba.cat", "xavixavi");
+            cliRqsts.userLogin(httpclient, httpPost, "diazgx@diba.cat", "X4vix@vi");
             sessionToken = ClientRequests.token;
 
             httpPost.setURI(new URI(URI));//ContainerManager URI
@@ -65,6 +65,9 @@ public class IncidentRequests {
             incRqsts.incidentNotification(httpclient, httpPost, sessionToken, incident);
             //Incident finalization
             //incRqsts.incidentFinalize(httpclient, httpPost, sessionToken,12);
+            //List incidents filtered by type and resolution_date state
+            incRqsts.listFilteredIncidents(httpclient, httpPost, sessionToken, 0, "", -1);
+
         } catch (NoSuchAlgorithmException ex) {
             Logger.getLogger(ContainerRequests.class.getName()).log(Level.SEVERE, null, ex);
         } catch (KeyStoreException ex) {
@@ -151,6 +154,47 @@ public class IncidentRequests {
                     .getName()).log(Level.SEVERE, null, ex);
         }
         return "Error incidentFinalize";
+    }
+
+    /**
+     * Function to list incidents by type and resolution state
+     *
+     * @param url Servlet location
+     * @param sessionToken
+     * @param screen current application screen number, starting with 0
+     * @param type sting of type of container or all types
+     * @param finalized int 1 if container is operative or 0 if not or any for
+     * all
+     * @return json String with elements startOfTable, endOfTable and the
+     * filtered incident objects
+     */
+    private String listFilteredIncidents(CloseableHttpClient httpclient, HttpPost httpPost, String sessionToken, int screen, String type, int finalized) {
+        try {
+            //Gson object to convert Container Object into String
+            Gson gson = new Gson();
+            //List of paràmeters to send
+            List<NameValuePair> nvps = new ArrayList<>();
+            nvps.add(new BasicNameValuePair("action", "ListFilteredIncidents"));
+            nvps.add(new BasicNameValuePair("token", sessionToken));
+            nvps.add(new BasicNameValuePair("screen", String.valueOf(screen)));
+            nvps.add(new BasicNameValuePair("type", type));
+            nvps.add(new BasicNameValuePair("finalized", String.valueOf(finalized)));
+            httpPost.setEntity(new UrlEncodedFormEntity(nvps));
+
+            System.out.println("Executing request " + httpPost.getRequestLine());
+            // Create a custom response handler
+            String responseBody = httpclient.execute(httpPost, customResponseHandler());
+            //Checks if response is a redirection and then re-execute request            
+            responseBody = reExecuteIfRedirected(responseBody, httpPost, httpclient);
+            System.out.println("----------------------------------------");
+            System.out.println(responseBody);
+            return responseBody; //Server response
+
+        } catch (Exception ex) {
+            Logger.getLogger(ClientRequests.class
+                    .getName()).log(Level.SEVERE, null, ex);
+        }
+        return "Error listFilteredIncidents";
     }
 
     /**
